@@ -11,20 +11,27 @@ import { copyTradingTradfiTools } from './copy-trading-tradfi/index.js';
 import { cryptoLoanFixedTermTools } from './crypto-loan-fixed-term/index.js';
 import { cryptoLoanFlexibleTools } from './crypto-loan-flexible/index.js';
 import { cryptoLoanNewTools } from './crypto-loan-new/index.js';
+import { doublewinTools } from './doublewin/index.js';
 import { earnTools } from './earn/index.js';
+import { earntokenTools } from './earntoken/index.js';
 import { fiatConvertTools } from './fiat-convert/index.js';
+import { fixedtermTools } from './fixedterm/index.js';
+import { liquidityminingTools } from './liquiditymining/index.js';
 import { marketTools } from './market/index.js';
 import { p2pTools } from './p2p/index.js';
 import { positionTools } from './position/index.js';
 import { preUpgradeTools } from './pre-upgrade/index.js';
 import { rfqTradingTools } from './rfq-trading/index.js';
+import { smartleverageTools } from './smartleverage/index.js';
 import { spotMarginTradeUtaTools } from './spot-margin-trade-uta/index.js';
 import { spotMarginUtaTools } from './spot-margin-uta/index.js';
 import { spreadTradingTools } from './spread-trading/index.js';
 import { strategyTools } from './strategy/index.js';
+import { subscriptionTools } from './subscription/index.js';
 import { tradeTools } from './trade/index.js';
 import { userTools } from './user/index.js';
 import { websocketTools } from './websocket/index.js';
+import { wstradeTools } from './wstrade/index.js';
 
 export const allTools = [
   ...accountTools,
@@ -39,18 +46,25 @@ export const allTools = [
   ...cryptoLoanFixedTermTools,
   ...cryptoLoanFlexibleTools,
   ...cryptoLoanNewTools,
+  ...doublewinTools,
   ...earnTools,
+  ...earntokenTools,
   ...fiatConvertTools,
+  ...fixedtermTools,
+  ...liquidityminingTools,
   ...marketTools,
   ...p2pTools,
   ...positionTools,
   ...preUpgradeTools,
   ...rfqTradingTools,
+  ...smartleverageTools,
   ...spotMarginTradeUtaTools,
   ...spotMarginUtaTools,
   ...spreadTradingTools,
   ...strategyTools,
+  ...subscriptionTools,
   ...tradeTools,
   ...userTools,
   ...websocketTools,
+  ...wstradeTools,
 ];
