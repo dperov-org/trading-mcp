@@ -1,0 +1,20 @@
+{
+  "name": "openai-function-tools-adapter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenAI function-tools adapter over the local trading-mcp tool layer",
+  "scripts": {
+    "codegen": "node --import tsx/esm scripts/generate-openai-tools.mjs",
+    "groups": "node --import tsx/esm src/list-groups.mjs",
+    "ask": "node --import tsx/esm src/ask.mjs",
+    "live-check": "node --import tsx/esm src/live-check.mjs"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "openai": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=20.6"
+  }
+}

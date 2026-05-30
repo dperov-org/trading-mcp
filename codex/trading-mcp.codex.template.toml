@@ -1,0 +1,14 @@
+# trading-mcp Codex CLI MCP profile
+# Rendered by scripts/install-codex-mcp.ps1 into:
+# - codex/trading-mcp.codex.toml (project-local concrete config preview)
+# Launchers pass this MCP config to Codex via inline `-c` overrides.
+
+[mcp_servers.__SERVER_NAME__]
+command = '__POWERSHELL_PATH__'
+args = [
+  '-ExecutionPolicy',
+  'Bypass',
+  '-File',
+  '__WRAPPER_SCRIPT__',
+]
+cwd = '__REPO_ROOT__'

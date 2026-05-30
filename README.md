@@ -482,12 +482,144 @@ Your AI client manages the MCP server process itself via stdio. A manually start
 
 ## Local Development
 
+### Requirements
+
+- **Node.js**: `>=20.6`
+- **npm**: version bundled with your Node.js installation
+
+Check your current runtime:
+
+```bash
+node --version
+npm --version
+```
+
+If `node --version` is older than `20.6`, upgrade Node before running the dev toolchain.
+
+Windows (machine-wide install from an elevated PowerShell):
+
+```powershell
+winget install --id OpenJS.NodeJS.LTS --scope machine --accept-package-agreements --accept-source-agreements
+```
+
+Windows (machine-wide upgrade if Node LTS is already managed by `winget`):
+
+```powershell
+winget upgrade --id OpenJS.NodeJS.LTS --scope machine --accept-package-agreements --accept-source-agreements
+```
+
+This repository also includes an admin-only helper script used for machine-wide Node LTS installation on Windows:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\admin-install-node-lts.ps1
+```
+
+### Code Generation
+
+The large `src/tools/**` wrapper layer is generated and should not be edited manually unless you are intentionally changing the generated source material.
+
+The public codegen pipeline is **inventory-first**:
+
+- `codegen/tool-inventory.json` is the current public source-of-truth
+- `scripts/generate-tools.mjs` regenerates `src/tools/**` from that inventory
+- `npm run codegen:bootstrap` rebuilds the inventory from the current generated files
+- `npm run verify` runs the current local verification pipeline
+
+Typical workflows:
+
+```bash
+# Install dependencies exactly as locked
+npm ci
+
+# Rebuild inventory from the current generated wrappers
+npm run codegen:bootstrap
+
+# Regenerate src/tools/** from inventory
+npm run generate
+```
+
+Notes:
+
+- `npm run generate` rewrites the generated wrapper files and category indexes
+- `npm run codegen:bootstrap` is mainly for migration and maintenance of the public inventory
+- custom wrapper logic already present in generated files is preserved via raw code fragments stored in the inventory
+
+### Verification
+
+Run the standard local verification pipeline:
+
+```bash
+npm run verify
+```
+
+`npm run verify` currently performs these checks in order:
+
+1. `npm run generate`
+2. `npm run typecheck`
+3. `npm run build`
+
+What each step validates:
+
+- `generate`: the public inventory can successfully regenerate `src/tools/**`
+- `typecheck`: the TypeScript source tree compiles with `tsc --noEmit`
+- `build`: the production bundle can be emitted with `tsup`
+
+What `verify` does **not** currently do:
+
+- it does not call live Bybit endpoints
+- it does not run integration tests against an MCP client
+- it does not assert a clean git diff after regeneration
+
+### Bybit API Smoke Test
+
+Run the safe read-only smoke test against live Bybit API credentials from `.env`:
+
+```bash
+npm run smoke:bybit
+```
+
+The current smoke runner:
+
+- loads `.env`
+- maps `BYBIT_RO_API_KEY` / `BYBIT_RO_API_SECRET` to the standard runtime auth variables
+- checks public market endpoints
+- checks authenticated read-only account endpoints
+- prints a compact summary without echoing secrets
+
+The current smoke set includes:
+
+- `getServerTime`
+- `getTickers` for `BTCUSDT`
+- `getOrderbook` for `BTCUSDT`
+- `queryAPIKey`
+- `getAccountInfo`
+- `getWalletBalance`
+- `getOpenOrders`
+
+This smoke test is intentionally non-destructive:
+
+- it does not place, amend, or cancel orders
+- it does not open WebSocket trade sessions
+- it does not require write permissions on the API key
+
 ```bash
 # Install dependencies
-npm install
+npm ci
 
 # Start the server in development mode
 npm run dev
+
+# Regenerate generated tools from inventory
+npm run generate
+
+# Rebuild inventory from the current generated files
+npm run codegen:bootstrap
+
+# Run the standard local verification pipeline
+npm run verify
+
+# Run safe live Bybit API smoke tests using .env credentials
+npm run smoke:bybit
 
 # Type check
 npm run typecheck
@@ -495,6 +627,55 @@ npm run typecheck
 # Build for production
 npm run build
 ```
+
+### Repository-Specific Additions
+
+This fork adds several local development and integration layers that are not part of the original upstream repository layout.
+
+#### Public codegen and inventory
+
+- `codegen/tool-inventory.json` is the public source-of-truth for the generated `src/tools/**` layer
+- `scripts/generate-tools.mjs` can:
+  - regenerate wrappers from inventory via `npm run generate`
+  - rebuild inventory from the current wrappers via `npm run codegen:bootstrap`
+- `apps/openai-function-tools-adapter/` contains a separate adapter project that exposes local tool handlers as OpenAI `function` tools
+- that adapter also generates strict-compatible OpenAI schemas and supports filtering by groups or explicit tool names
+
+#### OpenAI live-check apps
+
+Two standalone example apps are included under `apps/`:
+
+- `apps/openai-mcp-live-check/`
+  - runs the local MCP server, bridges it to remote MCP over HTTP, and checks it with OpenAI Responses API
+- `apps/openai-function-tools-adapter/`
+  - bypasses MCP entirely and exposes the same local handlers as OpenAI `function` tools
+
+Useful commands:
+
+```bash
+# Regenerate the OpenAI function-tool registry
+npm run codegen:openai-functions
+
+# Run the OpenAI function-tool smoke scenario
+npm run smoke:openai-functions
+```
+
+#### Codex CLI integration
+
+This fork also includes project-local scripts for opening a Codex CLI session with the Bybit MCP server available only for that session:
+
+```bash
+# Open an interactive Codex session with the local MCP wired in
+npm run codex:session
+
+# Run a non-interactive Codex smoke test against wallet balance tools
+npm run codex:mcp:smoke
+```
+
+Notes:
+
+- the launcher passes the MCP config inline to `codex` and does not leave the Bybit server globally registered in `~/.codex/config.toml`
+- the smoke command is intentionally read-only and uses the local `.env` mapping for `BYBIT_RO_*` aliases
 
 ---
 

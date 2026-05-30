@@ -1,0 +1,21 @@
+{
+  "name": "openai-mcp-live-check",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Live OpenAI Responses API checks for the local trading-mcp server via a public MCP bridge",
+  "scripts": {
+    "ask": "node src/ask.mjs",
+    "bridge": "node src/bridge-server.mjs",
+    "live-check": "node src/live-check.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "dotenv": "^17.2.3",
+    "localtunnel": "^2.0.2",
+    "openai": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=20.6"
+  }
+}

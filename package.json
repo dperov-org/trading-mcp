@@ -30,8 +30,18 @@
   ],
   "scripts": {
     "build": "tsup",
+    "codex:mcp:install": "powershell -ExecutionPolicy Bypass -File scripts/install-codex-mcp.ps1",
+    "codex:mcp:smoke": "powershell -ExecutionPolicy Bypass -File scripts/smoke-codex-mcp.ps1",
+    "codex:mcp:uninstall": "powershell -ExecutionPolicy Bypass -File scripts/remove-codex-mcp.ps1",
+    "codex:session": "powershell -ExecutionPolicy Bypass -File scripts/start-codex-with-mcp.ps1",
     "dev": "node --env-file=.env --import tsx/esm src/index.ts",
+    "generate": "node scripts/generate-tools.mjs generate",
+    "codegen:bootstrap": "node scripts/generate-tools.mjs bootstrap",
+    "codegen:openai-functions": "npm --prefix apps/openai-function-tools-adapter run codegen",
+    "smoke:bybit": "node --import tsx/esm scripts/bybit-smoke.ts",
+    "smoke:openai-functions": "npm --prefix apps/openai-function-tools-adapter run live-check",
     "typecheck": "tsc --noEmit",
+    "verify": "node scripts/verify.mjs",
     "publish-pkg": "bash scripts/publish.sh"
   },
   "dependencies": {
