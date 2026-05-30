@@ -672,9 +672,20 @@ npm run codex:session
 npm run codex:mcp:smoke
 ```
 
+Linux / WSL equivalents:
+
+```bash
+# Open an interactive Codex session with inline MCP config
+npm run codex:session:linux
+
+# Run the Codex MCP smoke test on Linux / WSL
+npm run codex:mcp:smoke:linux
+```
+
 Notes:
 
 - the launcher passes the MCP config inline to `codex` and does not leave the Bybit server globally registered in `~/.codex/config.toml`
+- the Linux launchers also load the project `.env` into the current process, so local environment-based credentials are available to `codex`
 - the smoke command is intentionally read-only and uses the local `.env` mapping for `BYBIT_RO_*` aliases
 
 ---
