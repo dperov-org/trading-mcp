@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bybit MCP Web UI Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="auth-shell">
+      <div class="auth-card">
+        <p class="eyebrow">Session Login</p>
+        <h1>Bybit MCP Web UI</h1>
+        <p class="auth-copy">
+          Enter the shared session password to access the local ChatKit interface.
+        </p>
+
+        <form id="login-form" class="auth-form">
+          <label class="auth-label" for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            class="auth-input"
+            autocomplete="current-password"
+            required
+          />
+          <button type="submit" class="auth-button">Open UI</button>
+        </form>
+
+        <p id="login-error" class="auth-error" hidden></p>
+      </div>
+    </div>
+
+    <script type="module" src="/login.js"></script>
+  </body>
+</html>

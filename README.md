@@ -660,6 +660,49 @@ npm run codegen:openai-functions
 npm run smoke:openai-functions
 ```
 
+#### Local ChatKit web UI
+
+This fork also includes a ChatKit-based browser UI that runs against a local `codex app-server`, which in turn uses the project-local Bybit MCP server.
+
+- `apps/local-mcp-web-ui/`
+  - serves a ChatKit browser surface
+  - starts `codex app-server` through a dedicated launcher
+  - streams real Bybit-backed answers through the local MCP stack
+
+Useful commands:
+
+```bash
+# Start the local HTTP web server for the ChatKit UI
+npm run webui:http
+
+# Start the local ChatKit web UI server
+npm run webui:start
+
+# Publish inside your tailnet without app-auth
+npm run webui:serve
+
+# Publish publicly through Tailscale Funnel with backend session auth
+npm run webui:funnel
+
+# Smoke-test the codex app-server + local MCP wiring directly
+npm run webui:app-server:smoke
+
+# Smoke-test the full ChatKit API flow with real Bybit prompts
+npm run webui:smoke
+```
+
+Notes:
+
+- the Node.js backend is cross-platform
+- `codex app-server` launch is platform-specific and uses:
+  - `scripts/start-codex-app-server-with-mcp.ps1` on Windows
+  - `scripts/start-codex-app-server-with-mcp.sh` on Linux
+- `npm run webui:serve` forces tailnet-only publication via `tailscale serve` and keeps backend auth disabled
+- `npm run webui:funnel` forces backend session auth and requires `WEB_UI_SESSION_PASSWORD`
+- for ChatKit on a published hostname, set `WEB_UI_CHATKIT_DOMAIN_KEY` to the `domain_pk_...` value generated in OpenAI `Settings -> Security -> Domain allowlist`
+- if one backend serves multiple hostnames, use `WEB_UI_CHATKIT_DOMAIN_KEYS` or `WEB_UI_CHATKIT_DOMAIN_KEYS_JSON` to map hostnames to different `domain_pk_...` values
+- tool restrictions and approval hardening are still intentionally out of scope for this MVP
+
 #### Codex CLI integration
 
 This fork also includes project-local scripts for opening a Codex CLI session with the Bybit MCP server available only for that session:

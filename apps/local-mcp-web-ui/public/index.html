@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bybit MCP Web UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <div class="hero">
+        <p class="eyebrow">Local ChatKit MVP</p>
+        <h1>Bybit MCP via Codex App Server</h1>
+        <p class="lede">
+          ChatKit UI on top of the local Bybit MCP stack. The browser talks to a
+          thin local backend, which streams turns from <code>codex app-server</code>.
+        </p>
+      </div>
+
+      <div class="chat-frame">
+        <openai-chatkit id="chatkit"></openai-chatkit>
+      </div>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

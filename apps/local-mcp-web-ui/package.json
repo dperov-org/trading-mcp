@@ -1,0 +1,22 @@
+{
+  "name": "local-mcp-web-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "ChatKit-based web UI for the local Bybit MCP stack via codex app-server",
+  "scripts": {
+    "http": "node src/server.mjs",
+    "start": "node src/server.mjs",
+    "tailscale:serve": "node src/tailscale-publish.mjs serve",
+    "tailscale:serve:status": "tailscale serve status --json",
+    "tailscale:serve:reset": "tailscale serve reset",
+    "tailscale:funnel": "node src/tailscale-publish.mjs funnel",
+    "tailscale:funnel:status": "tailscale funnel status --json",
+    "tailscale:funnel:reset": "tailscale funnel reset",
+    "smoke": "node src/smoke-webui.mjs",
+    "smoke:app-server": "node src/smoke-app-server.mjs"
+  },
+  "engines": {
+    "node": ">=20.6"
+  }
+}
