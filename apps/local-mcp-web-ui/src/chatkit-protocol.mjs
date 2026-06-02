@@ -100,6 +100,7 @@ export function toCodexUserInput(chatkitInput, options = {}) {
         "- trading_mcp_bybit_local = Bybit only.",
         "- trading_mcp_mexc_local = MEXC only.",
         "- If the user asks about MEXC, use only trading_mcp_mexc_local tools.",
+        "- For a generic MEXC trading/account review, start with trading_mcp_mexc_local.getMexcTradingReviewSnapshot.",
         "- If you are unsure which MEXC tool to call first, call trading_mcp_mexc_local.getMexcCapabilityGuide.",
         "- For MEXC trigger orders, plan orders, TP/SL orders, positions, or perpetual contracts, prefer MEXC Futures tools such as getFuturesTriggerOrders, getFuturesStopOrders, getFuturesOpenPositions, and getFuturesOpenOrders.",
         "",

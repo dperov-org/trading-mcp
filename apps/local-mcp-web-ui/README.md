@@ -37,6 +37,7 @@ npm run webui:funnel:status
 npm run webui:serve:reset
 npm run webui:funnel:reset
 npm run webui:app-server:smoke
+npm run webui:mexc-routing:smoke
 npm run webui:smoke
 ```
 
@@ -66,6 +67,7 @@ npm run smoke
 - lets `codex app-server` use both project-local MCP servers:
   - Bybit
   - MEXC
+- exposes a high-level MEXC review tool, `getMexcTradingReviewSnapshot`, so generic prompts like "analyze trades on MEXC" do not need to guess individual MEXC endpoints first
 - streams assistant output and basic tool progress into ChatKit
 - supports two publication profiles on top of the same backend:
   - `tailscale serve` without app-auth for tailnet-only use
@@ -216,7 +218,7 @@ Notes:
 - `WEB_UI_AUTH_MODE` is selected automatically by the Tailscale launcher scripts
 - `WEB_UI_SESSION_SECRET` is optional; if omitted, a deterministic local secret is derived from repo path and password
 - `WEB_UI_ALLOW_SHELL_COMMANDS` defaults to `0`; leave it disabled if you want the browser agent to stay on MCP/tools and avoid local shell-script fallbacks
-- `WEB_UI_APPROVAL_POLICY` defaults to `untrusted` while shell access is disabled, and to `never` only when `WEB_UI_ALLOW_SHELL_COMMANDS=1`
+- `WEB_UI_APPROVAL_POLICY` defaults to `never`; shell blocking is enforced by prompt routing plus runtime interruption of any `commandExecution` item
 - `WEB_UI_CHATKIT_DOMAIN_KEY` should be set to the public key generated in OpenAI `Settings -> Security -> Domain allowlist` for the exact published hostname
 - `WEB_UI_CHATKIT_DOMAIN_KEYS` and `WEB_UI_CHATKIT_DOMAIN_KEYS_JSON` let one backend serve multiple trusted domains; exact host matches win, then `*.suffix` wildcard entries are checked, then `WEB_UI_CHATKIT_DOMAIN_KEY` is used as the fallback
 - the backend also exposes `GET /readyz` for local launcher readiness checks

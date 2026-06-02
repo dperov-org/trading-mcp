@@ -199,6 +199,8 @@ export class CodexAppServerClient extends EventEmitter {
         reason: "Shell command execution is disabled for this web UI session.",
       };
     } else if (
+      (message.method === "mcpServer/elicitation/request" &&
+        message.params?._meta?.codex_approval_kind === "mcp_tool_call") ||
       message.method === "item/commandExecution/requestApproval" ||
       message.method === "item/fileChange/requestApproval" ||
       message.method === "item/permissions/requestApproval" ||
