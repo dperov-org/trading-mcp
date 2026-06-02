@@ -40,6 +40,37 @@
     return normalizeUrl(url).includes("/client-log");
   }
 
+  function rewriteVerifyInput(input) {
+    const proxyUrl = new URL("/chatkit/domain_keys/verify", window.location.origin).toString();
+    const normalized = normalizeUrl(input);
+    if (normalized !== "https://api.openai.com/v1/chatkit/domain_keys/verify") {
+      return input;
+    }
+
+    try {
+      if (typeof input === "string") {
+        return proxyUrl;
+      }
+      if (input instanceof URL) {
+        return new URL(proxyUrl);
+      }
+      if (typeof Request !== "undefined" && input instanceof Request) {
+        return new Request(proxyUrl, input);
+      }
+    } catch {}
+
+    return proxyUrl;
+  }
+
+  function rewriteVerifyUrl(url) {
+    const normalized = normalizeUrl(url);
+    if (normalized !== "https://api.openai.com/v1/chatkit/domain_keys/verify") {
+      return url;
+    }
+
+    return new URL("/chatkit/domain_keys/verify", window.location.origin).toString();
+  }
+
   function send(level, event, data) {
     const body = JSON.stringify({ level: level, event: event, data: data });
     if (navigator.sendBeacon && !shouldSkip("/client-log")) {
@@ -65,6 +96,8 @@
     const originalFetch = window.fetch.bind(window);
     window.fetch = async function patchedFrameFetch(input, init) {
       const url = normalizeUrl(input);
+      const rewrittenInput = rewriteVerifyInput(input);
+      const rewrittenUrl = normalizeUrl(rewrittenInput);
       const method = String(
         init && init.method
           ? init.method
@@ -74,10 +107,11 @@
       ).toUpperCase();
 
       try {
-        const response = await originalFetch(input, init);
-        if (!shouldSkip(url) && (!response.ok || url.includes("/chatkit") || url.includes("/auth/"))) {
+        const response = await originalFetch(rewrittenInput, init);
+        if (!shouldSkip(url) && (!response.ok || url.includes("/chatkit") || url.includes("/auth/") || url.includes("/domain_keys/verify"))) {
           send(response.ok ? "debug" : "warn", "frame_fetch_response", {
             url,
+            rewrittenUrl,
             method,
             status: response.status,
             ok: response.ok,
@@ -90,6 +124,7 @@
         if (!shouldSkip(url)) {
           send("error", "frame_fetch_failed", {
             url,
+            rewrittenUrl,
             method,
             message: error && error.message ? error.message : String(error),
             stack: error && error.stack ? error.stack : null,
@@ -107,7 +142,10 @@
     XMLHttpRequest.prototype.open = function patchedOpen(method, url) {
       this.__localFrameMethod = String(method || "GET").toUpperCase();
       this.__localFrameUrl = normalizeUrl(url);
-      return originalOpen.apply(this, arguments);
+      this.__localFrameRewrittenUrl = normalizeUrl(rewriteVerifyUrl(url));
+      const args = Array.from(arguments);
+      args[1] = rewriteVerifyUrl(url);
+      return originalOpen.apply(this, args);
     };
 
     XMLHttpRequest.prototype.send = function patchedSend() {
@@ -121,6 +159,7 @@
         if (this.status >= 400 || url.includes("/chatkit") || url.includes("/auth/")) {
           send(this.status >= 400 ? "warn" : "debug", "frame_xhr_response", {
             url,
+            rewrittenUrl: this.__localFrameRewrittenUrl || null,
             method,
             status: this.status,
             readyState: this.readyState,
@@ -134,6 +173,7 @@
         }
         send("error", "frame_xhr_failed", {
           url,
+          rewrittenUrl: this.__localFrameRewrittenUrl || null,
           method,
           status: this.status,
           readyState: this.readyState,

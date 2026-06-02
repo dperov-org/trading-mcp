@@ -37,6 +37,8 @@ npm run webui:serve:status
 npm run webui:funnel:status
 npm run webui:serve:reset
 npm run webui:funnel:reset
+npm run webui:chatkit-assets:smoke
+npm run webui:chatkit-verify-proxy:smoke
 npm run webui:app-server:smoke
 npm run webui:mexc-routing:smoke
 npm run webui:smoke
@@ -49,6 +51,8 @@ cd apps/local-mcp-web-ui
 npm run http
 npm run start
 npm run vendor:chatkit
+npm run smoke:chatkit-assets
+npm run smoke:chatkit-verify-proxy
 npm run tailscale:serve
 npm run tailscale:funnel
 npm run tailscale:serve:status
@@ -64,6 +68,7 @@ npm run smoke
 It downloads the browser bundle, the embedded frame HTML, the first-layer frame assets, and the lazy-loaded `index-*` / locale chunks that `ChatKit` requests after bootstrap.
 
 `npm run webui:chatkit-assets:smoke` validates that the locally served `ChatKit` asset graph is complete and that the web server returns `200` for each required asset.
+`npm run webui:chatkit-verify-proxy:smoke` validates the local proxy for `POST /chatkit/domain_keys/verify`, including body and header forwarding to an upstream verify endpoint.
 
 ## What the MVP does
 
@@ -76,6 +81,7 @@ It downloads the browser bundle, the embedded frame HTML, the first-layer frame 
 - exposes a high-level MEXC review tool, `getMexcTradingReviewSnapshot`, so generic prompts like "analyze trades on MEXC" do not need to guess individual MEXC endpoints first
 - streams assistant output and basic tool progress into ChatKit
 - loads the `ChatKit` runtime from local static assets under `public/vendor` and `public/assets/ck1`, so runtime bootstrap does not depend on `cdn.platform.openai.com`
+- proxies `ChatKit` domain verification through the local backend, so iframe bootstrap does not depend on the browser being able to reach `https://api.openai.com/v1/chatkit/domain_keys/verify` directly
 - supports two publication profiles on top of the same backend:
   - `tailscale serve` without app-auth for tailnet-only use
   - `tailscale funnel` with session auth inside the backend for public access
@@ -218,6 +224,7 @@ WEB_UI_APPROVAL_POLICY=untrusted
 WEB_UI_CHATKIT_DOMAIN_KEY=domain_pk_xxx
 WEB_UI_CHATKIT_DOMAIN_KEYS=desktop.tail3e0cf.ts.net=domain_pk_xxx,chat.example.com=domain_pk_yyy,*.tailnet.example=domain_pk_zzz
 WEB_UI_CHATKIT_DOMAIN_KEYS_JSON={"desktop.tail3e0cf.ts.net":"domain_pk_xxx","chat.example.com":"domain_pk_yyy"}
+WEB_UI_CHATKIT_VERIFY_URL=https://api.openai.com/v1/chatkit/domain_keys/verify
 ```
 
 Notes:
@@ -228,4 +235,5 @@ Notes:
 - `WEB_UI_APPROVAL_POLICY` defaults to `never`; shell blocking is enforced by prompt routing plus runtime interruption of any `commandExecution` item
 - `WEB_UI_CHATKIT_DOMAIN_KEY` should be set to the public key generated in OpenAI `Settings -> Security -> Domain allowlist` for the exact published hostname
 - `WEB_UI_CHATKIT_DOMAIN_KEYS` and `WEB_UI_CHATKIT_DOMAIN_KEYS_JSON` let one backend serve multiple trusted domains; exact host matches win, then `*.suffix` wildcard entries are checked, then `WEB_UI_CHATKIT_DOMAIN_KEY` is used as the fallback
+- `WEB_UI_CHATKIT_VERIFY_URL` defaults to OpenAI's live verify endpoint and is mainly useful for local smoke tests or controlled proxy-target overrides
 - the backend also exposes `GET /readyz` for local launcher readiness checks

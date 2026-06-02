@@ -15,6 +15,9 @@ const FRAME_HTML_RE = /ht="([^"]+\.html)"/;
 const CLOUDFLARE_CHALLENGE_RE =
   /<script>\(function\(\)\{function c\(\)[\s\S]*?<\/script>/i;
 const FRAME_DIAGNOSTICS_MARKER = "data-local-chatkit-frame-diagnostics";
+const CHATKIT_VERIFY_URL =
+  "https://api.openai.com/v1/chatkit/domain_keys/verify";
+const CHATKIT_VERIFY_PROXY_PATH = "/chatkit/domain_keys/verify";
 const FRAME_DIAGNOSTICS_SNIPPET = `
 <script ${FRAME_DIAGNOSTICS_MARKER}>
 (function () {
@@ -42,6 +45,37 @@ const FRAME_DIAGNOSTICS_SNIPPET = `
     return normalizeUrl(url).includes("/client-log");
   }
 
+  function rewriteVerifyInput(input) {
+    const proxyUrl = new URL("${CHATKIT_VERIFY_PROXY_PATH}", window.location.origin).toString();
+    const normalized = normalizeUrl(input);
+    if (normalized !== "${CHATKIT_VERIFY_URL}") {
+      return input;
+    }
+
+    try {
+      if (typeof input === "string") {
+        return proxyUrl;
+      }
+      if (input instanceof URL) {
+        return new URL(proxyUrl);
+      }
+      if (typeof Request !== "undefined" && input instanceof Request) {
+        return new Request(proxyUrl, input);
+      }
+    } catch {}
+
+    return proxyUrl;
+  }
+
+  function rewriteVerifyUrl(url) {
+    const normalized = normalizeUrl(url);
+    if (normalized !== "${CHATKIT_VERIFY_URL}") {
+      return url;
+    }
+
+    return new URL("${CHATKIT_VERIFY_PROXY_PATH}", window.location.origin).toString();
+  }
+
   function send(level, event, data) {
     const body = JSON.stringify({ level: level, event: event, data: data });
     if (navigator.sendBeacon && !shouldSkip("/client-log")) {
@@ -67,6 +101,8 @@ const FRAME_DIAGNOSTICS_SNIPPET = `
     const originalFetch = window.fetch.bind(window);
     window.fetch = async function patchedFrameFetch(input, init) {
       const url = normalizeUrl(input);
+      const rewrittenInput = rewriteVerifyInput(input);
+      const rewrittenUrl = normalizeUrl(rewrittenInput);
       const method = String(
         init && init.method
           ? init.method
@@ -76,10 +112,11 @@ const FRAME_DIAGNOSTICS_SNIPPET = `
       ).toUpperCase();
 
       try {
-        const response = await originalFetch(input, init);
-        if (!shouldSkip(url) && (!response.ok || url.includes("/chatkit") || url.includes("/auth/"))) {
+        const response = await originalFetch(rewrittenInput, init);
+        if (!shouldSkip(url) && (!response.ok || url.includes("/chatkit") || url.includes("/auth/") || url.includes("/domain_keys/verify"))) {
           send(response.ok ? "debug" : "warn", "frame_fetch_response", {
             url,
+            rewrittenUrl,
             method,
             status: response.status,
             ok: response.ok,
@@ -92,6 +129,7 @@ const FRAME_DIAGNOSTICS_SNIPPET = `
         if (!shouldSkip(url)) {
           send("error", "frame_fetch_failed", {
             url,
+            rewrittenUrl,
             method,
             message: error && error.message ? error.message : String(error),
             stack: error && error.stack ? error.stack : null,
@@ -109,7 +147,10 @@ const FRAME_DIAGNOSTICS_SNIPPET = `
     XMLHttpRequest.prototype.open = function patchedOpen(method, url) {
       this.__localFrameMethod = String(method || "GET").toUpperCase();
       this.__localFrameUrl = normalizeUrl(url);
-      return originalOpen.apply(this, arguments);
+      this.__localFrameRewrittenUrl = normalizeUrl(rewriteVerifyUrl(url));
+      const args = Array.from(arguments);
+      args[1] = rewriteVerifyUrl(url);
+      return originalOpen.apply(this, args);
     };
 
     XMLHttpRequest.prototype.send = function patchedSend() {
@@ -123,6 +164,7 @@ const FRAME_DIAGNOSTICS_SNIPPET = `
         if (this.status >= 400 || url.includes("/chatkit") || url.includes("/auth/")) {
           send(this.status >= 400 ? "warn" : "debug", "frame_xhr_response", {
             url,
+            rewrittenUrl: this.__localFrameRewrittenUrl || null,
             method,
             status: this.status,
             readyState: this.readyState,
@@ -136,6 +178,7 @@ const FRAME_DIAGNOSTICS_SNIPPET = `
         }
         send("error", "frame_xhr_failed", {
           url,
+          rewrittenUrl: this.__localFrameRewrittenUrl || null,
           method,
           status: this.status,
           readyState: this.readyState,

@@ -11,6 +11,7 @@ const publicDir = path.join(appRoot, "public");
 
 const FRAME_HTML_RE = /ht="([^"]+\.html)"/;
 const FRAME_DIAGNOSTICS_MARKER = "data-local-chatkit-frame-diagnostics";
+const CHATKIT_VERIFY_PROXY_PATH = "/chatkit/domain_keys/verify";
 const ABSOLUTE_ASSET_PATH_RE =
   /(?:src|href)=["']([^"']+)["']|\b(\/assets\/ck1\/[^"'`\s)><]+)\b/g;
 const RELATIVE_ASSET_PATH_RE =
@@ -101,6 +102,10 @@ async function main() {
     assert(
       frameHtmlText.includes(FRAME_DIAGNOSTICS_MARKER),
       "Vendored ChatKit frame HTML is missing diagnostics injection",
+    );
+    assert(
+      frameHtmlText.includes(CHATKIT_VERIFY_PROXY_PATH),
+      "Vendored ChatKit frame HTML is missing the local verify proxy path",
     );
     const frameInitialAssets = extractAssetPaths(frameHtmlText, frameHtmlPath);
     const restrictedRelativeImportAssets = new Set(

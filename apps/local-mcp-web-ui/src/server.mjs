@@ -57,17 +57,21 @@ function sendRedirect(response, location) {
   response.end();
 }
 
-function streamEvent(response, payload) {
-  response.write(`data: ${JSON.stringify(payload)}\n\n`);
-}
-
-async function readJsonBody(request) {
+async function readRawBody(request) {
   const chunks = [];
   for await (const chunk of request) {
     chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
   }
 
-  const raw = Buffer.concat(chunks).toString("utf8");
+  return Buffer.concat(chunks);
+}
+
+function streamEvent(response, payload) {
+  response.write(`data: ${JSON.stringify(payload)}\n\n`);
+}
+
+async function readJsonBody(request) {
+  const raw = (await readRawBody(request)).toString("utf8");
   return raw ? JSON.parse(raw) : {};
 }
 
@@ -156,6 +160,88 @@ async function serveStaticFile(config, requestPath, response) {
   } catch {
     sendJson(response, 404, { error: "Not found" });
   }
+}
+
+function buildProxyHeaders(request) {
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(request.headers)) {
+    if (value === undefined) {
+      continue;
+    }
+
+    const normalizedKey = String(key).toLowerCase();
+    if (
+      normalizedKey === "host" ||
+      normalizedKey === "connection" ||
+      normalizedKey === "content-length" ||
+      normalizedKey === "cookie" ||
+      normalizedKey === "accept-encoding"
+    ) {
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      for (const entry of value) {
+        headers.append(normalizedKey, entry);
+      }
+      continue;
+    }
+
+    headers.set(normalizedKey, String(value));
+  }
+
+  return headers;
+}
+
+async function proxyChatkitVerify({
+  config,
+  request,
+  response,
+  logger,
+  httpRequestId,
+}) {
+  const body = await readRawBody(request);
+  const headers = buildProxyHeaders(request);
+
+  logger.info("chatkit", "verify_proxy_started", {
+    httpRequestId,
+    method: request.method,
+    upstreamUrl: config.chatkitVerifyUrl,
+    contentLength: body.length,
+    origin: request.headers.origin || null,
+  });
+
+  const upstreamResponse = await fetch(config.chatkitVerifyUrl, {
+    method: request.method,
+    headers,
+    body: body.length > 0 ? body : undefined,
+  });
+
+  const responseBuffer = Buffer.from(await upstreamResponse.arrayBuffer());
+  const responseHeaders = {};
+  for (const [key, value] of upstreamResponse.headers.entries()) {
+    const normalizedKey = String(key).toLowerCase();
+    if (
+      normalizedKey === "content-length" ||
+      normalizedKey === "transfer-encoding" ||
+      normalizedKey === "connection" ||
+      normalizedKey === "content-encoding"
+    ) {
+      continue;
+    }
+
+    responseHeaders[normalizedKey] = value;
+  }
+
+  response.writeHead(upstreamResponse.status, responseHeaders);
+  response.end(responseBuffer);
+
+  logger.info("chatkit", "verify_proxy_finished", {
+    httpRequestId,
+    statusCode: upstreamResponse.status,
+    contentType: upstreamResponse.headers.get("content-type"),
+    responseLength: responseBuffer.length,
+  });
 }
 
 async function streamCodexTurn({
@@ -991,6 +1077,20 @@ export async function startWebUiServer() {
         });
         sendJson(response, 200, {
           ok: true,
+        });
+        return;
+      }
+
+      if (
+        request.method === "POST" &&
+        requestUrl.pathname === "/chatkit/domain_keys/verify"
+      ) {
+        await proxyChatkitVerify({
+          config,
+          request,
+          response,
+          logger,
+          httpRequestId,
         });
         return;
       }

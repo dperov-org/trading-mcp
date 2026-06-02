@@ -243,6 +243,9 @@ export function getAppConfig() {
     model: process.env.WEB_UI_MODEL || "gpt-5.5",
     chatkitDomainKey: defaultChatkitDomainKey,
     chatkitDomainKeys,
+    chatkitVerifyUrl:
+      process.env.WEB_UI_CHATKIT_VERIFY_URL ||
+      "https://api.openai.com/v1/chatkit/domain_keys/verify",
     resolveChatkitDomainKey(host) {
       return resolveDomainKeyForHost({
         host,
