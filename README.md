@@ -770,6 +770,9 @@ npm run webui:chatkit-assets:smoke
 # Validate the local ChatKit domain-verify proxy path
 npm run webui:chatkit-verify-proxy:smoke
 
+# Validate that the browser agent can use built-in web search
+npm run webui:web-search:smoke
+
 # Publish inside your tailnet without app-auth
 npm run webui:serve
 
@@ -797,6 +800,7 @@ Notes:
 - the browser now loads the full `ChatKit` runtime from vendored local assets under `apps/local-mcp-web-ui/public/vendor` and `apps/local-mcp-web-ui/public/assets/ck1`, including the lazy-loaded `index-*` and locale chunks needed after bootstrap, so runtime startup does not depend on `cdn.platform.openai.com`
 - `npm run webui:chatkit-assets:smoke` validates that the locally served `ChatKit` asset graph is complete
 - `npm run webui:chatkit-verify-proxy:smoke` validates the backend proxy for `POST /chatkit/domain_keys/verify`, so browser bootstrap no longer depends on direct access to `api.openai.com`
+- `npm run webui:web-search:smoke` validates that the browser agent can start built-in `webSearch` items while shell execution remains disabled
 - shell command execution is disabled by default in the web UI backend, so the agent stays on MCP/tools instead of falling back to local `npm` / shell helper scripts
 - set `WEB_UI_ALLOW_SHELL_COMMANDS=1` only if you explicitly want to re-enable local shell execution for browser sessions
 - with shell access disabled, the web UI uses `approvalPolicy=never`, injects MCP-only routing rules into the turn prompt, and force-interrupts any `commandExecution` item that still starts

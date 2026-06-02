@@ -39,6 +39,7 @@ npm run webui:serve:reset
 npm run webui:funnel:reset
 npm run webui:chatkit-assets:smoke
 npm run webui:chatkit-verify-proxy:smoke
+npm run webui:web-search:smoke
 npm run webui:app-server:smoke
 npm run webui:mexc-routing:smoke
 npm run webui:smoke
@@ -53,6 +54,7 @@ npm run start
 npm run vendor:chatkit
 npm run smoke:chatkit-assets
 npm run smoke:chatkit-verify-proxy
+npm run smoke:web-search
 npm run tailscale:serve
 npm run tailscale:funnel
 npm run tailscale:serve:status
@@ -69,6 +71,7 @@ It downloads the browser bundle, the embedded frame HTML, the first-layer frame 
 
 `npm run webui:chatkit-assets:smoke` validates that the locally served `ChatKit` asset graph is complete and that the web server returns `200` for each required asset.
 `npm run webui:chatkit-verify-proxy:smoke` validates the local proxy for `POST /chatkit/domain_keys/verify`, including body and header forwarding to an upstream verify endpoint.
+`npm run webui:web-search:smoke` validates that the agent can start a built-in `webSearch` item while shell execution remains blocked.
 
 ## What the MVP does
 
@@ -86,6 +89,7 @@ It downloads the browser bundle, the embedded frame HTML, the first-layer frame 
   - `tailscale serve` without app-auth for tailnet-only use
   - `tailscale funnel` with session auth inside the backend for public access
 - denies shell command execution by default, so the agent must use MCP/tools instead of local `npm`/`bash` helper scripts unless explicitly re-enabled
+- allows built-in web search by default for public internet context such as news or recent macro developments
 
 ## What the MVP intentionally does not do
 
@@ -220,6 +224,7 @@ WEB_UI_SESSION_SECRET=<optional cookie signing secret>
 WEB_UI_SESSION_TTL_HOURS=168
 WEB_UI_SESSION_COOKIE_NAME=local_mcp_web_ui_session
 WEB_UI_ALLOW_SHELL_COMMANDS=0
+WEB_UI_ALLOW_WEB_SEARCH=1
 WEB_UI_APPROVAL_POLICY=untrusted
 WEB_UI_CHATKIT_DOMAIN_KEY=domain_pk_xxx
 WEB_UI_CHATKIT_DOMAIN_KEYS=desktop.tail3e0cf.ts.net=domain_pk_xxx,chat.example.com=domain_pk_yyy,*.tailnet.example=domain_pk_zzz
@@ -232,6 +237,7 @@ Notes:
 - `WEB_UI_AUTH_MODE` is selected automatically by the Tailscale launcher scripts
 - `WEB_UI_SESSION_SECRET` is optional; if omitted, a deterministic local secret is derived from repo path and password
 - `WEB_UI_ALLOW_SHELL_COMMANDS` defaults to `0`; leave it disabled if you want the browser agent to stay on MCP/tools and avoid local shell-script fallbacks
+- `WEB_UI_ALLOW_WEB_SEARCH` defaults to `1`; this keeps public web search available for current external context without enabling shell execution
 - `WEB_UI_APPROVAL_POLICY` defaults to `never`; shell blocking is enforced by prompt routing plus runtime interruption of any `commandExecution` item
 - `WEB_UI_CHATKIT_DOMAIN_KEY` should be set to the public key generated in OpenAI `Settings -> Security -> Domain allowlist` for the exact published hostname
 - `WEB_UI_CHATKIT_DOMAIN_KEYS` and `WEB_UI_CHATKIT_DOMAIN_KEYS_JSON` let one backend serve multiple trusted domains; exact host matches win, then `*.suffix` wildcard entries are checked, then `WEB_UI_CHATKIT_DOMAIN_KEY` is used as the fallback

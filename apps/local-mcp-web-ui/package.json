@@ -10,6 +10,7 @@
     "vendor:chatkit": "node scripts/fetch-chatkit-vendor.mjs",
     "smoke:chatkit-assets": "node src/smoke-chatkit-assets.mjs",
     "smoke:chatkit-verify-proxy": "node src/smoke-chatkit-verify-proxy.mjs",
+    "smoke:web-search": "node src/smoke-web-search.mjs",
     "tailscale:serve": "node src/tailscale-publish.mjs serve",
     "tailscale:serve:status": "tailscale serve status --json",
     "tailscale:serve:reset": "tailscale serve reset",

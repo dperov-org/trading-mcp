@@ -74,6 +74,7 @@ export function normalizeChatKitInput(input, defaultModel) {
 
 export function toCodexUserInput(chatkitInput, options = {}) {
   const allowShellCommands = options.allowShellCommands ?? true;
+  const allowWebSearch = options.allowWebSearch ?? true;
   const text = chatkitInput.content
     .map((part) => {
       if (part.type === "input_tag") {
@@ -88,13 +89,16 @@ export function toCodexUserInput(chatkitInput, options = {}) {
   const finalText = chatkitInput.quoted_text
     ? `${chatkitInput.quoted_text}\n\n${text}`
     : text;
+  const webSearchRule = allowWebSearch
+    ? "- Prefer MCP tools for exchange/account/market data. Web search is allowed for public internet information such as news, macro context, or recent external developments."
+    : "- Use MCP tools only. If MCP data is insufficient, explain what is missing instead of using web search or the shell.";
   const policyPrefix = allowShellCommands
     ? ""
     : [
         "Hard constraint for this session:",
         "- Do not run shell commands, shell scripts, npm scripts, PowerShell, bash, Python, or local executable files.",
         "- Do not inspect or execute repository helper scripts to answer the request.",
-        "- Use MCP tools only. If MCP data is insufficient, explain what is missing instead of using the shell.",
+        webSearchRule,
         "",
         "MCP server routing for this session:",
         "- trading_mcp_bybit_local = Bybit only.",

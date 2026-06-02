@@ -254,6 +254,7 @@ async function streamCodexTurn({
   logger,
   requestId,
   allowShellCommands,
+  allowWebSearch,
 }) {
   let activeTurnId = null;
   let settled = false;
@@ -506,7 +507,7 @@ async function streamCodexTurn({
 
     const turnResponse = await codexClient.sendRequest("turn/start", {
       threadId,
-      input: toCodexUserInput(input, { allowShellCommands }),
+      input: toCodexUserInput(input, { allowShellCommands, allowWebSearch }),
       model,
     });
     activeTurnId = turnResponse?.turn?.id || activeTurnId;
@@ -830,17 +831,18 @@ function createChatKitApi({ config, store, codexClient, logger }) {
             item: userItem,
           });
 
-          await streamCodexTurn({
-            codexClient,
-            store,
-            threadId: resolvedThreadId,
-            input,
-            model: input.inference_options.model,
-            response,
-            logger,
-            requestId,
-            allowShellCommands: config.allowShellCommands,
-          });
+            await streamCodexTurn({
+              codexClient,
+              store,
+              threadId: resolvedThreadId,
+              input,
+              model: input.inference_options.model,
+              response,
+              logger,
+              requestId,
+              allowShellCommands: config.allowShellCommands,
+              allowWebSearch: config.allowWebSearch,
+            });
           logger.info("chatkit", "stream_finished", {
             requestId,
             threadId: resolvedThreadId,
@@ -886,6 +888,7 @@ export async function startWebUiServer() {
     logDir: config.logDir,
     storePath: config.storePath,
     allowShellCommands: config.allowShellCommands,
+    allowWebSearch: config.allowWebSearch,
     approvalPolicy: config.approvalPolicy,
   });
   const store = new ChatKitStore({
@@ -950,6 +953,7 @@ export async function startWebUiServer() {
           ok: true,
           auth_mode: config.authMode,
           allow_shell_commands: config.allowShellCommands,
+          allow_web_search: config.allowWebSearch,
           approval_policy: config.approvalPolicy,
         });
         return;
@@ -1035,6 +1039,7 @@ export async function startWebUiServer() {
           session_id: config.sessionId,
           auth_mode: config.authMode,
           allow_shell_commands: config.allowShellCommands,
+          allow_web_search: config.allowWebSearch,
           approval_policy: config.approvalPolicy,
           chatkit_domain_key: chatkitDomainKey,
           chatkit_domain_host: requestHost || null,

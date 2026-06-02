@@ -260,6 +260,7 @@ export function getAppConfig() {
     serverName: process.env.SERVER_NAME || "trading_mcp_bybit_local",
     mexcServerName: process.env.MEXC_SERVER_NAME || "trading_mcp_mexc_local",
     allowShellCommands: toBoolean(process.env.WEB_UI_ALLOW_SHELL_COMMANDS, false),
+    allowWebSearch: toBoolean(process.env.WEB_UI_ALLOW_WEB_SEARCH, true),
     approvalPolicy: process.env.WEB_UI_APPROVAL_POLICY || "never",
     platform,
     consoleLogLevel: toConsoleLevel(process.env.WEB_UI_CONSOLE_LOG_LEVEL),
