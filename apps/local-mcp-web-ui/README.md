@@ -7,7 +7,9 @@ Architecture:
 - frontend: official `ChatKit` web component
 - backend: thin custom API server in Node.js
 - agent runtime: local `codex app-server`
-- tools: existing `trading-mcp` Bybit MCP server over stdio
+- tools:
+  - `trading_mcp_local` for Bybit
+  - `trading_mcp_mexc_local` for MEXC
 
 Why this shape:
 
@@ -61,16 +63,18 @@ npm run smoke
 - serves a ChatKit-based browser UI
 - persists lightweight ChatKit thread history locally
 - starts a local `codex app-server` child process through the dedicated launcher
-- lets `codex app-server` use the project-local Bybit MCP server
+- lets `codex app-server` use both project-local MCP servers:
+  - Bybit
+  - MEXC
 - streams assistant output and basic tool progress into ChatKit
 - supports two publication profiles on top of the same backend:
   - `tailscale serve` without app-auth for tailnet-only use
   - `tailscale funnel` with session auth inside the backend for public access
+- denies shell command execution by default, so the agent must use MCP/tools instead of local `npm`/`bash` helper scripts unless explicitly re-enabled
 
 ## What the MVP intentionally does not do
 
 - no tool allowlist or write restrictions
-- no approval hardening
 - no per-user roles or external IdP integration
 
 ## Data storage
@@ -99,6 +103,7 @@ These logs include:
 - `codex app-server` spawn, initialize, stderr, and exit events
 - JSON-RPC request/response timing
 - turn start/completion, timeout, and partial assistant streaming progress
+- approval decisions for shell/file execution requests from `codex app-server`
 
 For debugging a hung browser session, start with `webui-latest.jsonl` and look for:
 
@@ -199,6 +204,8 @@ WEB_UI_SESSION_PASSWORD=<shared password>
 WEB_UI_SESSION_SECRET=<optional cookie signing secret>
 WEB_UI_SESSION_TTL_HOURS=168
 WEB_UI_SESSION_COOKIE_NAME=local_mcp_web_ui_session
+WEB_UI_ALLOW_SHELL_COMMANDS=0
+WEB_UI_APPROVAL_POLICY=untrusted
 WEB_UI_CHATKIT_DOMAIN_KEY=domain_pk_xxx
 WEB_UI_CHATKIT_DOMAIN_KEYS=desktop.tail3e0cf.ts.net=domain_pk_xxx,chat.example.com=domain_pk_yyy,*.tailnet.example=domain_pk_zzz
 WEB_UI_CHATKIT_DOMAIN_KEYS_JSON={"desktop.tail3e0cf.ts.net":"domain_pk_xxx","chat.example.com":"domain_pk_yyy"}
@@ -208,6 +215,8 @@ Notes:
 
 - `WEB_UI_AUTH_MODE` is selected automatically by the Tailscale launcher scripts
 - `WEB_UI_SESSION_SECRET` is optional; if omitted, a deterministic local secret is derived from repo path and password
+- `WEB_UI_ALLOW_SHELL_COMMANDS` defaults to `0`; leave it disabled if you want the browser agent to stay on MCP/tools and avoid local shell-script fallbacks
+- `WEB_UI_APPROVAL_POLICY` defaults to `untrusted` while shell access is disabled, and to `never` only when `WEB_UI_ALLOW_SHELL_COMMANDS=1`
 - `WEB_UI_CHATKIT_DOMAIN_KEY` should be set to the public key generated in OpenAI `Settings -> Security -> Domain allowlist` for the exact published hostname
 - `WEB_UI_CHATKIT_DOMAIN_KEYS` and `WEB_UI_CHATKIT_DOMAIN_KEYS_JSON` let one backend serve multiple trusted domains; exact host matches win, then `*.suffix` wildcard entries are checked, then `WEB_UI_CHATKIT_DOMAIN_KEY` is used as the fallback
 - the backend also exposes `GET /readyz` for local launcher readiness checks

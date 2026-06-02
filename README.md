@@ -747,7 +747,10 @@ This fork also includes a ChatKit-based browser UI that runs against a local `co
 - `apps/local-mcp-web-ui/`
   - serves a ChatKit browser surface
   - starts `codex app-server` through a dedicated launcher
-  - streams real Bybit-backed answers through the local MCP stack
+  - wires both local MCP servers into `codex app-server`:
+    - `trading_mcp_local` for Bybit
+    - `trading_mcp_mexc_local` for MEXC
+  - streams real exchange-backed answers through the local MCP stack
 
 Useful commands:
 
@@ -779,6 +782,9 @@ Notes:
   - `scripts/start-codex-app-server-with-mcp.sh` on Linux
 - `npm run webui:serve` forces tailnet-only publication via `tailscale serve` and keeps backend auth disabled
 - `npm run webui:funnel` forces backend session auth and requires `WEB_UI_SESSION_PASSWORD`
+- shell command execution is disabled by default in the web UI backend, so the agent stays on MCP/tools instead of falling back to local `npm` / shell helper scripts
+- set `WEB_UI_ALLOW_SHELL_COMMANDS=1` only if you explicitly want to re-enable local shell execution for browser sessions
+- with shell access disabled, the web UI uses `approvalPolicy=untrusted` and force-interrupts any `commandExecution` item that still starts
 - for ChatKit on a published hostname, set `WEB_UI_CHATKIT_DOMAIN_KEY` to the `domain_pk_...` value generated in OpenAI `Settings -> Security -> Domain allowlist`
 - if one backend serves multiple hostnames, use `WEB_UI_CHATKIT_DOMAIN_KEYS` or `WEB_UI_CHATKIT_DOMAIN_KEYS_JSON` to map hostnames to different `domain_pk_...` values
 - tool restrictions and approval hardening are still intentionally out of scope for this MVP

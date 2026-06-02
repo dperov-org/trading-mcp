@@ -157,10 +157,12 @@ async function streamCodexTurn({
   response,
   logger,
   requestId,
+  allowShellCommands,
 }) {
   let activeTurnId = null;
   let settled = false;
   let finishTurn;
+  let shellExecutionBlocked = false;
   const assistantItems = new Map();
 
   const cleanup = () => {
@@ -282,6 +284,25 @@ async function streamCodexTurn({
           break;
         }
 
+        if (params.item?.type === "commandExecution" && !allowShellCommands) {
+          shellExecutionBlocked = true;
+          logger.warn("turn", "shell_execution_blocked", {
+            requestId,
+            threadId,
+            turnId: params.turnId,
+            itemId: params.item?.id,
+            command: params.item?.command || null,
+          });
+          streamEvent(
+            response,
+            errorEvent(
+              "Shell command execution is disabled for this web UI session. Use MCP tools only.",
+              false,
+            ),
+          );
+          break;
+        }
+
         const progress = describeCodexItem(params.item);
         if (progress) {
           streamEvent(response, progress);
@@ -389,7 +410,7 @@ async function streamCodexTurn({
 
     const turnResponse = await codexClient.sendRequest("turn/start", {
       threadId,
-      input: toCodexUserInput(input),
+      input: toCodexUserInput(input, { allowShellCommands }),
       model,
     });
     activeTurnId = turnResponse?.turn?.id || activeTurnId;
@@ -509,13 +530,15 @@ async function streamCodexTurn({
             "This chat thread belongs to an older app-server session. Start a new chat or refresh the page.",
           )
         : error;
-      logger.error("turn", "stream_failed", {
-        requestId,
-        threadId,
-        turnId: activeTurnId,
-        error: surfacedError,
-      });
-      streamEvent(response, errorEvent(surfacedError.message, true));
+      if (!shellExecutionBlocked) {
+        logger.error("turn", "stream_failed", {
+          requestId,
+          threadId,
+          turnId: activeTurnId,
+          error: surfacedError,
+        });
+        streamEvent(response, errorEvent(surfacedError.message, true));
+      }
     }
   }
 }
@@ -656,7 +679,7 @@ function createChatKitApi({ config, store, codexClient, logger }) {
             const threadStart = await codexClient.sendRequest("thread/start", {
               cwd: config.repoRoot,
               model: input.inference_options.model,
-              approvalPolicy: "never",
+              approvalPolicy: config.approvalPolicy,
               sandbox: "danger-full-access",
               ephemeral: false,
             });
@@ -720,6 +743,7 @@ function createChatKitApi({ config, store, codexClient, logger }) {
             response,
             logger,
             requestId,
+            allowShellCommands: config.allowShellCommands,
           });
           logger.info("chatkit", "stream_finished", {
             requestId,
@@ -765,6 +789,8 @@ export async function startWebUiServer() {
     platform: config.platform,
     logDir: config.logDir,
     storePath: config.storePath,
+    allowShellCommands: config.allowShellCommands,
+    approvalPolicy: config.approvalPolicy,
   });
   const store = new ChatKitStore({
     filePath: config.storePath,
@@ -787,6 +813,7 @@ export async function startWebUiServer() {
     launcher: config.launcher,
     cwd: config.repoRoot,
     logger,
+    allowShellCommands: config.allowShellCommands,
   });
   await codexClient.start();
 
@@ -826,6 +853,8 @@ export async function startWebUiServer() {
         sendJson(response, 200, {
           ok: true,
           auth_mode: config.authMode,
+          allow_shell_commands: config.allowShellCommands,
+          approval_policy: config.approvalPolicy,
         });
         return;
       }
@@ -909,6 +938,8 @@ export async function startWebUiServer() {
           ok: true,
           session_id: config.sessionId,
           auth_mode: config.authMode,
+          allow_shell_commands: config.allowShellCommands,
+          approval_policy: config.approvalPolicy,
           chatkit_domain_key: chatkitDomainKey,
           chatkit_domain_host: requestHost || null,
           authenticated: auth.isAuthenticated(request),

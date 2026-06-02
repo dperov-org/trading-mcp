@@ -26,16 +26,24 @@ function nowMs() {
 }
 
 export class CodexAppServerClient extends EventEmitter {
-  constructor({ launcher, cwd, startupTimeoutMs = 30_000, logger = null }) {
+  constructor({
+    launcher,
+    cwd,
+    startupTimeoutMs = 30_000,
+    logger = null,
+    allowShellCommands = false,
+  }) {
     super();
     this.launcher = launcher;
     this.cwd = cwd;
     this.startupTimeoutMs = startupTimeoutMs;
     this.logger = logger;
+    this.allowShellCommands = allowShellCommands;
     this.child = null;
     this.pending = new Map();
     this.requestId = 0;
     this.initializeResponse = null;
+    this.blockedCommandTurns = new Set();
   }
 
   async start() {
@@ -179,8 +187,18 @@ export class CodexAppServerClient extends EventEmitter {
 
   async #handleServerRequest(message) {
     let result = {};
+    let autoResolved = true;
 
     if (
+      (message.method === "item/commandExecution/requestApproval" ||
+        message.method === "execCommandApproval") &&
+      !this.allowShellCommands
+    ) {
+      result = {
+        decision: "denied",
+        reason: "Shell command execution is disabled for this web UI session.",
+      };
+    } else if (
       message.method === "item/commandExecution/requestApproval" ||
       message.method === "item/fileChange/requestApproval" ||
       message.method === "item/permissions/requestApproval" ||
@@ -188,6 +206,12 @@ export class CodexAppServerClient extends EventEmitter {
       message.method === "execCommandApproval"
     ) {
       result = { decision: "approved" };
+    } else {
+      autoResolved = false;
+    }
+
+    if (!autoResolved) {
+      return;
     }
 
     this.logger?.info("codex-app-server", "server_request", {
@@ -202,6 +226,42 @@ export class CodexAppServerClient extends EventEmitter {
       id: message.id,
       result,
     });
+  }
+
+  async #interruptCommandExecution(message) {
+    const threadId = message.params?.threadId;
+    const turnId = message.params?.turnId;
+    if (!threadId || !turnId || this.blockedCommandTurns.has(turnId)) {
+      return;
+    }
+
+    this.blockedCommandTurns.add(turnId);
+    this.logger?.warn("codex-app-server", "shell_execution_interrupting", {
+      threadId,
+      turnId,
+      command: message.params?.item?.command || null,
+    });
+
+    try {
+      await this.sendRequest(
+        "turn/interrupt",
+        {
+          threadId,
+          turnId,
+        },
+        10_000,
+      );
+      this.logger?.info("codex-app-server", "shell_execution_interrupted", {
+        threadId,
+        turnId,
+      });
+    } catch (error) {
+      this.logger?.error("codex-app-server", "shell_execution_interrupt_failed", {
+        threadId,
+        turnId,
+        error,
+      });
+    }
   }
 
   #handleLine(line) {
@@ -228,6 +288,21 @@ export class CodexAppServerClient extends EventEmitter {
     }
 
     if (typeof message.method === "string") {
+      if (
+        !this.allowShellCommands &&
+        message.method === "item/started" &&
+        message.params?.item?.type === "commandExecution"
+      ) {
+        void this.#interruptCommandExecution(message);
+      }
+
+      if (message.method === "turn/completed") {
+        const completedTurnId = message.params?.turn?.id || message.params?.turnId;
+        if (completedTurnId) {
+          this.blockedCommandTurns.delete(completedTurnId);
+        }
+      }
+
       this.logger?.debug("codex-app-server", "notification", {
         method: message.method,
         params: message.params,

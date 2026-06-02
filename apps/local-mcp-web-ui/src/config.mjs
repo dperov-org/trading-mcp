@@ -41,6 +41,23 @@ function toAuthMode(value) {
   return "none";
 }
 
+function toBoolean(value, fallback) {
+  if (value === undefined || value === null || value === "") {
+    return fallback;
+  }
+
+  const normalized = String(value).trim().toLowerCase();
+  if (["1", "true", "yes", "on"].includes(normalized)) {
+    return true;
+  }
+
+  if (["0", "false", "no", "off"].includes(normalized)) {
+    return false;
+  }
+
+  return fallback;
+}
+
 function normalizeHost(host) {
   const raw = String(host || "").trim().toLowerCase();
   if (!raw) {
@@ -234,6 +251,13 @@ export function getAppConfig() {
       });
     },
     serverName: process.env.SERVER_NAME || "trading_mcp_local",
+    mexcServerName: process.env.MEXC_SERVER_NAME || "trading_mcp_mexc_local",
+    allowShellCommands: toBoolean(process.env.WEB_UI_ALLOW_SHELL_COMMANDS, false),
+    approvalPolicy:
+      process.env.WEB_UI_APPROVAL_POLICY ||
+      (toBoolean(process.env.WEB_UI_ALLOW_SHELL_COMMANDS, false)
+        ? "never"
+        : "untrusted"),
     platform,
     consoleLogLevel: toConsoleLevel(process.env.WEB_UI_CONSOLE_LOG_LEVEL),
     authMode,

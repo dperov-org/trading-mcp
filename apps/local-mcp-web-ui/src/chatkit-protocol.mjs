@@ -72,7 +72,8 @@ export function normalizeChatKitInput(input, defaultModel) {
   };
 }
 
-export function toCodexUserInput(chatkitInput) {
+export function toCodexUserInput(chatkitInput, options = {}) {
+  const allowShellCommands = options.allowShellCommands ?? true;
   const text = chatkitInput.content
     .map((part) => {
       if (part.type === "input_tag") {
@@ -87,11 +88,20 @@ export function toCodexUserInput(chatkitInput) {
   const finalText = chatkitInput.quoted_text
     ? `${chatkitInput.quoted_text}\n\n${text}`
     : text;
+  const policyPrefix = allowShellCommands
+    ? ""
+    : [
+        "Hard constraint for this session:",
+        "- Do not run shell commands, shell scripts, npm scripts, PowerShell, bash, Python, or local executable files.",
+        "- Do not inspect or execute repository helper scripts to answer the request.",
+        "- Use MCP tools only. If MCP data is insufficient, explain what is missing instead of using the shell.",
+        "",
+      ].join("\n");
 
   return [
     {
       type: "text",
-      text: finalText,
+      text: `${policyPrefix}${finalText}`.trim(),
       text_elements: [],
     },
   ];
