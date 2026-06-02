@@ -187,7 +187,11 @@ function loadProjectEnv(repoRoot) {
     }
 
     const key = line.slice(0, separatorIndex).trim();
-    if (!key || Object.prototype.hasOwnProperty.call(process.env, key)) {
+    if (
+      !key ||
+      (Object.prototype.hasOwnProperty.call(process.env, key) &&
+        process.env[key] !== "")
+    ) {
       continue;
     }
 
