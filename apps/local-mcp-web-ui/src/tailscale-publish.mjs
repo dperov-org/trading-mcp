@@ -1,5 +1,8 @@
 import { spawn } from "node:child_process";
 
+const FUNNEL_POLICY_DENIED_RE =
+  /Funnel is enabled, but the list of allowed nodes in the tailnet policy file does not include the one you are using\./i;
+
 function parseMode(argv) {
   const mode = String(argv[2] || "").trim().toLowerCase();
   if (mode === "serve" || mode === "funnel") {
@@ -57,6 +60,95 @@ function runCommand(command, args, { timeoutMs = 30_000 } = {}) {
       }
 
       resolve(output);
+    });
+  });
+}
+
+function runStreamingCommand(command, args, { timeoutMs = 30_000, earlyRejectPatterns = [] } = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    const stdout = [];
+    const stderr = [];
+    let settled = false;
+
+    const finishReject = (error) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      clearTimeout(timeout);
+      child.kill();
+      reject(error);
+    };
+
+    const finishResolve = (code) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      clearTimeout(timeout);
+      const output = {
+        code,
+        stdout: Buffer.concat(stdout).toString("utf8").trim(),
+        stderr: Buffer.concat(stderr).toString("utf8").trim(),
+      };
+
+      if (code !== 0) {
+        reject(
+          new Error(
+            `${command} ${args.join(" ")} failed with code ${code}\n${output.stderr || output.stdout}`,
+          ),
+        );
+        return;
+      }
+
+      resolve(output);
+    };
+
+    const inspectOutput = () => {
+      const text = `${Buffer.concat(stdout).toString("utf8")}\n${Buffer.concat(stderr).toString("utf8")}`;
+      for (const pattern of earlyRejectPatterns) {
+        if (pattern.test(text)) {
+          finishReject(
+            new Error(
+              `${command} ${args.join(" ")} was rejected by Tailscale policy.\n${text.trim()}`,
+            ),
+          );
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    child.stdout.on("data", (chunk) => {
+      stdout.push(Buffer.from(chunk));
+      inspectOutput();
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr.push(Buffer.from(chunk));
+      inspectOutput();
+    });
+
+    const timeout = setTimeout(() => {
+      finishReject(
+        new Error(
+          `Timed out running ${command} ${args.join(" ")} after ${timeoutMs}ms`,
+        ),
+      );
+    }, timeoutMs);
+
+    child.on("error", (error) => {
+      finishReject(error);
+    });
+
+    child.on("exit", (code) => {
+      finishResolve(code);
     });
   });
 }
@@ -134,8 +226,9 @@ async function main() {
   });
 
   try {
-    const publishResult = await runCommand("tailscale", [mode, "--bg", "--yes", String(config.port)], {
+    const publishResult = await runStreamingCommand("tailscale", [mode, "--bg", "--yes", String(config.port)], {
       timeoutMs: 30_000,
+      earlyRejectPatterns: mode === "funnel" ? [FUNNEL_POLICY_DENIED_RE] : [],
     });
     const statusResult = await runCommand("tailscale", [mode, "status", "--json"], {
       timeoutMs: 15_000,

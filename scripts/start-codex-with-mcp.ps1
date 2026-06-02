@@ -1,5 +1,6 @@
 param(
   [string]$ServerName = 'trading_mcp_local',
+  [string]$MexcServerName = 'trading_mcp_mexc_local',
   [Parameter(ValueFromRemainingArguments = $true)]
   [string[]]$CodexArgs
 )
@@ -14,7 +15,7 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 Set-Location $repoRoot
 
 $launchArgs = @('-C', $repoRoot)
-$launchArgs += Get-CodexMcpConfigOverrides -RepoRoot $repoRoot -ServerName $ServerName
+$launchArgs += Get-CodexMcpConfigOverrides -RepoRoot $repoRoot -ServerName $ServerName -MexcServerName $MexcServerName
 
 if (-not ($CodexArgs -contains '--dangerously-bypass-approvals-and-sandbox')) {
   $launchArgs += '--dangerously-bypass-approvals-and-sandbox'

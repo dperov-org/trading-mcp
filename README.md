@@ -621,12 +621,92 @@ npm run verify
 # Run safe live Bybit API smoke tests using .env credentials
 npm run smoke:bybit
 
+# Start the experimental MEXC MCP server
+npm run mexc:start
+
+# Run baseline MEXC Spot/Futures REST smoke tests using .env credentials
+npm run smoke:mexc
+
+# Run extended MEXC read-only Spot + Futures smoke tests
+npm run smoke:mexc:readonly
+
+# Run MEXC write-path smoke tests for futures limit + trigger TP/SL lifecycle
+npm run smoke:mexc:write
+
+# Run MEXC Spot WebSocket smoke tests using live protobuf streams
+npm run smoke:mexc:ws
+
 # Type check
 npm run typecheck
 
 # Build for production
 npm run build
 ```
+
+Current MEXC scope in this repository:
+
+- separate experimental `MEXC` MCP runtime with `spot` and `futures` coverage
+- full current `Spot` read-only REST coverage from the public `spot_v3` docs, including:
+  - market data
+  - account/order history
+  - capital/deposit/withdraw history
+  - sub-account queries
+  - rebate / affiliate read-only queries
+- authenticated `Spot` trade tools:
+  - `createTestOrder`
+  - `createOrder`
+  - `cancelOrder`
+  - `cancelAllOrders`
+  - `getOrder`
+- `Futures` read-only REST coverage, including:
+  - contract metadata
+  - tickers
+  - orderbook
+  - klines
+  - index/fair/funding price data
+  - futures assets, positions, active orders, history, fills
+  - futures stop orders
+  - futures trigger / plan orders
+- authenticated `Futures` write tools:
+  - `createFuturesOrder`
+  - `cancelFuturesOrderByExternalId`
+  - `cancelAllFuturesOrders`
+  - `cancelFuturesOrders` (best-effort; MEXC may reject documented body shapes on some accounts)
+  - `createFuturesTriggerOrder`
+  - `cancelFuturesTriggerOrders`
+  - `cancelAllFuturesTriggerOrders`
+  - `updateFuturesOrderTpSl`
+  - `cancelFuturesStopOrders`
+  - `cancelAllFuturesStopOrders`
+  - `updateFuturesTriggerOrderTpSl`
+- authenticated spot account tools including `getMyTrades`
+- the MEXC transport layer preserves unsafe 16+ digit numeric ids as strings, so large `orderId` / `planOrderId` values survive round-trips through Node.js without precision loss
+- public Spot WebSocket snapshot tools built on the current protobuf stream format:
+  - `subscribeTickers`
+  - `subscribeOrderbook`
+  - `subscribeTrades`
+
+Current MEXC tool count: `80`
+
+Current MEXC smoke commands:
+
+- `npm run smoke:mexc`
+  - live REST/account/trade validation on mainnet
+  - includes safe signed validation through `POST /api/v3/order/test`
+- `npm run smoke:mexc:readonly`
+  - live extended read-only validation on mainnet
+  - covers new spot query tools and futures read-only tools
+  - explicitly verifies `futures trigger orders` and `futures stop orders`
+- `npm run smoke:mexc:write`
+  - live write validation on mainnet for:
+    - futures limit order place -> open-order visibility -> targeted cancel by `externalOid`
+    - futures trigger order place with `takeProfitPrice` / `stopLossPrice` -> trigger-list visibility -> targeted cancel
+  - spot real-order placement is attempted as best effort, but may be skipped on accounts without sufficient spot balance
+- `npm run smoke:mexc:ws`
+  - live Spot WebSocket smoke against protobuf channels for:
+    - aggregated book ticker
+    - partial orderbook depth
+    - aggregated public trades
 
 ### Repository-Specific Additions
 
@@ -708,26 +788,37 @@ Notes:
 This fork also includes project-local scripts for opening a Codex CLI session with the Bybit MCP server available only for that session:
 
 ```bash
-# Open an interactive Codex session with the local MCP wired in
+# Open an interactive Codex session with both local MCP servers wired in:
+# - trading_mcp_local (Bybit)
+# - trading_mcp_mexc_local (MEXC)
 npm run codex:session
 
-# Run a non-interactive Codex smoke test against wallet balance tools
+# Run a non-interactive Codex smoke test against Bybit wallet balance tools
 npm run codex:mcp:smoke
+
+# Run a non-interactive Codex smoke test against MEXC wallet balance tools
+npm run codex:mcp:smoke:mexc
 ```
 
 Linux / WSL equivalents:
 
 ```bash
-# Open an interactive Codex session with inline MCP config
+# Open an interactive Codex session with both local MCP servers wired in
 npm run codex:session:linux
 
-# Run the Codex MCP smoke test on Linux / WSL
+# Run the Bybit Codex MCP smoke test on Linux / WSL
 npm run codex:mcp:smoke:linux
+
+# Run the MEXC Codex MCP smoke test on Linux / WSL
+npm run codex:mcp:smoke:mexc:linux
 ```
 
 Notes:
 
-- the launcher passes the MCP config inline to `codex` and does not leave the Bybit server globally registered in `~/.codex/config.toml`
+- the launcher passes the MCP config inline to `codex` and does not leave either MCP server globally registered in `~/.codex/config.toml`
+- the interactive session now exposes two local MCP servers:
+  - `trading_mcp_local` for Bybit
+  - `trading_mcp_mexc_local` for MEXC
 - the Linux launchers also load the project `.env` into the current process, so local environment-based credentials are available to `codex`
 - the smoke command is intentionally read-only and uses the local `.env` mapping for `BYBIT_RO_*` aliases
 

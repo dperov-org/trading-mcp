@@ -12,3 +12,13 @@ args = [
   '__WRAPPER_SCRIPT__',
 ]
 cwd = '__REPO_ROOT__'
+
+[mcp_servers.__MEXC_SERVER_NAME__]
+command = '__POWERSHELL_PATH__'
+args = [
+  '-ExecutionPolicy',
+  'Bypass',
+  '-File',
+  '__MEXC_WRAPPER_SCRIPT__',
+]
+cwd = '__REPO_ROOT__'
