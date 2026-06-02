@@ -1,5 +1,4 @@
-const CHATKIT_CDN_URL =
-  "https://cdn.platform.openai.com/deployments/chatkit/chatkit.js";
+const CHATKIT_BUNDLE_URL = "/vendor/chatkit.js";
 const CHATKIT_LOAD_TIMEOUT_MS = 15000;
 const CHATKIT_RENDER_TIMEOUT_MS = 6000;
 const defaultThreadStorageKey = "local-mcp-web-ui.thread";
@@ -202,24 +201,24 @@ function ensureChatKitScript() {
   }
 
   return new Promise((resolve, reject) => {
-    const existing = document.querySelector(`script[src="${CHATKIT_CDN_URL}"]`);
+    const existing = document.querySelector(`script[src="${CHATKIT_BUNDLE_URL}"]`);
     if (existing) {
       existing.addEventListener("load", () => resolve(), { once: true });
       existing.addEventListener(
         "error",
-        () => reject(new Error(`Failed to load ${CHATKIT_CDN_URL}`)),
+        () => reject(new Error(`Failed to load ${CHATKIT_BUNDLE_URL}`)),
         { once: true },
       );
       return;
     }
 
     const script = document.createElement("script");
-    script.src = CHATKIT_CDN_URL;
+    script.src = CHATKIT_BUNDLE_URL;
     script.async = true;
     script.addEventListener("load", () => resolve(), { once: true });
     script.addEventListener(
       "error",
-      () => reject(new Error(`Failed to load ${CHATKIT_CDN_URL}`)),
+      () => reject(new Error(`Failed to load ${CHATKIT_BUNDLE_URL}`)),
       { once: true },
     );
     document.head.appendChild(script);

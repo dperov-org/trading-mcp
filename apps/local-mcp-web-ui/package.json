@@ -7,6 +7,7 @@
   "scripts": {
     "http": "node src/server.mjs",
     "start": "node src/server.mjs",
+    "vendor:chatkit": "node scripts/fetch-chatkit-vendor.mjs",
     "tailscale:serve": "node src/tailscale-publish.mjs serve",
     "tailscale:serve:status": "tailscale serve status --json",
     "tailscale:serve:reset": "tailscale serve reset",

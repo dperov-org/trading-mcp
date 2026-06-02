@@ -30,6 +30,7 @@ From the repository root:
 ```bash
 npm run webui:http
 npm run webui:start
+npm run webui:vendor:chatkit
 npm run webui:serve
 npm run webui:funnel
 npm run webui:serve:status
@@ -47,6 +48,7 @@ App-local equivalents:
 cd apps/local-mcp-web-ui
 npm run http
 npm run start
+npm run vendor:chatkit
 npm run tailscale:serve
 npm run tailscale:funnel
 npm run tailscale:serve:status
@@ -58,6 +60,7 @@ npm run smoke
 ```
 
 `webui:http` and `start` are equivalent. Both start the local HTTP server on `127.0.0.1:8787` by default.
+`webui:vendor:chatkit` refreshes the vendored local `ChatKit` browser bundle in `public/vendor/chatkit.js`.
 
 ## What the MVP does
 
@@ -69,6 +72,7 @@ npm run smoke
   - MEXC
 - exposes a high-level MEXC review tool, `getMexcTradingReviewSnapshot`, so generic prompts like "analyze trades on MEXC" do not need to guess individual MEXC endpoints first
 - streams assistant output and basic tool progress into ChatKit
+- loads the `ChatKit` browser bundle from the local static asset `public/vendor/chatkit.js`, so runtime bootstrap does not depend on `cdn.platform.openai.com`
 - supports two publication profiles on top of the same backend:
   - `tailscale serve` without app-auth for tailnet-only use
   - `tailscale funnel` with session auth inside the backend for public access
