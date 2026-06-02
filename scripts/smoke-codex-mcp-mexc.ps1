@@ -10,7 +10,7 @@ $outputPath = Join-Path $artifactsDir 'codex-mcp-mexc-smoke-last-message.txt'
 
 New-Item -ItemType Directory -Force -Path $artifactsDir | Out-Null
 
-& (Join-Path $PSScriptRoot 'install-codex-mcp.ps1') -ServerName 'trading_mcp_local'
+& (Join-Path $PSScriptRoot 'install-codex-mcp.ps1') -ServerName 'trading_mcp_bybit_local'
 . (Join-Path $PSScriptRoot 'get-codex-mcp-config-overrides.ps1')
 
 $prompt = @'
@@ -21,7 +21,7 @@ If the MCP server is unavailable, reply with exactly MCP_UNAVAILABLE.
 
 Set-Location $repoRoot
 $launchArgs = @()
-$launchArgs += Get-CodexMcpConfigOverrides -RepoRoot $repoRoot -ServerName 'trading_mcp_local' -MexcServerName $ServerName
+$launchArgs += Get-CodexMcpConfigOverrides -RepoRoot $repoRoot -ServerName 'trading_mcp_bybit_local' -MexcServerName $ServerName
 $launchArgs += @(
   'exec',
   '--ignore-user-config',

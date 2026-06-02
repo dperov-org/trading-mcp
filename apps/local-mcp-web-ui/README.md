@@ -8,7 +8,7 @@ Architecture:
 - backend: thin custom API server in Node.js
 - agent runtime: local `codex app-server`
 - tools:
-  - `trading_mcp_local` for Bybit
+  - `trading_mcp_bybit_local` for Bybit
   - `trading_mcp_mexc_local` for MEXC
 
 Why this shape:

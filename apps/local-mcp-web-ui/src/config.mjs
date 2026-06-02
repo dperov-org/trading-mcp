@@ -250,7 +250,7 @@ export function getAppConfig() {
         defaultKey: defaultChatkitDomainKey,
       });
     },
-    serverName: process.env.SERVER_NAME || "trading_mcp_local",
+    serverName: process.env.SERVER_NAME || "trading_mcp_bybit_local",
     mexcServerName: process.env.MEXC_SERVER_NAME || "trading_mcp_mexc_local",
     allowShellCommands: toBoolean(process.env.WEB_UI_ALLOW_SHELL_COMMANDS, false),
     approvalPolicy:

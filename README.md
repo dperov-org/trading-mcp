@@ -748,7 +748,7 @@ This fork also includes a ChatKit-based browser UI that runs against a local `co
   - serves a ChatKit browser surface
   - starts `codex app-server` through a dedicated launcher
   - wires both local MCP servers into `codex app-server`:
-    - `trading_mcp_local` for Bybit
+    - `trading_mcp_bybit_local` for Bybit
     - `trading_mcp_mexc_local` for MEXC
   - streams real exchange-backed answers through the local MCP stack
 
@@ -795,7 +795,7 @@ This fork also includes project-local scripts for opening a Codex CLI session wi
 
 ```bash
 # Open an interactive Codex session with both local MCP servers wired in:
-# - trading_mcp_local (Bybit)
+# - trading_mcp_bybit_local (Bybit)
 # - trading_mcp_mexc_local (MEXC)
 npm run codex:session
 
@@ -823,7 +823,7 @@ Notes:
 
 - the launcher passes the MCP config inline to `codex` and does not leave either MCP server globally registered in `~/.codex/config.toml`
 - the interactive session now exposes two local MCP servers:
-  - `trading_mcp_local` for Bybit
+  - `trading_mcp_bybit_local` for Bybit
   - `trading_mcp_mexc_local` for MEXC
 - the Linux launchers also load the project `.env` into the current process, so local environment-based credentials are available to `codex`
 - the smoke command is intentionally read-only and uses the local `.env` mapping for `BYBIT_RO_*` aliases

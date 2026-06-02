@@ -1,5 +1,5 @@
 param(
-  [string]$ServerName = 'trading_mcp_local',
+  [string]$ServerName = 'trading_mcp_bybit_local',
   [Parameter(ValueFromRemainingArguments = $true)]
   [string[]]$AppServerArgs
 )

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-server_name="${SERVER_NAME:-trading_mcp_local}"
+server_name="${SERVER_NAME:-trading_mcp_bybit_local}"
 mexc_server_name="${MEXC_SERVER_NAME:-trading_mcp_mexc_local}"
 wrapper_script="$repo_root/scripts/run-trading-mcp-for-codex.sh"
 mexc_wrapper_script="$repo_root/scripts/run-mexc-mcp-for-codex.sh"

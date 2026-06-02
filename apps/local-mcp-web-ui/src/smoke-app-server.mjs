@@ -38,6 +38,13 @@ async function main() {
       arguments: {},
     });
 
+    const mexcGuideToolCall = await codexClient.sendRequest("mcpServer/tool/call", {
+      threadId: threadStart.thread.id,
+      server: config.mexcServerName,
+      tool: "getMexcCapabilityGuide",
+      arguments: {},
+    });
+
     await new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         cleanup();
@@ -107,6 +114,7 @@ async function main() {
           approvalPolicy: config.approvalPolicy,
           bybitToolCall: toolCall,
           mexcToolCall,
+          mexcGuideToolCall,
           shellAttempt,
         },
         null,

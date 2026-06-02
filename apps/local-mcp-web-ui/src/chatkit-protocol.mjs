@@ -96,6 +96,13 @@ export function toCodexUserInput(chatkitInput, options = {}) {
         "- Do not inspect or execute repository helper scripts to answer the request.",
         "- Use MCP tools only. If MCP data is insufficient, explain what is missing instead of using the shell.",
         "",
+        "MCP server routing for this session:",
+        "- trading_mcp_bybit_local = Bybit only.",
+        "- trading_mcp_mexc_local = MEXC only.",
+        "- If the user asks about MEXC, use only trading_mcp_mexc_local tools.",
+        "- If you are unsure which MEXC tool to call first, call trading_mcp_mexc_local.getMexcCapabilityGuide.",
+        "- For MEXC trigger orders, plan orders, TP/SL orders, positions, or perpetual contracts, prefer MEXC Futures tools such as getFuturesTriggerOrders, getFuturesStopOrders, getFuturesOpenPositions, and getFuturesOpenOrders.",
+        "",
       ].join("\n");
 
   return [

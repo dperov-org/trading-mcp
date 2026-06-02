@@ -1,7 +1,7 @@
 function Get-CodexMcpConfigOverrides {
   param(
     [string]$RepoRoot,
-    [string]$ServerName = 'trading_mcp_local',
+    [string]$ServerName = 'trading_mcp_bybit_local',
     [string]$MexcServerName = 'trading_mcp_mexc_local'
   )
 

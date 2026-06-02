@@ -1,5 +1,5 @@
 param(
-  [string]$ServerName = 'trading_mcp_local'
+  [string]$ServerName = 'trading_mcp_bybit_local'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -14,7 +14,7 @@ New-Item -ItemType Directory -Force -Path $artifactsDir | Out-Null
 . (Join-Path $PSScriptRoot 'get-codex-mcp-config-overrides.ps1')
 
 $prompt = @'
-Use the MCP server named trading_mcp_local if it is available.
+Use the MCP server named trading_mcp_bybit_local if it is available.
 Tell me my current Bybit wallet balance summary in a short answer.
 If the MCP server is unavailable, reply with exactly MCP_UNAVAILABLE.
 '@

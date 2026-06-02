@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-server_name="${SERVER_NAME:-trading_mcp_local}"
+server_name="${SERVER_NAME:-trading_mcp_bybit_local}"
 wrapper_script="$repo_root/scripts/run-trading-mcp-for-codex.sh"
 bash_path="$(command -v bash)"
 artifacts_dir="$repo_root/artifacts/codex"
@@ -14,7 +14,7 @@ load_project_env "$repo_root"
 mkdir -p "$artifacts_dir"
 
 prompt="$(cat <<'EOF'
-Use the MCP server named trading_mcp_local if it is available.
+Use the MCP server named trading_mcp_bybit_local if it is available.
 Call only the MCP tool getWalletBalance with arguments {"accountType":"UNIFIED"}.
 Summarize the result in a short answer.
 If the MCP server is unavailable, reply with exactly MCP_UNAVAILABLE.
