@@ -10,6 +10,7 @@ const appRoot = path.resolve(srcDir, "..");
 const publicDir = path.join(appRoot, "public");
 
 const FRAME_HTML_RE = /ht="([^"]+\.html)"/;
+const FRAME_DIAGNOSTICS_MARKER = "data-local-chatkit-frame-diagnostics";
 const ABSOLUTE_ASSET_PATH_RE =
   /(?:src|href)=["']([^"']+)["']|\b(\/assets\/ck1\/[^"'`\s)><]+)\b/g;
 const RELATIVE_ASSET_PATH_RE =
@@ -97,6 +98,10 @@ async function main() {
 
     const frameHtmlPath = `/vendor/${frameHtmlMatch[1]}`;
     const frameHtmlText = await readLocalAsset(frameHtmlPath);
+    assert(
+      frameHtmlText.includes(FRAME_DIAGNOSTICS_MARKER),
+      "Vendored ChatKit frame HTML is missing diagnostics injection",
+    );
     const frameInitialAssets = extractAssetPaths(frameHtmlText, frameHtmlPath);
     const restrictedRelativeImportAssets = new Set(
       [...frameInitialAssets].filter((assetPath) =>
@@ -139,6 +144,7 @@ async function main() {
         {
           ok: true,
           baseUrl,
+          frameDiagnosticsInjected: true,
           checkedAssets: checked,
           checkedCount: checked.length,
         },

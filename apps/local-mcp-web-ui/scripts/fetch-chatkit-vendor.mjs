@@ -14,6 +14,158 @@ const ENTRY_RELATIVE_ASSET_PATH_RE =
 const FRAME_HTML_RE = /ht="([^"]+\.html)"/;
 const CLOUDFLARE_CHALLENGE_RE =
   /<script>\(function\(\)\{function c\(\)[\s\S]*?<\/script>/i;
+const FRAME_DIAGNOSTICS_MARKER = "data-local-chatkit-frame-diagnostics";
+const FRAME_DIAGNOSTICS_SNIPPET = `
+<script ${FRAME_DIAGNOSTICS_MARKER}>
+(function () {
+  if (window.__LOCAL_CHATKIT_FRAME_DIAGNOSTICS__) {
+    return;
+  }
+  window.__LOCAL_CHATKIT_FRAME_DIAGNOSTICS__ = true;
+
+  function normalizeUrl(input) {
+    try {
+      if (typeof input === "string") {
+        return new URL(input, window.location.origin).toString();
+      }
+      if (input instanceof URL) {
+        return input.toString();
+      }
+      if (typeof Request !== "undefined" && input instanceof Request) {
+        return new URL(input.url, window.location.origin).toString();
+      }
+    } catch {}
+    return String(input || "");
+  }
+
+  function shouldSkip(url) {
+    return normalizeUrl(url).includes("/client-log");
+  }
+
+  function send(level, event, data) {
+    const body = JSON.stringify({ level: level, event: event, data: data });
+    if (navigator.sendBeacon && !shouldSkip("/client-log")) {
+      try {
+        const blob = new Blob([body], { type: "application/json" });
+        if (navigator.sendBeacon("/client-log", blob)) {
+          return;
+        }
+      } catch {}
+    }
+
+    try {
+      fetch("/client-log", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body,
+        keepalive: true,
+      }).catch(function () {});
+    } catch {}
+  }
+
+  if (typeof window.fetch === "function") {
+    const originalFetch = window.fetch.bind(window);
+    window.fetch = async function patchedFrameFetch(input, init) {
+      const url = normalizeUrl(input);
+      const method = String(
+        init && init.method
+          ? init.method
+          : typeof Request !== "undefined" && input instanceof Request
+            ? input.method
+            : "GET"
+      ).toUpperCase();
+
+      try {
+        const response = await originalFetch(input, init);
+        if (!shouldSkip(url) && (!response.ok || url.includes("/chatkit") || url.includes("/auth/"))) {
+          send(response.ok ? "debug" : "warn", "frame_fetch_response", {
+            url,
+            method,
+            status: response.status,
+            ok: response.ok,
+            redirected: response.redirected,
+            type: response.type,
+          });
+        }
+        return response;
+      } catch (error) {
+        if (!shouldSkip(url)) {
+          send("error", "frame_fetch_failed", {
+            url,
+            method,
+            message: error && error.message ? error.message : String(error),
+            stack: error && error.stack ? error.stack : null,
+          });
+        }
+        throw error;
+      }
+    };
+  }
+
+  if (typeof XMLHttpRequest !== "undefined") {
+    const originalOpen = XMLHttpRequest.prototype.open;
+    const originalSend = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function patchedOpen(method, url) {
+      this.__localFrameMethod = String(method || "GET").toUpperCase();
+      this.__localFrameUrl = normalizeUrl(url);
+      return originalOpen.apply(this, arguments);
+    };
+
+    XMLHttpRequest.prototype.send = function patchedSend() {
+      const url = this.__localFrameUrl || "";
+      const method = this.__localFrameMethod || "GET";
+
+      this.addEventListener("loadend", function () {
+        if (shouldSkip(url)) {
+          return;
+        }
+        if (this.status >= 400 || url.includes("/chatkit") || url.includes("/auth/")) {
+          send(this.status >= 400 ? "warn" : "debug", "frame_xhr_response", {
+            url,
+            method,
+            status: this.status,
+            readyState: this.readyState,
+          });
+        }
+      }, { once: true });
+
+      this.addEventListener("error", function () {
+        if (shouldSkip(url)) {
+          return;
+        }
+        send("error", "frame_xhr_failed", {
+          url,
+          method,
+          status: this.status,
+          readyState: this.readyState,
+        });
+      }, { once: true });
+
+      return originalSend.apply(this, arguments);
+    };
+  }
+
+  window.addEventListener("error", function (event) {
+    send("error", "frame_window_error", {
+      message: event.message,
+      filename: event.filename || null,
+      lineno: event.lineno || null,
+      colno: event.colno || null,
+      stack: event.error && event.error.stack ? event.error.stack : null,
+    });
+  });
+
+  window.addEventListener("unhandledrejection", function (event) {
+    const reason = event.reason;
+    send("error", "frame_unhandled_rejection", {
+      reason: typeof reason === "object" && reason ? (reason.message || String(reason)) : String(reason),
+      stack: typeof reason === "object" && reason ? (reason.stack || null) : null,
+    });
+  });
+})();
+</script>
+`.trim();
 
 const currentFile = fileURLToPath(import.meta.url);
 const scriptDir = path.dirname(currentFile);
@@ -74,6 +226,22 @@ function resolveRelativeAssetPath(parentAssetPath, candidate) {
 
   const parentDir = path.posix.dirname(parentAssetPath);
   return path.posix.normalize(path.posix.join(parentDir, candidate));
+}
+
+function injectFrameDiagnostics(html) {
+  if (html.includes(FRAME_DIAGNOSTICS_MARKER)) {
+    return html;
+  }
+
+  if (html.includes("</head>")) {
+    return html.replace("</head>", `${FRAME_DIAGNOSTICS_SNIPPET}\n</head>`);
+  }
+
+  if (html.includes("<body")) {
+    return html.replace(/<body([^>]*)>/i, `<body$1>\n${FRAME_DIAGNOSTICS_SNIPPET}\n`);
+  }
+
+  return `${FRAME_DIAGNOSTICS_SNIPPET}\n${html}`;
 }
 
 function extractAssetPathsFor(text, parentAssetPath, { entryRestricted = false } = {}) {
@@ -211,6 +379,7 @@ async function fetchAssetGraph(seedPaths, { restrictedRelativeImportAssets = new
       );
       if (ext === ".html") {
         body = body.replace(CLOUDFLARE_CHALLENGE_RE, "");
+        body = injectFrameDiagnostics(body);
       }
 
       const outputPath = await writeTextAsset(assetPath, body);
@@ -262,7 +431,9 @@ async function main() {
 
   const frameHtmlPath = `/vendor/${frameHtmlMatch[1]}`;
   const frameHtmlBody = await fetchText(toCdnUrl(frameHtmlPath), "text/html, */*");
-  const sanitizedFrameHtmlBody = frameHtmlBody.replace(CLOUDFLARE_CHALLENGE_RE, "");
+  const sanitizedFrameHtmlBody = injectFrameDiagnostics(
+    frameHtmlBody.replace(CLOUDFLARE_CHALLENGE_RE, ""),
+  );
   const frameInitialAssets = extractAssetPathsFor(sanitizedFrameHtmlBody, frameHtmlPath);
   const restrictedRelativeImportAssets = new Set(
     [...frameInitialAssets].filter((assetPath) =>

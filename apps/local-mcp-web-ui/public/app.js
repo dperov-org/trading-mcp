@@ -4,6 +4,7 @@ const CHATKIT_RENDER_TIMEOUT_MS = 6000;
 const defaultThreadStorageKey = "local-mcp-web-ui.thread";
 const chatkitElement = document.getElementById("chatkit");
 let statusElement = null;
+let networkDiagnosticsInstalled = false;
 
 function ensureStatusElement() {
   if (statusElement?.isConnected) {
@@ -50,6 +51,134 @@ async function reportClientEvent(level, event, data = {}) {
     });
   } catch {
     // Ignore logging failures in the browser.
+  }
+}
+
+function normalizeRequestUrl(input) {
+  try {
+    if (typeof input === "string") {
+      return new URL(input, window.location.origin).toString();
+    }
+
+    if (input instanceof URL) {
+      return input.toString();
+    }
+
+    if (typeof Request !== "undefined" && input instanceof Request) {
+      return new URL(input.url, window.location.origin).toString();
+    }
+  } catch {
+    // Fall through.
+  }
+
+  return String(input || "");
+}
+
+function shouldSkipClientLog(url) {
+  return normalizeRequestUrl(url).includes("/client-log");
+}
+
+function installNetworkDiagnostics() {
+  if (networkDiagnosticsInstalled) {
+    return;
+  }
+
+  networkDiagnosticsInstalled = true;
+
+  if (typeof window.fetch === "function") {
+    const originalFetch = window.fetch.bind(window);
+    window.fetch = async function patchedFetch(input, init) {
+      const url = normalizeRequestUrl(input);
+      const method =
+        String(
+          init?.method ||
+            (typeof Request !== "undefined" && input instanceof Request
+              ? input.method
+              : "GET"),
+        ).toUpperCase();
+
+      try {
+        const response = await originalFetch(input, init);
+
+        if (
+          !shouldSkipClientLog(url) &&
+          (!response.ok || url.includes("/chatkit") || url.includes("/auth/"))
+        ) {
+          reportClientEvent(
+            response.ok ? "debug" : "warn",
+            "fetch_response",
+            {
+              url,
+              method,
+              status: response.status,
+              ok: response.ok,
+              redirected: response.redirected,
+              type: response.type,
+            },
+          );
+        }
+
+        return response;
+      } catch (error) {
+        if (!shouldSkipClientLog(url)) {
+          reportClientEvent("error", "fetch_failed", {
+            url,
+            method,
+            message: error?.message || String(error),
+            stack: error?.stack || null,
+          });
+        }
+        throw error;
+      }
+    };
+  }
+
+  if (typeof XMLHttpRequest !== "undefined") {
+    const originalOpen = XMLHttpRequest.prototype.open;
+    const originalSend = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function patchedOpen(method, url, ...rest) {
+      this.__localChatkitMethod = String(method || "GET").toUpperCase();
+      this.__localChatkitUrl = normalizeRequestUrl(url);
+      return originalOpen.call(this, method, url, ...rest);
+    };
+
+    XMLHttpRequest.prototype.send = function patchedSend(body) {
+      const url = this.__localChatkitUrl || "";
+      const method = this.__localChatkitMethod || "GET";
+
+      const handleLoadEnd = () => {
+        if (shouldSkipClientLog(url)) {
+          return;
+        }
+
+        if (this.status >= 400 || url.includes("/chatkit") || url.includes("/auth/")) {
+          reportClientEvent(this.status >= 400 ? "warn" : "debug", "xhr_response", {
+            url,
+            method,
+            status: this.status,
+            readyState: this.readyState,
+          });
+        }
+      };
+
+      const handleError = () => {
+        if (shouldSkipClientLog(url)) {
+          return;
+        }
+
+        reportClientEvent("error", "xhr_failed", {
+          url,
+          method,
+          status: this.status,
+          readyState: this.readyState,
+        });
+      };
+
+      this.addEventListener("loadend", handleLoadEnd, { once: true });
+      this.addEventListener("error", handleError, { once: true });
+      return originalSend.call(this, body);
+    };
   }
 }
 
@@ -264,12 +393,15 @@ function watchForVisibleRender() {
 }
 
 function installClientErrorHandlers() {
+  installNetworkDiagnostics();
+
   window.addEventListener("error", (event) => {
     reportClientEvent("error", "window_error", {
       message: event.message,
       filename: event.filename,
       lineno: event.lineno,
       colno: event.colno,
+      stack: event.error?.stack || null,
     });
   });
 
@@ -279,6 +411,10 @@ function installClientErrorHandlers() {
         typeof event.reason === "object"
           ? event.reason?.message || String(event.reason)
           : String(event.reason),
+      stack:
+        typeof event.reason === "object" && event.reason
+          ? event.reason?.stack || null
+          : null,
     });
   });
 }
@@ -327,6 +463,7 @@ async function main() {
     console.error("ChatKit error", event.detail?.error);
     reportClientEvent("error", "chatkit_error", {
       message,
+      stack: event.detail?.error?.stack || null,
     });
     showStatus(
       "Chat UI reported an internal error. Reload the page. If it persists, disable privacy or ad-blocking extensions for this site and try again.",
