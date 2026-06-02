@@ -52,6 +52,7 @@
     "webui:http": "node apps/local-mcp-web-ui/src/server.mjs",
     "webui:start": "node apps/local-mcp-web-ui/src/server.mjs",
     "webui:vendor:chatkit": "node apps/local-mcp-web-ui/scripts/fetch-chatkit-vendor.mjs",
+    "webui:chatkit-assets:smoke": "node apps/local-mcp-web-ui/src/smoke-chatkit-assets.mjs",
     "webui:serve": "node apps/local-mcp-web-ui/src/tailscale-publish.mjs serve",
     "webui:serve:status": "tailscale serve status --json",
     "webui:serve:reset": "tailscale serve reset",

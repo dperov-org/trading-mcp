@@ -27,6 +27,16 @@ const contentTypes = new Map([
   [".js", "text/javascript; charset=utf-8"],
   [".css", "text/css; charset=utf-8"],
   [".json", "application/json; charset=utf-8"],
+  [".svg", "image/svg+xml"],
+  [".ico", "image/x-icon"],
+  [".png", "image/png"],
+  [".jpg", "image/jpeg"],
+  [".jpeg", "image/jpeg"],
+  [".webp", "image/webp"],
+  [".woff", "font/woff"],
+  [".woff2", "font/woff2"],
+  [".ttf", "font/ttf"],
+  [".map", "application/json; charset=utf-8"],
 ]);
 
 function nowIsoString() {

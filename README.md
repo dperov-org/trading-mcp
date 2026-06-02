@@ -788,7 +788,8 @@ Notes:
   - `scripts/start-codex-app-server-with-mcp.sh` on Linux
 - `npm run webui:serve` forces tailnet-only publication via `tailscale serve` and keeps backend auth disabled
 - `npm run webui:funnel` forces backend session auth and requires `WEB_UI_SESSION_PASSWORD`
-- the browser now loads `ChatKit` from the vendored local asset `apps/local-mcp-web-ui/public/vendor/chatkit.js`, so runtime startup does not depend on `cdn.platform.openai.com`
+- the browser now loads the full `ChatKit` runtime from vendored local assets under `apps/local-mcp-web-ui/public/vendor` and `apps/local-mcp-web-ui/public/assets/ck1`, so runtime startup does not depend on `cdn.platform.openai.com`
+- `npm run webui:chatkit-assets:smoke` validates that the locally served `ChatKit` asset graph is complete
 - shell command execution is disabled by default in the web UI backend, so the agent stays on MCP/tools instead of falling back to local `npm` / shell helper scripts
 - set `WEB_UI_ALLOW_SHELL_COMMANDS=1` only if you explicitly want to re-enable local shell execution for browser sessions
 - with shell access disabled, the web UI uses `approvalPolicy=never`, injects MCP-only routing rules into the turn prompt, and force-interrupts any `commandExecution` item that still starts

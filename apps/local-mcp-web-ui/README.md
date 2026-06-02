@@ -60,7 +60,10 @@ npm run smoke
 ```
 
 `webui:http` and `start` are equivalent. Both start the local HTTP server on `127.0.0.1:8787` by default.
-`webui:vendor:chatkit` refreshes the vendored local `ChatKit` browser bundle in `public/vendor/chatkit.js`.
+`webui:vendor:chatkit` refreshes the vendored local `ChatKit` runtime in `public/vendor` and `public/assets/ck1`.
+It downloads the browser bundle, the embedded frame HTML, and the frame assets that `ChatKit` loads after bootstrap.
+
+`npm run webui:chatkit-assets:smoke` validates that the locally served `ChatKit` asset graph is complete and that the web server returns `200` for each required asset.
 
 ## What the MVP does
 
@@ -72,7 +75,7 @@ npm run smoke
   - MEXC
 - exposes a high-level MEXC review tool, `getMexcTradingReviewSnapshot`, so generic prompts like "analyze trades on MEXC" do not need to guess individual MEXC endpoints first
 - streams assistant output and basic tool progress into ChatKit
-- loads the `ChatKit` browser bundle from the local static asset `public/vendor/chatkit.js`, so runtime bootstrap does not depend on `cdn.platform.openai.com`
+- loads the `ChatKit` runtime from local static assets under `public/vendor` and `public/assets/ck1`, so runtime bootstrap does not depend on `cdn.platform.openai.com`
 - supports two publication profiles on top of the same backend:
   - `tailscale serve` without app-auth for tailnet-only use
   - `tailscale funnel` with session auth inside the backend for public access
