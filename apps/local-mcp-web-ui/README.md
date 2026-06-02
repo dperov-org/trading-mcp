@@ -61,7 +61,7 @@ npm run smoke
 
 `webui:http` and `start` are equivalent. Both start the local HTTP server on `127.0.0.1:8787` by default.
 `webui:vendor:chatkit` refreshes the vendored local `ChatKit` runtime in `public/vendor` and `public/assets/ck1`.
-It downloads the browser bundle, the embedded frame HTML, and the frame assets that `ChatKit` loads after bootstrap.
+It downloads the browser bundle, the embedded frame HTML, the first-layer frame assets, and the lazy-loaded `index-*` / locale chunks that `ChatKit` requests after bootstrap.
 
 `npm run webui:chatkit-assets:smoke` validates that the locally served `ChatKit` asset graph is complete and that the web server returns `200` for each required asset.
 

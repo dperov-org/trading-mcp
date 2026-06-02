@@ -10,8 +10,12 @@ const appRoot = path.resolve(srcDir, "..");
 const publicDir = path.join(appRoot, "public");
 
 const FRAME_HTML_RE = /ht="([^"]+\.html)"/;
-const ASSET_PATH_RE =
+const ABSOLUTE_ASSET_PATH_RE =
   /(?:src|href)=["']([^"']+)["']|\b(\/assets\/ck1\/[^"'`\s)><]+)\b/g;
+const RELATIVE_ASSET_PATH_RE =
+  /(?:import\(|new URL\(|src=|href=)["'](\.\/[^"'`\s)><]+\.(?:js|css|svg|ico|woff2?|ttf|json))["']/g;
+const ENTRY_RELATIVE_ASSET_PATH_RE =
+  /(?:import\(|new URL\()["'](\.\/(?:(?:index|[A-Za-z]{2}-[A-Za-z]{2})-[^"'`\s)><]+\.js))["']/g;
 
 function assert(condition, message) {
   if (!condition) {
@@ -19,9 +23,18 @@ function assert(condition, message) {
   }
 }
 
-function extractAssetPaths(text) {
+function resolveRelativeAssetPath(parentAssetPath, candidate) {
+  if (!candidate.startsWith("./")) {
+    return candidate;
+  }
+
+  const parentDir = path.posix.dirname(parentAssetPath);
+  return path.posix.normalize(path.posix.join(parentDir, candidate));
+}
+
+function extractAssetPaths(text, parentAssetPath, { entryRestricted = false } = {}) {
   const result = new Set();
-  for (const match of text.matchAll(ASSET_PATH_RE)) {
+  for (const match of text.matchAll(ABSOLUTE_ASSET_PATH_RE)) {
     const candidate = match[1] || match[2];
     if (!candidate) {
       continue;
@@ -36,6 +49,24 @@ function extractAssetPaths(text) {
     }
 
     result.add(candidate);
+  }
+
+  const relativeRegex = entryRestricted
+    ? ENTRY_RELATIVE_ASSET_PATH_RE
+    : RELATIVE_ASSET_PATH_RE;
+
+  for (const match of text.matchAll(relativeRegex)) {
+    const candidate = match[1];
+    if (!candidate) {
+      continue;
+    }
+
+    const resolved = resolveRelativeAssetPath(parentAssetPath, candidate);
+    if (!resolved.startsWith("/assets/") && !resolved.startsWith("/vendor/")) {
+      continue;
+    }
+
+    result.add(resolved);
   }
 
   return result;
@@ -64,7 +95,16 @@ async function main() {
     const frameHtmlMatch = bundleText.match(FRAME_HTML_RE);
     assert(frameHtmlMatch, "Unable to extract ChatKit frame HTML path from local bundle");
 
-    const queue = [`/vendor/${frameHtmlMatch[1]}`];
+    const frameHtmlPath = `/vendor/${frameHtmlMatch[1]}`;
+    const frameHtmlText = await readLocalAsset(frameHtmlPath);
+    const frameInitialAssets = extractAssetPaths(frameHtmlText, frameHtmlPath);
+    const restrictedRelativeImportAssets = new Set(
+      [...frameInitialAssets].filter((assetPath) =>
+        /^\/assets\/ck1\/index-[A-Za-z0-9_-]+\.js$/.test(assetPath),
+      ),
+    );
+
+    const queue = [frameHtmlPath];
     const visited = new Set();
     const checked = [];
 
@@ -85,7 +125,9 @@ async function main() {
       }
 
       const localText = await readLocalAsset(assetPath);
-      for (const nestedPath of extractAssetPaths(localText)) {
+      for (const nestedPath of extractAssetPaths(localText, assetPath, {
+        entryRestricted: restrictedRelativeImportAssets.has(assetPath),
+      })) {
         if (!visited.has(nestedPath)) {
           queue.push(nestedPath);
         }
