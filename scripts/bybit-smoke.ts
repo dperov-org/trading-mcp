@@ -26,9 +26,10 @@ type SmokeResult = {
 };
 
 async function main() {
+  const credentialMode = parseCredentialMode();
   await loadEnvFile(path.join(process.cwd(), '.env'));
-  mapReadOnlyEnvAliases();
-  validateAuthEnv();
+  mapBybitEnvAliases(credentialMode);
+  validateAuthEnv(credentialMode);
 
   const tests: SmokeCase[] = [
     {
@@ -103,7 +104,7 @@ async function main() {
 
   console.error(`bybit smoke target: ${process.env.BYBIT_TESTNET === 'true' ? 'testnet' : 'mainnet'}`);
   console.error(`auth mode: ${process.env.BYBIT_API_PRIVATE_KEY_PATH ? 'rsa' : 'hmac'}`);
-  console.error(`api key source: ${process.env.BYBIT_RO_API_KEY ? 'BYBIT_RO_* alias' : 'BYBIT_API_* direct'}`);
+  console.error(`api key source: ${describeApiKeySource(credentialMode)}`);
 
   const results: SmokeResult[] = [];
 
@@ -137,9 +138,48 @@ async function main() {
   }
 
   const failed = results.filter((result) => !result.ok);
+  const apiKeyResult = results.find((result) => result.name === 'auth:queryAPIKey');
+  if (credentialMode === 'rw' && apiKeyResult?.ok) {
+    try {
+      const rawResult = await queryAPIKey.handler({});
+      const data = unwrapResult<Record<string, unknown>>(rawResult) ?? {};
+      if (isReadOnlyValue(data.readOnly)) {
+        failed.push({
+          name: 'auth:queryAPIKey(readOnly=false)',
+          ok: false,
+          durationMs: 0,
+          error: `Expected RW API key, got readOnly=${stringValue(data.readOnly)}`,
+        });
+        console.error(`- FAIL auth:queryAPIKey(readOnly=false) Expected RW API key, got readOnly=${stringValue(data.readOnly)}`);
+      } else {
+        console.error(`- OK   auth:queryAPIKey(readOnly=false) readOnly=${stringValue(data.readOnly)}`);
+      }
+    } catch (error) {
+      failed.push({
+        name: 'auth:queryAPIKey(readOnly=false)',
+        ok: false,
+        durationMs: 0,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      console.error(`- FAIL auth:queryAPIKey(readOnly=false) ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
   if (failed.length > 0) {
     process.exitCode = 1;
   }
+}
+
+function parseCredentialMode(): 'ro' | 'rw' {
+  if (process.argv.includes('--rw')) {
+    return 'rw';
+  }
+
+  if (process.argv.includes('--ro')) {
+    return 'ro';
+  }
+
+  return 'ro';
 }
 
 async function loadEnvFile(filePath: string) {
@@ -167,23 +207,36 @@ async function loadEnvFile(filePath: string) {
   }
 }
 
-function mapReadOnlyEnvAliases() {
-  if (!process.env.BYBIT_API_KEY && process.env.BYBIT_RO_API_KEY) {
+function mapBybitEnvAliases(credentialMode: 'ro' | 'rw') {
+  const keyName = credentialMode === 'rw' ? 'BYBIT_RW_API_KEY' : 'BYBIT_RO_API_KEY';
+  const secretName = credentialMode === 'rw' ? 'BYBIT_RW_API_SECRET' : 'BYBIT_RO_API_SECRET';
+
+  const selectedKey = process.env[keyName];
+  const selectedSecret = process.env[secretName];
+
+  if (selectedKey) {
+    process.env.BYBIT_API_KEY = selectedKey;
+  } else if (!process.env.BYBIT_API_KEY && credentialMode === 'ro' && process.env.BYBIT_RO_API_KEY) {
     process.env.BYBIT_API_KEY = process.env.BYBIT_RO_API_KEY;
   }
 
-  if (!process.env.BYBIT_API_SECRET && process.env.BYBIT_RO_API_SECRET) {
+  if (selectedSecret) {
+    process.env.BYBIT_API_SECRET = selectedSecret;
+  } else if (!process.env.BYBIT_API_SECRET && credentialMode === 'ro' && process.env.BYBIT_RO_API_SECRET) {
     process.env.BYBIT_API_SECRET = process.env.BYBIT_RO_API_SECRET;
   }
 }
 
-function validateAuthEnv() {
+function validateAuthEnv(credentialMode: 'ro' | 'rw') {
+  const keyName = credentialMode === 'rw' ? 'BYBIT_RW_API_KEY' : 'BYBIT_RO_API_KEY';
+  const secretName = credentialMode === 'rw' ? 'BYBIT_RW_API_SECRET' : 'BYBIT_RO_API_SECRET';
+
   if (!process.env.BYBIT_API_KEY) {
-    throw new Error('Missing BYBIT_API_KEY or BYBIT_RO_API_KEY in .env');
+    throw new Error(`Missing BYBIT_API_KEY or ${keyName} in .env`);
   }
 
   if (!process.env.BYBIT_API_SECRET && !process.env.BYBIT_API_PRIVATE_KEY_PATH) {
-    throw new Error('Missing BYBIT_API_SECRET/BYBIT_RO_API_SECRET or BYBIT_API_PRIVATE_KEY_PATH in .env');
+    throw new Error(`Missing BYBIT_API_SECRET/${secretName} or BYBIT_API_PRIVATE_KEY_PATH in .env`);
   }
 }
 
@@ -199,6 +252,20 @@ function unwrapListItem(result: unknown): Record<string, any> | undefined {
 
 function stringValue(value: unknown) {
   return value === undefined || value === null ? 'n/a' : String(value);
+}
+
+function describeApiKeySource(credentialMode: 'ro' | 'rw') {
+  const keyName = credentialMode === 'rw' ? 'BYBIT_RW_API_KEY' : 'BYBIT_RO_API_KEY';
+  return process.env[keyName] ? `${keyName.replace('_API_KEY', '')}_* alias` : 'BYBIT_API_* direct';
+}
+
+function isReadOnlyValue(value: unknown): boolean {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  const normalized = String(value ?? '').trim().toLowerCase();
+  return normalized === '1' || normalized === 'true' || normalized === 'yes';
 }
 
 main().catch((error) => {

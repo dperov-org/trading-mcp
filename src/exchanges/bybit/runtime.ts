@@ -4,6 +4,7 @@ import { subscriptionTools } from '../../tools/subscription/index.js';
 import { resolveSignConfig } from '../../utils/auth.js';
 import { VERSION } from '../../version.js';
 import { checkVersionForTool } from '../../version-check.js';
+import { getBybitCredentialSourceLabel, selectBybitCredentialAliases } from './config.js';
 
 async function loadBybitTools(): Promise<ToolDefinition[]> {
   let generatedTools: ToolDefinition[] = [];
@@ -19,19 +20,24 @@ async function loadBybitTools(): Promise<ToolDefinition[]> {
 }
 
 function getBybitAuthSummary(): string {
+  const credentialSelection = selectBybitCredentialAliases();
+  const credentialSource = getBybitCredentialSourceLabel(credentialSelection);
+
   if (!process.env.BYBIT_API_KEY) {
-    return 'auth: unauthenticated';
+    return `auth: unauthenticated, key source: ${credentialSource}, rw aliases: ${credentialSelection.useRwKeys ? 'enabled' : 'disabled'}`;
   }
 
   try {
     const signConfig = resolveSignConfig();
-    return `auth: ${signConfig.type === 'rsa' ? 'RSA-SHA256' : 'HMAC-SHA256'}`;
+    return `auth: ${signConfig.type === 'rsa' ? 'RSA-SHA256' : 'HMAC-SHA256'}, key source: ${credentialSource}, rw aliases: ${credentialSelection.useRwKeys ? 'enabled' : 'disabled'}`;
   } catch (error) {
-    return `auth: config error — ${error instanceof Error ? error.message : String(error)}`;
+    return `auth: config error — ${error instanceof Error ? error.message : String(error)}, key source: ${credentialSource}`;
   }
 }
 
 export async function createBybitRuntime(): Promise<ExchangeRuntime> {
+  selectBybitCredentialAliases();
+
   return {
     id: 'bybit',
     serverName: 'trading-mcp',

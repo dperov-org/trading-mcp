@@ -148,6 +148,9 @@ The AI will read the README, understand all available tools, and be ready to ass
 | `BYBIT_API_SECRET` | HMAC mode | — | Your Bybit API secret (HMAC-SHA256 signing) |
 | `BYBIT_API_PRIVATE_KEY_PATH` | RSA mode | — | Absolute path to your RSA private key PEM file (RSA-SHA256 signing) |
 | `BYBIT_TESTNET` | No | `false` | Set to `true` to use the testnet |
+| `BYBIT_RW_API_KEY` / `BYBIT_RW_API_SECRET` | Local `.env` alias | — | Read-write Bybit API key pair used by local launchers when `BYBIT_USE_RW_KEYS` is enabled |
+| `BYBIT_RO_API_KEY` / `BYBIT_RO_API_SECRET` | Local `.env` alias | — | Read-only Bybit API key pair used as fallback or for read-only smoke tests |
+| `BYBIT_USE_RW_KEYS` | No | `true` | Set to `false` to force local alias selection to use `BYBIT_RO_*` instead of `BYBIT_RW_*` |
 
 Market data tools work without credentials. Authenticated tools require `BYBIT_API_KEY` plus **exactly one** signing credential:
 
@@ -602,6 +605,14 @@ This smoke test is intentionally non-destructive:
 - it does not open WebSocket trade sessions
 - it does not require write permissions on the API key
 
+To validate the read-write key pair without placing an order:
+
+```bash
+npm run smoke:bybit:rw
+```
+
+This uses `BYBIT_RW_API_KEY` / `BYBIT_RW_API_SECRET`, calls the same non-destructive endpoints, and fails if `queryAPIKey` reports the selected key as read-only.
+
 ```bash
 # Install dependencies
 npm ci
@@ -620,6 +631,7 @@ npm run verify
 
 # Run safe live Bybit API smoke tests using .env credentials
 npm run smoke:bybit
+npm run smoke:bybit:rw
 
 # Start the experimental MEXC MCP server
 npm run mexc:start
@@ -845,7 +857,8 @@ Notes:
   - `trading_mcp_bybit_local` for Bybit
   - `trading_mcp_mexc_local` for MEXC
 - the Linux launchers also load the project `.env` into the current process, so local environment-based credentials are available to `codex`
-- the smoke command is intentionally read-only and uses the local `.env` mapping for `BYBIT_RO_*` aliases
+- the default Bybit runtime uses `BYBIT_RW_*` aliases when present; set `BYBIT_USE_RW_KEYS=false` to force `BYBIT_RO_*`
+- the default smoke command is intentionally read-only and uses the local `.env` mapping for `BYBIT_RO_*` aliases; `npm run smoke:bybit:rw` validates `BYBIT_RW_*` without placing orders
 
 ---
 

@@ -44,6 +44,7 @@
     "codegen:bootstrap": "node scripts/generate-tools.mjs bootstrap",
     "codegen:openai-functions": "npm --prefix apps/openai-function-tools-adapter run codegen",
     "smoke:bybit": "node --import tsx/esm scripts/bybit-smoke.ts",
+    "smoke:bybit:rw": "node --import tsx/esm scripts/bybit-smoke.ts --rw",
     "smoke:mexc": "node --env-file=.env --import tsx/esm scripts/mexc-smoke.ts",
     "smoke:mexc:readonly": "node --env-file=.env --import tsx/esm scripts/mexc-readonly-smoke.ts",
     "smoke:mexc:write": "node --env-file=.env --import tsx/esm scripts/mexc-write-smoke.ts",
