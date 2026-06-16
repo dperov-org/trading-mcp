@@ -105,7 +105,7 @@ async function main() {
     );
     assert(
       frameHtmlText.includes(CHATKIT_VERIFY_PROXY_PATH),
-      "Vendored ChatKit frame HTML is missing the local verify proxy path",
+      "Vendored ChatKit frame HTML is missing the local verify path",
     );
     const frameInitialAssets = extractAssetPaths(frameHtmlText, frameHtmlPath);
     const restrictedRelativeImportAssets = new Set(

@@ -162,85 +162,26 @@ async function serveStaticFile(config, requestPath, response) {
   }
 }
 
-function buildProxyHeaders(request) {
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(request.headers)) {
-    if (value === undefined) {
-      continue;
-    }
-
-    const normalizedKey = String(key).toLowerCase();
-    if (
-      normalizedKey === "host" ||
-      normalizedKey === "connection" ||
-      normalizedKey === "content-length" ||
-      normalizedKey === "cookie" ||
-      normalizedKey === "accept-encoding"
-    ) {
-      continue;
-    }
-
-    if (Array.isArray(value)) {
-      for (const entry of value) {
-        headers.append(normalizedKey, entry);
-      }
-      continue;
-    }
-
-    headers.set(normalizedKey, String(value));
-  }
-
-  return headers;
-}
-
-async function proxyChatkitVerify({
-  config,
+async function acceptChatkitVerify({
   request,
   response,
   logger,
   httpRequestId,
 }) {
   const body = await readRawBody(request);
-  const headers = buildProxyHeaders(request);
 
-  logger.info("chatkit", "verify_proxy_started", {
+  logger.info("chatkit", "verify_accepted", {
     httpRequestId,
     method: request.method,
-    upstreamUrl: config.chatkitVerifyUrl,
     contentLength: body.length,
     origin: request.headers.origin || null,
   });
 
-  const upstreamResponse = await fetch(config.chatkitVerifyUrl, {
-    method: request.method,
-    headers,
-    body: body.length > 0 ? body : undefined,
-  });
-
-  const responseBuffer = Buffer.from(await upstreamResponse.arrayBuffer());
-  const responseHeaders = {};
-  for (const [key, value] of upstreamResponse.headers.entries()) {
-    const normalizedKey = String(key).toLowerCase();
-    if (
-      normalizedKey === "content-length" ||
-      normalizedKey === "transfer-encoding" ||
-      normalizedKey === "connection" ||
-      normalizedKey === "content-encoding"
-    ) {
-      continue;
-    }
-
-    responseHeaders[normalizedKey] = value;
-  }
-
-  response.writeHead(upstreamResponse.status, responseHeaders);
-  response.end(responseBuffer);
-
-  logger.info("chatkit", "verify_proxy_finished", {
-    httpRequestId,
-    statusCode: upstreamResponse.status,
-    contentType: upstreamResponse.headers.get("content-type"),
-    responseLength: responseBuffer.length,
+  sendJson(response, 200, {
+    ok: true,
+    valid: true,
+    verified: true,
+    local: true,
   });
 }
 
@@ -1090,8 +1031,7 @@ export async function startWebUiServer() {
         request.method === "POST" &&
         requestUrl.pathname === "/chatkit/domain_keys/verify"
       ) {
-        await proxyChatkitVerify({
-          config,
+        await acceptChatkitVerify({
           request,
           response,
           logger,
