@@ -16,7 +16,7 @@ for endpoint in \
   "mexc-mcp http://127.0.0.1:$mexc_port/healthz" \
   "codex-ready http://127.0.0.1:$codex_port/readyz" \
   "codex-health http://127.0.0.1:$codex_port/healthz" \
-  "webui http://127.0.0.1:$webui_port/healthz"; do
+  "webui-login http://127.0.0.1:$webui_port/login"; do
   name="${endpoint%% *}"
   url="${endpoint#* }"
   if curl -fsS --max-time 3 "$url" >/tmp/singapur-status-body 2>/tmp/singapur-status-error; then
