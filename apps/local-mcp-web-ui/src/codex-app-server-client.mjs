@@ -28,6 +28,8 @@ function nowMs() {
 export class CodexAppServerClient extends EventEmitter {
   constructor({
     launcher,
+    appServerUrl = null,
+    mode = "spawn",
     cwd,
     startupTimeoutMs = 30_000,
     logger = null,
@@ -35,11 +37,14 @@ export class CodexAppServerClient extends EventEmitter {
   }) {
     super();
     this.launcher = launcher;
+    this.appServerUrl = appServerUrl;
+    this.mode = mode === "external" ? "external" : "spawn";
     this.cwd = cwd;
     this.startupTimeoutMs = startupTimeoutMs;
     this.logger = logger;
     this.allowShellCommands = allowShellCommands;
     this.child = null;
+    this.ws = null;
     this.pending = new Map();
     this.requestId = 0;
     this.initializeResponse = null;
@@ -47,10 +52,41 @@ export class CodexAppServerClient extends EventEmitter {
   }
 
   async start() {
-    if (this.child) {
+    if (this.child || this.ws) {
       return this.initializeResponse;
     }
 
+    if (this.mode === "external") {
+      await this.#startWebSocket();
+    } else {
+      this.#startChild();
+    }
+
+    this.initializeResponse = await this.sendRequest(
+      "initialize",
+      {
+        clientInfo: {
+          name: "local-mcp-web-ui",
+          title: "Local MCP Web UI",
+          version: "0.1.0",
+        },
+        capabilities: null,
+      },
+      this.startupTimeoutMs,
+    );
+
+    this.#write({
+      method: "initialized",
+    });
+    this.logger?.info("codex-app-server", "initialized", {
+      mode: this.mode,
+      initializeResponse: this.initializeResponse,
+    });
+
+    return this.initializeResponse;
+  }
+
+  #startChild() {
     const child = spawn(this.launcher.command, this.launcher.args, {
       cwd: this.cwd,
       stdio: ["pipe", "pipe", "pipe"],
@@ -95,35 +131,85 @@ export class CodexAppServerClient extends EventEmitter {
       this.child = null;
       this.emit("exit", { code, signal });
     });
+  }
 
-    this.initializeResponse = await this.sendRequest(
-      "initialize",
-      {
-        clientInfo: {
-          name: "local-mcp-web-ui",
-          title: "Local MCP Web UI",
-          version: "0.1.0",
+  async #startWebSocket() {
+    if (!this.appServerUrl) {
+      throw new Error("WEB_UI_CODEX_APP_SERVER_URL is required in external Codex mode");
+    }
+
+    const ws = new WebSocket(this.appServerUrl);
+    this.ws = ws;
+    this.logger?.info("codex-app-server", "websocket_connecting", {
+      url: this.appServerUrl,
+    });
+
+    await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        reject(
+          new Error(
+            `Timed out connecting to codex app-server websocket after ${this.startupTimeoutMs}ms`,
+          ),
+        );
+      }, this.startupTimeoutMs);
+
+      ws.addEventListener(
+        "open",
+        () => {
+          clearTimeout(timer);
+          this.logger?.info("codex-app-server", "websocket_connected", {
+            url: this.appServerUrl,
+          });
+          resolve();
         },
-        capabilities: null,
-      },
-      this.startupTimeoutMs,
-    );
-
-    this.#write({
-      method: "initialized",
+        { once: true },
+      );
+      ws.addEventListener(
+        "error",
+        () => {
+          clearTimeout(timer);
+          reject(new Error(`Failed to connect to codex app-server at ${this.appServerUrl}`));
+        },
+        { once: true },
+      );
     });
-    this.logger?.info("codex-app-server", "initialized", {
-      initializeResponse: this.initializeResponse,
-    });
 
-    return this.initializeResponse;
+    ws.addEventListener("message", (event) => {
+      this.#handleLine(String(event.data));
+    });
+    ws.addEventListener("close", (event) => {
+      const message = `codex app-server websocket closed (code=${event.code}, reason=${event.reason || "none"})`;
+      const error = new Error(message);
+      this.logger?.warn("codex-app-server", "websocket_closed", {
+        code: event.code,
+        reason: event.reason || null,
+        pendingRequestCount: this.pending.size,
+      });
+
+      for (const { reject, timer } of this.pending.values()) {
+        clearTimeout(timer);
+        reject(error);
+      }
+
+      this.pending.clear();
+      this.ws = null;
+      this.emit("exit", { code: event.code, signal: "websocket-close" });
+    });
   }
 
   async stop() {
+    if (this.ws) {
+      const ws = this.ws;
+      this.ws = null;
+      this.logger?.info("codex-app-server", "websocket_stop_requested", {
+        url: this.appServerUrl,
+      });
+      ws.close();
+    }
+
     if (!this.child) {
       return;
     }
-
     const child = this.child;
     this.child = null;
     this.logger?.info("codex-app-server", "stop_requested", {
@@ -133,7 +219,7 @@ export class CodexAppServerClient extends EventEmitter {
   }
 
   async sendRequest(method, params, timeoutMs = 120_000) {
-    if (!this.child) {
+    if (!this.child && !this.ws) {
       await this.start();
     }
 
@@ -178,11 +264,20 @@ export class CodexAppServerClient extends EventEmitter {
   }
 
   #write(payload) {
-    if (!this.child?.stdin) {
-      throw new Error("codex app-server stdin is not available");
+    const envelope = createJsonRpcEnvelope(payload);
+    if (this.ws) {
+      if (this.ws.readyState !== WebSocket.OPEN) {
+        throw new Error("codex app-server websocket is not open");
+      }
+      this.ws.send(envelope);
+      return;
     }
 
-    this.child.stdin.write(`${createJsonRpcEnvelope(payload)}\n`);
+    if (!this.child?.stdin) {
+      throw new Error("codex app-server transport is not available");
+    }
+
+    this.child.stdin.write(`${envelope}\n`);
   }
 
   async #handleServerRequest(message) {

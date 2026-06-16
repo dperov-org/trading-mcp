@@ -11,15 +11,29 @@ bash_path="$(command -v bash)"
 source "$repo_root/scripts/load-project-env.sh"
 load_project_env "$repo_root"
 
+mcp_mode="${CODEX_MCP_MODE:-stdio}"
+
 launch_args=(
   -C "$repo_root"
-  -c "mcp_servers.$server_name.command='$bash_path'"
-  -c "mcp_servers.$server_name.args=['$wrapper_script']"
-  -c "mcp_servers.$server_name.cwd='$repo_root'"
-  -c "mcp_servers.$mexc_server_name.command='$bash_path'"
-  -c "mcp_servers.$mexc_server_name.args=['$mexc_wrapper_script']"
-  -c "mcp_servers.$mexc_server_name.cwd='$repo_root'"
 )
+
+if [[ "$mcp_mode" == "external" ]]; then
+  bybit_mcp_url="${CODEX_BYBIT_MCP_URL:?CODEX_BYBIT_MCP_URL is required when CODEX_MCP_MODE=external}"
+  mexc_mcp_url="${CODEX_MEXC_MCP_URL:?CODEX_MEXC_MCP_URL is required when CODEX_MCP_MODE=external}"
+  launch_args+=(
+    -c "mcp_servers.$server_name.url='$bybit_mcp_url'"
+    -c "mcp_servers.$mexc_server_name.url='$mexc_mcp_url'"
+  )
+else
+  launch_args+=(
+    -c "mcp_servers.$server_name.command='$bash_path'"
+    -c "mcp_servers.$server_name.args=['$wrapper_script']"
+    -c "mcp_servers.$server_name.cwd='$repo_root'"
+    -c "mcp_servers.$mexc_server_name.command='$bash_path'"
+    -c "mcp_servers.$mexc_server_name.args=['$mexc_wrapper_script']"
+    -c "mcp_servers.$mexc_server_name.cwd='$repo_root'"
+  )
+fi
 
 has_bypass_flag=false
 has_model_flag=false

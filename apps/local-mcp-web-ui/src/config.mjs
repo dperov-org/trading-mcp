@@ -232,6 +232,13 @@ export function getAppConfig() {
       .createHash("sha256")
       .update(`${repoRoot}:${sessionPassword || "no-password-configured"}`)
       .digest("hex");
+  const codexMode =
+    String(process.env.WEB_UI_CODEX_MODE || "spawn").trim().toLowerCase() ===
+    "external"
+      ? "external"
+      : "spawn";
+  const codexAppServerUrl =
+    process.env.WEB_UI_CODEX_APP_SERVER_URL || "ws://127.0.0.1:8790";
 
   return {
     appRoot,
@@ -259,6 +266,10 @@ export function getAppConfig() {
     allowShellCommands: toBoolean(process.env.WEB_UI_ALLOW_SHELL_COMMANDS, false),
     allowWebSearch: toBoolean(process.env.WEB_UI_ALLOW_WEB_SEARCH, true),
     approvalPolicy: process.env.WEB_UI_APPROVAL_POLICY || "never",
+    codexMode,
+    codexAppServerUrl,
+    codexAppServerTransport:
+      codexMode === "external" ? "ws" : "stdio",
     platform,
     consoleLogLevel: toConsoleLevel(process.env.WEB_UI_CONSOLE_LOG_LEVEL),
     authMode,

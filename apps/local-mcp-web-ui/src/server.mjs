@@ -831,6 +831,9 @@ export async function startWebUiServer() {
     allowShellCommands: config.allowShellCommands,
     allowWebSearch: config.allowWebSearch,
     approvalPolicy: config.approvalPolicy,
+    codexMode: config.codexMode,
+    codexAppServerUrl:
+      config.codexMode === "external" ? config.codexAppServerUrl : null,
   });
   const store = new ChatKitStore({
     filePath: config.storePath,
@@ -851,6 +854,8 @@ export async function startWebUiServer() {
 
   const codexClient = new CodexAppServerClient({
     launcher: config.launcher,
+    mode: config.codexMode,
+    appServerUrl: config.codexAppServerUrl,
     cwd: config.repoRoot,
     logger,
     allowShellCommands: config.allowShellCommands,
@@ -896,6 +901,9 @@ export async function startWebUiServer() {
           allow_shell_commands: config.allowShellCommands,
           allow_web_search: config.allowWebSearch,
           approval_policy: config.approvalPolicy,
+          codex_mode: config.codexMode,
+          codex_app_server_url:
+            config.codexMode === "external" ? config.codexAppServerUrl : null,
         });
         return;
       }
@@ -982,6 +990,9 @@ export async function startWebUiServer() {
           allow_shell_commands: config.allowShellCommands,
           allow_web_search: config.allowWebSearch,
           approval_policy: config.approvalPolicy,
+          codex_mode: config.codexMode,
+          codex_app_server_url:
+            config.codexMode === "external" ? config.codexAppServerUrl : null,
           chatkit_domain_key: chatkitDomainKey,
           chatkit_domain_host: requestHost || null,
           authenticated: auth.isAuthenticated(request),
