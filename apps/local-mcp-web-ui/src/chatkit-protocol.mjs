@@ -119,7 +119,7 @@ export function toCodexUserInput(chatkitInput, options = {}) {
   ];
 }
 
-export function createUserMessageItem({ threadId, input, createdAt }) {
+export function createUserMessageItem({ threadId, input, createdAt, metadata = null }) {
   return {
     id: `message_${crypto.randomUUID()}`,
     thread_id: threadId,
@@ -129,10 +129,11 @@ export function createUserMessageItem({ threadId, input, createdAt }) {
     attachments: [],
     quoted_text: input.quoted_text,
     inference_options: input.inference_options,
+    ...(metadata ? { metadata } : {}),
   };
 }
 
-export function createAssistantMessageItem({ threadId, itemId, text, createdAt }) {
+export function createAssistantMessageItem({ threadId, itemId, text, createdAt, metadata = null }) {
   return {
     id: itemId,
     thread_id: threadId,
@@ -145,16 +146,18 @@ export function createAssistantMessageItem({ threadId, itemId, text, createdAt }
         annotations: [],
       },
     ],
+    ...(metadata ? { metadata } : {}),
   };
 }
 
-export function createPendingAssistantMessageItem({ threadId, itemId, createdAt }) {
+export function createPendingAssistantMessageItem({ threadId, itemId, createdAt, metadata = null }) {
   return {
     id: itemId,
     thread_id: threadId,
     created_at: createdAt,
     type: "assistant_message",
     content: [],
+    ...(metadata ? { metadata } : {}),
   };
 }
 

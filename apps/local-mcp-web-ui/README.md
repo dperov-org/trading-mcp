@@ -83,6 +83,7 @@ It downloads the browser bundle, the embedded frame HTML, the first-layer frame 
   - MEXC
 - exposes a high-level MEXC review tool, `getMexcTradingReviewSnapshot`, so generic prompts like "analyze trades on MEXC" do not need to guess individual MEXC endpoints first
 - streams assistant output and basic tool progress into ChatKit
+- handles ChatKit retry requests (`threads.retry_after_item`) as SSE streams; the backend finds the preceding user message, trims later local UI items, and starts a replacement Codex turn instead of returning `400 unsupported_request_type`
 - loads the `ChatKit` runtime from local static assets under `public/vendor` and `public/assets/ck1`, so runtime bootstrap does not depend on `cdn.platform.openai.com`
 - accepts `ChatKit` domain verification through the local backend, so iframe bootstrap does not depend on either the browser or backend reaching `https://api.openai.com/v1/chatkit/domain_keys/verify`
 - supports two publication profiles on top of the same backend:
@@ -130,7 +131,10 @@ For debugging a hung browser session, start with `webui-latest.jsonl` and look f
 - `completion_timeout`
 - `app_server_exit_during_turn`
 - `stream_handler_failed`
+- `unsupported_request_type` with `threads.retry_after_item`, which means the deployed backend is older than the retry handler
 - repeated `stderr` or `warning` events
+
+`threads.retry_after_item` should return `200` with `text/event-stream`. For a missing or stale thread it returns a ChatKit stream `error` event, not an HTTP `400`.
 
 Console output is intentionally quieter by default:
 

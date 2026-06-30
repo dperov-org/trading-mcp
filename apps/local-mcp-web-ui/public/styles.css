@@ -81,10 +81,48 @@ code {
   box-shadow: var(--shadow);
 }
 
+.session-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(16, 64, 61, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.session-status__state {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.session-status__pill {
+  max-width: 100%;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(11, 122, 117, 0.08);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.session-status__pill[data-kind="sync"] {
+  background: rgba(11, 122, 117, 0.13);
+}
+
+.session-status__pill[data-kind="tokens"] {
+  background: rgba(20, 55, 53, 0.08);
+}
+
 #chatkit {
   display: block;
   width: 100%;
-  min-height: calc(100vh - 232px);
+  min-height: calc(100vh - 282px);
   border-radius: 20px;
   overflow: hidden;
 }
@@ -193,6 +231,6 @@ code {
   }
 
   #chatkit {
-    min-height: calc(100vh - 198px);
+    min-height: calc(100vh - 248px);
   }
 }

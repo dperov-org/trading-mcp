@@ -3,8 +3,14 @@ const CHATKIT_LOAD_TIMEOUT_MS = 15000;
 const CHATKIT_RENDER_TIMEOUT_MS = 6000;
 const defaultThreadStorageKey = "local-mcp-web-ui.thread";
 const chatkitElement = document.getElementById("chatkit");
+const sessionStatusElement = document.getElementById("session-status");
 let statusElement = null;
 let networkDiagnosticsInstalled = false;
+let currentThreadId = null;
+let externalReloadTimer = null;
+let currentThreadStorageKey = null;
+let lastLocalThreadChangeAt = 0;
+let lastLocalThreadChangeId = null;
 
 function ensureStatusElement() {
   if (statusElement?.isConnected) {
@@ -33,6 +39,123 @@ function hideStatus() {
   statusElement.hidden = true;
   statusElement.textContent = "";
   statusElement.dataset.variant = "";
+}
+
+function formatShortId(value) {
+  if (!value) {
+    return "none";
+  }
+  const text = String(value);
+  return text.length > 14 ? `${text.slice(0, 8)}...${text.slice(-4)}` : text;
+}
+
+function formatDateTime(value) {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+  return date.toLocaleString(undefined, {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function extractTokenTotal(tokenUsage) {
+  if (!tokenUsage || typeof tokenUsage !== "object") {
+    return null;
+  }
+  const direct = tokenUsage.total_tokens ?? tokenUsage.totalTokens;
+  if (Number.isFinite(Number(direct))) {
+    return Number(direct);
+  }
+  const nested = tokenUsage.total?.total_tokens ?? tokenUsage.total?.totalTokens;
+  if (Number.isFinite(Number(nested))) {
+    return Number(nested);
+  }
+  const input =
+    tokenUsage.input_tokens ??
+    tokenUsage.inputTokens ??
+    tokenUsage.total?.input_tokens ??
+    tokenUsage.total?.inputTokens;
+  const output =
+    tokenUsage.output_tokens ??
+    tokenUsage.outputTokens ??
+    tokenUsage.total?.output_tokens ??
+    tokenUsage.total?.outputTokens;
+  if (Number.isFinite(Number(input)) || Number.isFinite(Number(output))) {
+    return (Number(input) || 0) + (Number(output) || 0);
+  }
+  return null;
+}
+
+function renderCurrentSessionStatus(status) {
+  if (!sessionStatusElement) {
+    return;
+  }
+
+  const mode = status?.mode || "new";
+  const syncState = status?.sync_state || "unknown";
+  const title = status?.title || "No active thread";
+  const updatedAt = formatDateTime(status?.updated_at);
+  const tokenTotal = extractTokenTotal(status?.token_usage);
+  const fields = [
+    ["Mode", mode],
+    ["Sync", syncState, "sync"],
+    ["Codex", formatShortId(status?.codex_thread_id_short || status?.codex_thread_id)],
+    ["Web UI", formatShortId(status?.webui_thread_id_short || status?.webui_thread_id)],
+    status?.source ? ["Source", status.source] : null,
+    status?.cwd ? ["CWD", status.cwd] : null,
+    updatedAt ? ["Updated", updatedAt] : null,
+    tokenTotal !== null ? ["Tokens", tokenTotal.toLocaleString(), "tokens"] : null,
+  ].filter(Boolean);
+
+  sessionStatusElement.replaceChildren();
+  const state = document.createElement("span");
+  state.className = "session-status__state";
+  state.textContent = title;
+  sessionStatusElement.appendChild(state);
+
+  for (const [label, value, kind] of fields) {
+    const pill = document.createElement("span");
+    pill.className = "session-status__pill";
+    if (kind) {
+      pill.dataset.kind = kind;
+    }
+    pill.textContent = `${label}: ${value}`;
+    sessionStatusElement.appendChild(pill);
+  }
+}
+
+async function refreshCurrentSessionStatus(threadId = currentThreadId) {
+  const query = threadId ? `?thread_id=${encodeURIComponent(threadId)}` : "";
+  try {
+    const response = await fetch(`/api/current-session${query}`, {
+      headers: {
+        accept: "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`current-session failed with ${response.status}`);
+    }
+    const payload = await response.json();
+    renderCurrentSessionStatus(payload);
+  } catch (error) {
+    renderCurrentSessionStatus({
+      mode: threadId ? "browser" : "new",
+      webui_thread_id: threadId || null,
+      codex_thread_id: threadId || null,
+      title: threadId ? "Session status unavailable" : "No active thread",
+      sync_state: "error",
+    });
+    reportClientEvent("warn", "current_session_status_failed", {
+      message: error?.message || String(error),
+    });
+  }
 }
 
 async function reportClientEvent(level, event, data = {}) {
@@ -309,6 +432,57 @@ function buildOptions(initialThread, chatkitDomainKey) {
   };
 }
 
+function installExternalChangeEvents(threadStorageKey) {
+  if (typeof EventSource === "undefined") {
+    return;
+  }
+
+  const events = new EventSource("/events");
+  events.addEventListener("message", (event) => {
+    let payload;
+    try {
+      payload = JSON.parse(event.data);
+    } catch {
+      return;
+    }
+
+    if (!payload || payload.type === "connected") {
+      return;
+    }
+
+    const affectedThreadId = payload.thread_id || null;
+    const activeThreadId =
+      currentThreadId || window.localStorage.getItem(threadStorageKey);
+    if (affectedThreadId && activeThreadId && affectedThreadId !== activeThreadId) {
+      return;
+    }
+
+    reportClientEvent("info", "external_change_event", payload);
+    refreshCurrentSessionStatus(activeThreadId);
+    if (
+      affectedThreadId &&
+      affectedThreadId === lastLocalThreadChangeId &&
+      Date.now() - lastLocalThreadChangeAt < 30000
+    ) {
+      reportClientEvent("info", "external_change_reload_suppressed", {
+        thread_id: affectedThreadId,
+        reason: "recent_local_thread_change",
+      });
+      return;
+    }
+
+    showStatus("Conversation updated externally. Refreshing...", "info");
+    window.clearTimeout(externalReloadTimer);
+    externalReloadTimer = window.setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  });
+
+  events.addEventListener("error", () => {
+    reportClientEvent("warn", "external_change_events_error", {});
+  });
+}
+
 function waitForChatKitDefinition(timeoutMs) {
   return Promise.race([
     customElements.whenDefined("openai-chatkit"),
@@ -433,7 +607,10 @@ async function main() {
   });
 
   const threadStorageKey = makeThreadStorageKey(sessionState.sessionId);
+  currentThreadStorageKey = threadStorageKey;
   const initialThread = getInitialThread(threadStorageKey);
+  currentThreadId = initialThread;
+  await refreshCurrentSessionStatus(initialThread);
   chatkitElement.setOptions(
     buildOptions(initialThread, sessionState.chatkitDomainKey),
   );
@@ -446,6 +623,9 @@ async function main() {
 
   chatkitElement.addEventListener("chatkit.thread.change", (event) => {
     const threadId = event.detail.threadId;
+    currentThreadId = threadId || null;
+    lastLocalThreadChangeAt = Date.now();
+    lastLocalThreadChangeId = threadId || null;
     if (threadId) {
       window.localStorage.setItem(threadStorageKey, threadId);
     } else {
@@ -456,7 +636,10 @@ async function main() {
       threadId,
       threadStorageKey,
     });
+    refreshCurrentSessionStatus(threadId || null);
   });
+
+  installExternalChangeEvents(threadStorageKey);
 
   chatkitElement.addEventListener("chatkit.error", (event) => {
     const message = event.detail?.error?.message || String(event.detail?.error);

@@ -268,6 +268,15 @@ export function getAppConfig() {
     approvalPolicy: process.env.WEB_UI_APPROVAL_POLICY || "never",
     codexMode,
     codexAppServerUrl,
+    externalChangeSync: toBoolean(
+      process.env.WEB_UI_EXTERNAL_CHANGE_SYNC,
+      codexMode === "external",
+    ),
+    reconcileOnStart: toBoolean(
+      process.env.WEB_UI_EXTERNAL_CHANGE_SYNC_RECONCILE_ON_START,
+      codexMode === "external",
+    ),
+    browserEvents: toBoolean(process.env.WEB_UI_BROWSER_EVENTS, true),
     codexAppServerTransport:
       codexMode === "external" ? "ws" : "stdio",
     platform,

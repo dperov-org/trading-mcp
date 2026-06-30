@@ -18,7 +18,9 @@
     "tailscale:funnel:status": "tailscale funnel status --json",
     "tailscale:funnel:reset": "tailscale funnel reset",
     "smoke": "node src/smoke-webui.mjs",
-    "smoke:app-server": "node src/smoke-app-server.mjs"
+    "smoke:app-server": "node src/smoke-app-server.mjs",
+    "smoke:external-sync": "node src/smoke-external-change-sync.mjs",
+    "smoke:reconcile": "node src/smoke-thread-reconcile.mjs"
   },
   "engines": {
     "node": ">=20.6"

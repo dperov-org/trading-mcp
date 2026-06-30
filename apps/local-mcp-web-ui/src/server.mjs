@@ -8,7 +8,11 @@ import { SessionAuth } from "./auth.mjs";
 import { ChatKitStore } from "./chatkit-store.mjs";
 import { getAppConfig } from "./config.mjs";
 import { CodexAppServerClient } from "./codex-app-server-client.mjs";
+import { codexMetadata } from "./codex-event-normalizer.mjs";
+import { CodexThreadReconciler } from "./codex-thread-reconciler.mjs";
+import { ExternalChangeSync } from "./external-change-sync.mjs";
 import { WebUiLogger } from "./logger.mjs";
+import { WebUiEventHub } from "./webui-events.mjs";
 import {
   createAssistantMessageItem,
   createPendingAssistantMessageItem,
@@ -86,6 +90,8 @@ function createThreadRecord({ threadId, title, model, sessionId }) {
       model,
       session_id: sessionId,
       updated_at: createdAt,
+      source: "webui",
+      codex_thread_id: threadId,
     },
     items: [],
   };
@@ -137,6 +143,40 @@ function isMissingCodexThreadError(error) {
     typeof error?.message === "string" &&
     error.message.toLowerCase().includes("thread not found")
   );
+}
+
+function shortId(value) {
+  return typeof value === "string" && value.length > 12
+    ? `${value.slice(0, 8)}...${value.slice(-4)}`
+    : value || null;
+}
+
+function makeCurrentSessionStatus({ thread = null, selectedThreadId = null, externalSync }) {
+  const metadata = thread?.metadata || {};
+  const codexThreadId = metadata.codex_thread_id || thread?.id || selectedThreadId || null;
+  const tokenUsage = metadata.token_usage || null;
+  const syncStatus = externalSync.status();
+  const syncState = syncStatus.last_error
+    ? "error"
+    : syncStatus.started
+      ? "live"
+      : syncStatus.enabled
+        ? "offline"
+        : "disabled";
+
+  return {
+    mode: thread ? metadata.source || "browser" : "new",
+    webui_thread_id: thread?.id || selectedThreadId || null,
+    webui_thread_id_short: shortId(thread?.id || selectedThreadId || null),
+    codex_thread_id: codexThreadId,
+    codex_thread_id_short: shortId(codexThreadId),
+    title: thread?.title || null,
+    source: metadata.source || null,
+    cwd: metadata.cwd || null,
+    updated_at: metadata.updated_at || thread?.created_at || null,
+    sync_state: syncState,
+    token_usage: tokenUsage,
+  };
 }
 
 async function serveStaticFile(config, requestPath, response) {
@@ -196,6 +236,7 @@ async function streamCodexTurn({
   requestId,
   allowShellCommands,
   allowWebSearch,
+  activeWebUiTurns,
 }) {
   let activeTurnId = null;
   let settled = false;
@@ -284,6 +325,17 @@ async function streamCodexTurn({
       itemId: state.assistantItemId,
       text: finalText,
       createdAt: state.createdAt,
+      metadata:
+        codexItem?.id && activeTurnId
+          ? codexMetadata({
+              threadId,
+              turnId: activeTurnId,
+              itemId: codexItem.id,
+              kind: "agentMessage",
+              source: "webui",
+              status: "completed",
+            })
+          : null,
     });
 
     await store.appendItem(threadId, assistantItem);
@@ -452,6 +504,10 @@ async function streamCodexTurn({
       model,
     });
     activeTurnId = turnResponse?.turn?.id || activeTurnId;
+    if (activeTurnId) {
+      activeWebUiTurns?.add(activeTurnId);
+      setTimeout(() => activeWebUiTurns?.delete(activeTurnId), 300_000).unref?.();
+    }
     logger.info("turn", "turn_start_response", {
       requestId,
       threadId,
@@ -581,7 +637,14 @@ async function streamCodexTurn({
   }
 }
 
-function createChatKitApi({ config, store, codexClient, logger }) {
+function createChatKitApi({
+  config,
+  store,
+  codexClient,
+  logger,
+  activeWebUiTurns,
+  activeWebUiThreads,
+}) {
   return async function handleChatKitRequest(body, response) {
     const requestId = crypto.randomUUID();
     const requestType = body?.type || "unknown";
@@ -689,6 +752,103 @@ function createChatKitApi({ config, store, codexClient, logger }) {
         sendJson(response, 200, {});
         return;
 
+      case "threads.retry_after_item": {
+        response.writeHead(200, {
+          "content-type": "text/event-stream; charset=utf-8",
+          "cache-control": "no-cache, no-transform",
+          connection: "keep-alive",
+        });
+
+        try {
+          streamEvent(response, streamOptionsEvent());
+
+          const threadId = body?.params?.thread_id;
+          const itemId = body?.params?.item_id;
+          const context = await store.getItemContext(threadId, itemId);
+          const retrySource = context?.previousUserMessage;
+
+          logger.info("chatkit", "retry_after_item_requested", {
+            requestId,
+            threadId,
+            itemId,
+            foundItem: Boolean(context?.item),
+            retrySourceItemId: retrySource?.id || null,
+          });
+
+          if (!context) {
+            logger.warn("chatkit", "thread_not_found", {
+              requestId,
+              threadId,
+              operation: "threads.retry_after_item",
+            });
+            streamEvent(response, errorEvent("Thread not found", false));
+            response.end();
+            return;
+          }
+
+          if (!retrySource) {
+            logger.warn("chatkit", "retry_source_not_found", {
+              requestId,
+              threadId,
+              itemId,
+            });
+            streamEvent(response, errorEvent("No user message found to retry", false));
+            response.end();
+            return;
+          }
+
+          if (context.item?.id) {
+            const truncated = await store.truncateAfterItem(threadId, context.item.id);
+            logger.info("chatkit", "thread_truncated_for_retry", {
+              requestId,
+              threadId,
+              itemId: context.item.id,
+              removedCount: truncated?.removed?.length || 0,
+            });
+          }
+
+          const input = normalizeChatKitInput(
+            {
+              content: retrySource.content,
+              attachments: retrySource.attachments,
+              quoted_text: retrySource.quoted_text,
+              inference_options: retrySource.inference_options,
+            },
+            config.model,
+          );
+
+          await streamCodexTurn({
+            codexClient,
+            store,
+            threadId,
+            input,
+            model: input.inference_options.model,
+            response,
+            logger,
+            requestId,
+            allowShellCommands: config.allowShellCommands,
+            allowWebSearch: config.allowWebSearch,
+            activeWebUiTurns,
+          });
+
+          logger.info("chatkit", "retry_stream_finished", {
+            requestId,
+            threadId,
+            itemId,
+          });
+        } catch (error) {
+          logger.error("chatkit", "retry_stream_handler_failed", {
+            requestId,
+            type: requestType,
+            error,
+          });
+          streamEvent(response, errorEvent(error.message, true));
+        }
+
+        response.end();
+        return;
+      }
+
       case "threads.create":
       case "threads.add_user_message": {
         response.writeHead(200, {
@@ -723,6 +883,10 @@ function createChatKitApi({ config, store, codexClient, logger }) {
             });
 
             resolvedThreadId = threadStart.thread.id;
+            activeWebUiThreads?.add(resolvedThreadId);
+            setTimeout(() => {
+              activeWebUiThreads?.delete(resolvedThreadId);
+            }, 300_000).unref?.();
             threadRecord = createThreadRecord({
               threadId: resolvedThreadId,
               title: makeThreadTitle(input),
@@ -772,18 +936,19 @@ function createChatKitApi({ config, store, codexClient, logger }) {
             item: userItem,
           });
 
-            await streamCodexTurn({
-              codexClient,
-              store,
-              threadId: resolvedThreadId,
-              input,
-              model: input.inference_options.model,
-              response,
-              logger,
-              requestId,
-              allowShellCommands: config.allowShellCommands,
-              allowWebSearch: config.allowWebSearch,
-            });
+          await streamCodexTurn({
+            codexClient,
+            store,
+            threadId: resolvedThreadId,
+            input,
+            model: input.inference_options.model,
+            response,
+            logger,
+            requestId,
+            allowShellCommands: config.allowShellCommands,
+            allowWebSearch: config.allowWebSearch,
+            activeWebUiTurns,
+          });
           logger.info("chatkit", "stream_finished", {
             requestId,
             threadId: resolvedThreadId,
@@ -834,6 +999,9 @@ export async function startWebUiServer() {
     codexMode: config.codexMode,
     codexAppServerUrl:
       config.codexMode === "external" ? config.codexAppServerUrl : null,
+    externalChangeSync: config.externalChangeSync,
+    browserEvents: config.browserEvents,
+    reconcileOnStart: config.reconcileOnStart,
   });
   const store = new ChatKitStore({
     filePath: config.storePath,
@@ -861,12 +1029,50 @@ export async function startWebUiServer() {
     allowShellCommands: config.allowShellCommands,
   });
   await codexClient.start();
+  const eventHub = new WebUiEventHub();
+  const activeWebUiTurns = new Set();
+  const activeWebUiThreads = new Set();
+  const externalChangeSync = new ExternalChangeSync({
+    codexClient,
+    store,
+    eventHub,
+    logger,
+    model: config.model,
+    enabled: config.externalChangeSync,
+    ignoredTurnIds: activeWebUiTurns,
+    ignoredThreadIds: activeWebUiThreads,
+  });
+  externalChangeSync.start();
+  const reconciler = new CodexThreadReconciler({
+    codexClient,
+    store,
+    logger,
+    model: config.model,
+    repoRoot: config.repoRoot,
+  });
+  if (config.reconcileOnStart) {
+    setImmediate(async () => {
+      try {
+        const threadIds = await store.listKnownCodexThreadIds({ limit: 20 });
+        for (const threadId of threadIds) {
+          await reconciler.reconcileThread(threadId);
+        }
+        logger.info("reconciler", "startup_reconcile_completed", {
+          threadCount: threadIds.length,
+        });
+      } catch (error) {
+        logger.warn("reconciler", "startup_reconcile_failed", { error });
+      }
+    });
+  }
 
   const handleChatKitRequest = createChatKitApi({
     config,
     store,
     codexClient,
     logger,
+    activeWebUiTurns,
+    activeWebUiThreads,
   });
 
   const server = http.createServer(async (request, response) => {
@@ -904,6 +1110,8 @@ export async function startWebUiServer() {
           codex_mode: config.codexMode,
           codex_app_server_url:
             config.codexMode === "external" ? config.codexAppServerUrl : null,
+          external_sync: externalChangeSync.status(),
+          reconcile_on_start: config.reconcileOnStart,
         });
         return;
       }
@@ -993,6 +1201,8 @@ export async function startWebUiServer() {
           codex_mode: config.codexMode,
           codex_app_server_url:
             config.codexMode === "external" ? config.codexAppServerUrl : null,
+          external_sync: externalChangeSync.status(),
+          reconcile_on_start: config.reconcileOnStart,
           chatkit_domain_key: chatkitDomainKey,
           chatkit_domain_host: requestHost || null,
           authenticated: auth.isAuthenticated(request),
@@ -1005,6 +1215,69 @@ export async function startWebUiServer() {
           httpRequestId,
           requestHost,
           chatkitDomainKey,
+        });
+        return;
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/sessions") {
+        const threads = await reconciler.listThreads({ limit: 30 });
+        sendJson(response, 200, {
+          data: threads.map((thread) => ({
+            thread_id: thread.id,
+            title: thread.name || thread.title || null,
+            cwd: thread.cwd || null,
+            updated_at: thread.updatedAt || thread.updated_at || null,
+            created_at: thread.createdAt || thread.created_at || null,
+            source: thread.source || thread.sourceKind || null,
+            status: thread.status || null,
+          })),
+        });
+        return;
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/current-session") {
+        const selectedThreadId = String(requestUrl.searchParams.get("thread_id") || "").trim();
+        const thread = selectedThreadId ? await store.getThread(selectedThreadId) : null;
+        sendJson(
+          response,
+          200,
+          makeCurrentSessionStatus({
+            thread,
+            selectedThreadId: selectedThreadId || null,
+            externalSync: externalChangeSync,
+          }),
+        );
+        return;
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/session/select") {
+        const body = await readJsonBody(request);
+        const threadId = String(body?.thread_id || body?.threadId || "").trim();
+        if (!threadId) {
+          sendJson(response, 400, { ok: false, error: "thread_id is required" });
+          return;
+        }
+        const result = await reconciler.reconcileThread(threadId);
+        eventHub.broadcast({
+          type: "thread.updated",
+          thread_id: result.threadId,
+        });
+        sendJson(response, 200, {
+          ok: true,
+          thread_id: result.threadId,
+          imported_item_count: result.importedItemCount,
+        });
+        return;
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/events") {
+        if (!config.browserEvents) {
+          sendJson(response, 404, { error: "Browser events are disabled" });
+          return;
+        }
+        eventHub.addClient(response);
+        logger.info("events", "client_connected", {
+          httpRequestId,
         });
         return;
       }
@@ -1095,6 +1368,8 @@ export async function startWebUiServer() {
 
   const close = async () => {
     logger.info("server", "shutdown_started", {});
+    externalChangeSync.stop();
+    eventHub.close();
     await codexClient.stop();
     await new Promise((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));

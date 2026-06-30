@@ -5,6 +5,27 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function nowIsoString() {
+  return new Date().toISOString();
+}
+
+function codexItemKey(metadata = {}) {
+  const threadId = metadata.codex_thread_id;
+  const turnId = metadata.codex_turn_id;
+  const itemId = metadata.codex_item_id;
+  const kind = metadata.codex_item_kind || "item";
+
+  if (!threadId || !turnId || !itemId) {
+    return null;
+  }
+
+  return `codex:${threadId}:${turnId}:${itemId}:${kind}`;
+}
+
+function itemMatchesCodexKey(item, key) {
+  return key && codexItemKey(item?.metadata) === key;
+}
+
 function emptyPage() {
   return {
     data: [],
@@ -104,6 +125,11 @@ export class ChatKitStore {
 
   async createThread(record) {
     return this.#mutate(async (state) => {
+      const existing = state.threads.find((thread) => thread.id === record.id);
+      if (existing) {
+        return makeThreadResponse(existing, true);
+      }
+
       state.threads.unshift({
         ...clone(record),
         items: clone(record.items || []),
@@ -134,6 +160,15 @@ export class ChatKitStore {
     return page;
   }
 
+  async listKnownCodexThreadIds({ limit = 20 } = {}) {
+    const state = await this.#readState();
+    return state.threads
+      .filter((thread) => this.#isVisibleThread(thread))
+      .map((thread) => thread.metadata?.codex_thread_id || thread.id)
+      .filter(Boolean)
+      .slice(0, limit);
+  }
+
   async getThread(threadId) {
     const state = await this.#readState();
     const thread = state.threads.find(
@@ -159,6 +194,63 @@ export class ChatKitStore {
     return makePage(items, limit, after);
   }
 
+  async getItemContext(threadId, itemId) {
+    const state = await this.#readState();
+    const thread = state.threads.find(
+      (entry) => entry.id === threadId && this.#isVisibleThread(entry),
+    );
+    if (!thread) {
+      return null;
+    }
+
+    const itemIndex = thread.items.findIndex((entry) => entry.id === itemId);
+    if (itemIndex < 0) {
+      return {
+        thread: makeThreadResponse(thread, true),
+        item: null,
+        itemIndex: -1,
+        previousUserMessage: null,
+      };
+    }
+
+    const item = thread.items[itemIndex];
+    const previousUserMessage = [...thread.items.slice(0, itemIndex + 1)]
+      .reverse()
+      .find((entry) => entry.type === "user_message") || null;
+
+    return {
+      thread: makeThreadResponse(thread, true),
+      item: clone(item),
+      itemIndex,
+      previousUserMessage: previousUserMessage ? clone(previousUserMessage) : null,
+    };
+  }
+
+  async truncateAfterItem(threadId, itemId) {
+    return this.#mutate(async (state) => {
+      const thread = state.threads.find(
+        (entry) => entry.id === threadId && this.#isVisibleThread(entry),
+      );
+      if (!thread) {
+        return null;
+      }
+
+      const itemIndex = thread.items.findIndex((entry) => entry.id === itemId);
+      if (itemIndex < 0) {
+        return null;
+      }
+
+      const removed = thread.items.splice(itemIndex + 1);
+      thread.metadata.updated_at =
+        thread.items[itemIndex]?.created_at || nowIsoString();
+
+      return {
+        thread: makeThreadResponse(thread, true),
+        removed: clone(removed),
+      };
+    });
+  }
+
   async appendItem(threadId, item) {
     return this.#mutate(async (state) => {
       const thread = state.threads.find(
@@ -171,6 +263,170 @@ export class ChatKitStore {
       thread.items.push(clone(item));
       thread.metadata.updated_at = item.created_at;
       return clone(item);
+    });
+  }
+
+  async appendItemIfMissing(threadId, item) {
+    return this.#mutate(async (state) => {
+      const thread = state.threads.find(
+        (entry) => entry.id === threadId && this.#isVisibleThread(entry),
+      );
+      if (!thread) {
+        return null;
+      }
+
+      const key = codexItemKey(item?.metadata);
+      const existing = thread.items.find(
+        (entry) => entry.id === item.id || itemMatchesCodexKey(entry, key),
+      );
+      if (existing) {
+        return clone(existing);
+      }
+
+      thread.items.push(clone(item));
+      thread.metadata.updated_at = item.created_at || nowIsoString();
+      return clone(item);
+    });
+  }
+
+  async upsertCodexThread({
+    threadId,
+    title = null,
+    model = null,
+    createdAt = null,
+    updatedAt = null,
+    source = "codex_external",
+    tokenUsage = null,
+    cwd = null,
+  }) {
+    return this.#mutate(async (state) => {
+      const existing = state.threads.find((entry) => entry.id === threadId);
+      if (existing) {
+        existing.metadata.session_id ||= this.sessionId;
+        existing.metadata.codex_thread_id ||= threadId;
+        existing.metadata.updated_at = updatedAt || existing.metadata.updated_at || nowIsoString();
+        existing.metadata.source ||= source;
+        if (model) {
+          existing.metadata.model = model;
+        }
+        if (cwd) {
+          existing.metadata.cwd = cwd;
+        }
+        if (tokenUsage) {
+          existing.metadata.token_usage = tokenUsage;
+        }
+        if (title && (!existing.title || existing.title === "New thread")) {
+          existing.title = title;
+        }
+        return makeThreadResponse(existing, true);
+      }
+
+      const timestamp = createdAt || nowIsoString();
+      const updateTimestamp = updatedAt || timestamp;
+      const record = {
+        id: threadId,
+        title: title || "External Codex thread",
+        created_at: timestamp,
+        status: { type: "active" },
+        metadata: {
+          model,
+          session_id: this.sessionId,
+          updated_at: updateTimestamp,
+          source,
+          codex_thread_id: threadId,
+          ...(cwd ? { cwd } : {}),
+          ...(tokenUsage ? { token_usage: tokenUsage } : {}),
+        },
+        items: [],
+      };
+
+      state.threads.unshift(record);
+      return makeThreadResponse(record, true);
+    });
+  }
+
+  async upsertAssistantDraft(threadId, item, textDelta = "") {
+    return this.#mutate(async (state) => {
+      const thread = state.threads.find(
+        (entry) => entry.id === threadId && this.#isVisibleThread(entry),
+      );
+      if (!thread) {
+        return null;
+      }
+
+      const key = codexItemKey(item?.metadata);
+      let existing = thread.items.find(
+        (entry) => entry.id === item.id || itemMatchesCodexKey(entry, key),
+      );
+
+      if (!existing) {
+        existing = clone(item);
+        if (!Array.isArray(existing.content) || existing.content.length === 0) {
+          existing.content = [
+            {
+              type: "output_text",
+              text: "",
+              annotations: [],
+            },
+          ];
+        }
+        thread.items.push(existing);
+      }
+
+      const content = existing.content?.[0];
+      if (content && typeof content.text === "string" && textDelta) {
+        content.text += textDelta;
+      }
+      existing.metadata ||= {};
+      existing.metadata.updated_at = nowIsoString();
+      existing.metadata.status = "in_progress";
+      thread.metadata.updated_at = existing.metadata.updated_at;
+      return clone(existing);
+    });
+  }
+
+  async finalizeAssistantDraft(threadId, item, finalText = "") {
+    return this.#mutate(async (state) => {
+      const thread = state.threads.find(
+        (entry) => entry.id === threadId && this.#isVisibleThread(entry),
+      );
+      if (!thread) {
+        return null;
+      }
+
+      const key = codexItemKey(item?.metadata);
+      let existing = thread.items.find(
+        (entry) => entry.id === item.id || itemMatchesCodexKey(entry, key),
+      );
+
+      if (!existing) {
+        existing = clone(item);
+        thread.items.push(existing);
+      }
+
+      if (finalText) {
+        existing.content = [
+          {
+            type: "output_text",
+            text: finalText,
+            annotations: [],
+          },
+        ];
+      } else if (!Array.isArray(existing.content) || existing.content.length === 0) {
+        existing.content = [
+          {
+            type: "output_text",
+            text: "",
+            annotations: [],
+          },
+        ];
+      }
+
+      existing.metadata ||= {};
+      existing.metadata.updated_at = nowIsoString();
+      existing.metadata.status = "completed";
+      thread.metadata.updated_at = existing.created_at || existing.metadata.updated_at;
+      return clone(existing);
     });
   }
 
