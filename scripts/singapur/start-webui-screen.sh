@@ -15,6 +15,9 @@ screen -dmS "$screen_name" bash -lc "
   export WEB_UI_PORT='$webui_port'
   export WEB_UI_CODEX_MODE=external
   export WEB_UI_CODEX_APP_SERVER_URL='$codex_ws_url'
+  export WEB_UI_LOG_MAX_BYTES='${WEB_UI_LOG_MAX_BYTES:-10485760}'
+  export WEB_UI_LOG_RETENTION_DAYS='${WEB_UI_LOG_RETENTION_DAYS:-30}'
+  export WEB_UI_LOG_MAX_FILES='${WEB_UI_LOG_MAX_FILES:-100}'
   exec npm run webui:funnel
 "
 

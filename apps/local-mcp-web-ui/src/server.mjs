@@ -591,6 +591,25 @@ async function streamCodexTurn({
       (item) => item.type === "agentMessage" && typeof item.text === "string",
     );
 
+    if (completedTurn?.status === "failed" || completedTurn?.error) {
+      const rawMessage = String(
+        completedTurn?.error?.message || "Codex could not complete this request.",
+      );
+      const message = /responses\/compact|remote compact task/i.test(rawMessage)
+        ? "This conversation is too large to continue because Codex context compaction failed. Start a new chat and resend your request."
+        : rawMessage;
+
+      logger.error("turn", "completed_with_error", {
+        requestId,
+        threadId,
+        turnId: activeTurnId,
+        status: completedTurn?.status || null,
+        error: completedTurn?.error || null,
+      });
+      streamEvent(response, errorEvent(message, true));
+      return;
+    }
+
     for (const item of fallbackMessages) {
       const existingState = assistantItems.get(item.id);
       if (!existingState || !existingState.done) {
@@ -984,6 +1003,9 @@ export async function startWebUiServer() {
     logDir: config.logDir,
     sessionId: config.sessionId,
     consoleLevel: config.consoleLogLevel,
+    maxFileBytes: config.logMaxBytes,
+    retentionDays: config.logRetentionDays,
+    maxFiles: config.logMaxFiles,
   });
   await logger.initialize();
   logger.info("server", "startup", {
@@ -992,6 +1014,9 @@ export async function startWebUiServer() {
     port: config.port,
     platform: config.platform,
     logDir: config.logDir,
+    logMaxBytes: config.logMaxBytes,
+    logRetentionDays: config.logRetentionDays,
+    logMaxFiles: config.logMaxFiles,
     storePath: config.storePath,
     allowShellCommands: config.allowShellCommands,
     allowWebSearch: config.allowWebSearch,

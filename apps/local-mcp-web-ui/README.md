@@ -227,6 +227,9 @@ WEB_UI_SESSION_PASSWORD=<shared password>
 WEB_UI_SESSION_SECRET=<optional cookie signing secret>
 WEB_UI_SESSION_TTL_HOURS=168
 WEB_UI_SESSION_COOKIE_NAME=local_mcp_web_ui_session
+WEB_UI_LOG_MAX_BYTES=10485760
+WEB_UI_LOG_RETENTION_DAYS=30
+WEB_UI_LOG_MAX_FILES=100
 WEB_UI_ALLOW_SHELL_COMMANDS=0
 WEB_UI_ALLOW_WEB_SEARCH=1
 WEB_UI_APPROVAL_POLICY=untrusted
@@ -239,6 +242,7 @@ Notes:
 
 - `WEB_UI_AUTH_MODE` is selected automatically by the Tailscale launcher scripts
 - `WEB_UI_SESSION_SECRET` is optional; if omitted, a deterministic local secret is derived from repo path and password
+- Web UI JSONL files roll over daily or when they reach `WEB_UI_LOG_MAX_BYTES`; files older than `WEB_UI_LOG_RETENTION_DAYS` and excess retained files are removed on startup and rotation
 - `WEB_UI_ALLOW_SHELL_COMMANDS` defaults to `0`; leave it disabled if you want the browser agent to stay on MCP/tools and avoid local shell-script fallbacks
 - `WEB_UI_ALLOW_WEB_SEARCH` defaults to `1`; this keeps public web search available for current external context without enabling shell execution
 - `WEB_UI_APPROVAL_POLICY` defaults to `never`; shell blocking is enforced by prompt routing plus runtime interruption of any `commandExecution` item

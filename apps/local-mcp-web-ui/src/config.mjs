@@ -246,6 +246,9 @@ export function getAppConfig() {
     publicDir: path.join(appRoot, "public"),
     artifactsDir: path.join(appRoot, "artifacts"),
     logDir: path.join(appRoot, "artifacts", "logs"),
+    logMaxBytes: toInt(process.env.WEB_UI_LOG_MAX_BYTES, 10 * 1024 * 1024),
+    logRetentionDays: toInt(process.env.WEB_UI_LOG_RETENTION_DAYS, 30),
+    logMaxFiles: toInt(process.env.WEB_UI_LOG_MAX_FILES, 100),
     storePath:
       process.env.WEB_UI_STORE_PATH ||
       path.join(appRoot, ".data", "store.json"),

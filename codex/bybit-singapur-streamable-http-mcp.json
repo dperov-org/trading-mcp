@@ -1,0 +1,14 @@
+{
+  "servers": [
+    {
+      "name": "bybit-singapur-mcp",
+      "enabled": true,
+      "transport": "streamable_http",
+      "url": "http://singapur.tail3e0cf.ts.net:8791/mcp/bybit",
+      "headers": {},
+      "timeout_seconds": 30,
+      "client_session_timeout_seconds": 10,
+      "cache_tools_list": true
+    }
+  ]
+}

@@ -81,6 +81,7 @@
     "singapur:codex": "bash scripts/singapur/start-codex-screen.sh",
     "singapur:webui": "bash scripts/singapur/start-webui-screen.sh",
     "singapur:publish-tailnet": "bash scripts/singapur/publish-tailnet-services.sh",
+    "singapur:export-config": "bash scripts/singapur/export-runtime-config.sh",
     "singapur:status": "bash scripts/singapur/status.sh",
     "singapur:stop": "bash scripts/singapur/stop-all.sh",
     "typecheck": "tsc --noEmit",
