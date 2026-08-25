@@ -125,12 +125,22 @@ These logs include:
 - turn start/completion, timeout, and partial assistant streaming progress
 - approval decisions for shell/file execution requests from `codex app-server`
 
+For every ChatKit turn, JSONL additionally records a correlated trace with
+`httpRequestId`, `requestId`, `threadId`, and `turnId`: the full ChatKit body,
+`thread/start` and `turn/start` request/responses, accepted/ignored Codex
+notifications, every SSE event written to the browser, 15-second waiting
+heartbeats, and HTTP finish/close/abort events. This is intentionally verbose:
+the files can contain prompt text, model output, tool arguments, and other
+sensitive data. Treat the log directory as sensitive operational data.
+
 For debugging a hung browser session, start with `webui-latest.jsonl` and look for:
 
 - `request_timeout`
 - `completion_timeout`
 - `app_server_exit_during_turn`
 - `stream_handler_failed`
+- `completion_still_waiting` (shows a turn accepted by Codex but not completed yet)
+- `sse.event_written` paired with `http.response_finished` or `http.request_aborted`
 - `unsupported_request_type` with `threads.retry_after_item`, which means the deployed backend is older than the retry handler
 - repeated `stderr` or `warning` events
 

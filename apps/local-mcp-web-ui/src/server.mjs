@@ -70,8 +70,18 @@ async function readRawBody(request) {
   return Buffer.concat(chunks);
 }
 
-function streamEvent(response, payload) {
-  response.write(`data: ${JSON.stringify(payload)}\n\n`);
+function streamEvent(response, payload, { logger = null, context = {} } = {}) {
+  const serialized = `data: ${JSON.stringify(payload)}\n\n`;
+  const writeAccepted = response.write(serialized);
+  logger?.debug("sse", "event_written", {
+    ...context,
+    payload,
+    byteLength: Buffer.byteLength(serialized, "utf8"),
+    writeAccepted,
+    writableEnded: response.writableEnded,
+    destroyed: response.destroyed,
+  });
+  return writeAccepted;
 }
 
 async function readJsonBody(request) {
@@ -233,6 +243,7 @@ async function streamCodexTurn({
   model,
   response,
   logger,
+  httpRequestId,
   requestId,
   allowShellCommands,
   allowWebSearch,
@@ -243,6 +254,16 @@ async function streamCodexTurn({
   let finishTurn;
   let shellExecutionBlocked = false;
   const assistantItems = new Map();
+  const streamContext = () => ({
+    httpRequestId,
+    requestId,
+    threadId,
+    turnId: activeTurnId,
+  });
+  const emit = (payload) => streamEvent(response, payload, {
+    logger,
+    context: streamContext(),
+  });
 
   const cleanup = () => {
     codexClient.off("notification", onNotification);
@@ -274,7 +295,7 @@ async function streamCodexTurn({
       codexItemId,
       assistantItemId: state.assistantItemId,
     });
-    streamEvent(response, {
+    emit({
       type: "thread.item.added",
       item: createPendingAssistantMessageItem({
         threadId,
@@ -282,7 +303,7 @@ async function streamCodexTurn({
         createdAt: state.createdAt,
       }),
     });
-    streamEvent(response, {
+    emit({
       type: "thread.item.updated",
       item_id: state.assistantItemId,
       update: {
@@ -339,7 +360,7 @@ async function streamCodexTurn({
     });
 
     await store.appendItem(threadId, assistantItem);
-    streamEvent(response, {
+    emit({
       type: "thread.item.done",
       item: assistantItem,
     });
@@ -347,17 +368,42 @@ async function streamCodexTurn({
 
   const onNotification = (message) => {
     if (!message?.method) {
+      logger.debug("turn", "notification_ignored", {
+        ...streamContext(),
+        reason: "missing_method",
+        message,
+      });
       return;
     }
 
     const params = message.params || {};
     if (params.threadId && params.threadId !== threadId) {
+      logger.debug("turn", "notification_ignored", {
+        ...streamContext(),
+        reason: "different_thread",
+        notificationMethod: message.method,
+        notificationThreadId: params.threadId,
+        message,
+      });
       return;
     }
 
     if (activeTurnId && params.turnId && params.turnId !== activeTurnId) {
+      logger.debug("turn", "notification_ignored", {
+        ...streamContext(),
+        reason: "different_turn",
+        notificationMethod: message.method,
+        notificationTurnId: params.turnId,
+        message,
+      });
       return;
     }
+
+    logger.debug("turn", "notification_received", {
+      ...streamContext(),
+      notificationMethod: message.method,
+      message,
+    });
 
     switch (message.method) {
       case "item/started": {
@@ -383,8 +429,7 @@ async function streamCodexTurn({
             itemId: params.item?.id,
             command: params.item?.command || null,
           });
-          streamEvent(
-            response,
+          emit(
             errorEvent(
               "Shell command execution is disabled for this web UI session. Use MCP tools only.",
               false,
@@ -395,7 +440,7 @@ async function streamCodexTurn({
 
         const progress = describeCodexItem(params.item);
         if (progress) {
-          streamEvent(response, progress);
+          emit(progress);
         }
         break;
       }
@@ -429,7 +474,7 @@ async function streamCodexTurn({
           itemId: params.itemId,
           message: params.message,
         });
-        streamEvent(response, progressEvent(params.message, "bolt"));
+        emit(progressEvent(params.message, "bolt"));
         break;
 
       case "warning":
@@ -438,7 +483,7 @@ async function streamCodexTurn({
           threadId,
           message: params.message,
         });
-        streamEvent(response, progressEvent(params.message, "info"));
+        emit(progressEvent(params.message, "info"));
         break;
 
       case "item/agentMessage/delta": {
@@ -454,7 +499,7 @@ async function streamCodexTurn({
           deltaLength: (params.delta || "").length,
           aggregatedLength: assistantState.text.length,
         });
-        streamEvent(response, {
+        emit({
           type: "thread.item.updated",
           item_id: assistantState.assistantItemId,
           update: {
@@ -491,37 +536,64 @@ async function streamCodexTurn({
     }
   };
 
-    codexClient.on("notification", onNotification);
+  codexClient.on("notification", onNotification);
 
   try {
     const completedTurnPromise = new Promise((resolve, reject) => {
       finishTurn = resolve;
     });
 
-    const turnResponse = await codexClient.sendRequest("turn/start", {
+    const turnStartParams = {
       threadId,
       input: toCodexUserInput(input, { allowShellCommands, allowWebSearch }),
       model,
+    };
+    const turnStartAt = Date.now();
+    logger.info("turn", "start_request", {
+      ...streamContext(),
+      params: turnStartParams,
+      responseState: {
+        writableEnded: response.writableEnded,
+        destroyed: response.destroyed,
+      },
     });
+    const turnResponse = await codexClient.sendRequest("turn/start", turnStartParams);
     activeTurnId = turnResponse?.turn?.id || activeTurnId;
     if (activeTurnId) {
       activeWebUiTurns?.add(activeTurnId);
       setTimeout(() => activeWebUiTurns?.delete(activeTurnId), 300_000).unref?.();
     }
     logger.info("turn", "turn_start_response", {
-      requestId,
-      threadId,
-      turnId: activeTurnId,
+      ...streamContext(),
       initialStatus: turnResponse?.turn?.status,
+      response: turnResponse,
     });
 
     const completedTurn = await new Promise((resolve, reject) => {
+      const heartbeat = setInterval(() => {
+        logger.warn("turn", "completion_still_waiting", {
+          ...streamContext(),
+          elapsedMs: Date.now() - turnStartAt,
+          partialAssistantLength: [...assistantItems.values()].reduce(
+            (total, item) => total + item.text.length,
+            0,
+          ),
+          assistantItemCount: assistantItems.size,
+          responseState: {
+            writableEnded: response.writableEnded,
+            destroyed: response.destroyed,
+          },
+        });
+      }, 15_000);
+      heartbeat.unref?.();
+
       const timeout = setTimeout(() => {
         if (settled) {
           return;
         }
 
         settled = true;
+        clearInterval(heartbeat);
         cleanup();
         logger.error("turn", "completion_timeout", {
           requestId,
@@ -542,6 +614,7 @@ async function streamCodexTurn({
         }
 
         settled = true;
+        clearInterval(heartbeat);
         cleanup();
         logger.error("turn", "app_server_exit_during_turn", {
           requestId,
@@ -562,18 +635,19 @@ async function streamCodexTurn({
       completedTurnPromise.then(
         (turn) => {
           clearTimeout(timeout);
+          clearInterval(heartbeat);
           codexClient.off("exit", handleExit);
           cleanup();
           logger.info("turn", "completion_resolved", {
-            requestId,
-            threadId,
-            turnId: turn?.id || activeTurnId,
+            ...streamContext(),
             finalStatus: turn?.status,
+            completedTurn: turn,
           });
           resolve(turn);
         },
         (error) => {
           clearTimeout(timeout);
+          clearInterval(heartbeat);
           codexClient.off("exit", handleExit);
           cleanup();
           logger.error("turn", "completion_rejected", {
@@ -600,13 +674,11 @@ async function streamCodexTurn({
         : rawMessage;
 
       logger.error("turn", "completed_with_error", {
-        requestId,
-        threadId,
-        turnId: activeTurnId,
+        ...streamContext(),
         status: completedTurn?.status || null,
         error: completedTurn?.error || null,
       });
-      streamEvent(response, errorEvent(message, true));
+      emit(errorEvent(message, true));
       return;
     }
 
@@ -625,14 +697,24 @@ async function streamCodexTurn({
 
       if (fallbackText) {
         logger.info("turn", "assistant_fallback_text_used", {
-          requestId,
-          threadId,
-          turnId: activeTurnId,
+          ...streamContext(),
           fallbackLength: fallbackText.length,
         });
         await finalizeAssistant(null, fallbackText);
       }
     }
+
+    logger.info("turn", "succeeded", {
+      ...streamContext(),
+      completedStatus: completedTurn?.status || null,
+      completedItemCount: Array.isArray(completedTurn?.items) ? completedTurn.items.length : 0,
+      fallbackMessageCount: fallbackMessages.length,
+      assistantItemCount: assistantItems.size,
+      assistantTextLength: [...assistantItems.values()].reduce(
+        (total, item) => total + item.text.length,
+        0,
+      ),
+    });
   } catch (error) {
     cleanup();
 
@@ -645,12 +727,10 @@ async function streamCodexTurn({
         : error;
       if (!shellExecutionBlocked) {
         logger.error("turn", "stream_failed", {
-          requestId,
-          threadId,
-          turnId: activeTurnId,
+          ...streamContext(),
           error: surfacedError,
         });
-        streamEvent(response, errorEvent(surfacedError.message, true));
+        emit(errorEvent(surfacedError.message, true));
       }
     }
   }
@@ -664,10 +744,11 @@ function createChatKitApi({
   activeWebUiTurns,
   activeWebUiThreads,
 }) {
-  return async function handleChatKitRequest(body, response) {
+  return async function handleChatKitRequest(body, response, { httpRequestId = null } = {}) {
     const requestId = crypto.randomUUID();
     const requestType = body?.type || "unknown";
     logger.info("chatkit", "request_received", {
+      httpRequestId,
       requestId,
       type: requestType,
       body,
@@ -779,7 +860,10 @@ function createChatKitApi({
         });
 
         try {
-          streamEvent(response, streamOptionsEvent());
+          streamEvent(response, streamOptionsEvent(), {
+            logger,
+            context: { httpRequestId, requestId, requestType, phase: "retry" },
+          });
 
           const threadId = body?.params?.thread_id;
           const itemId = body?.params?.item_id;
@@ -800,7 +884,10 @@ function createChatKitApi({
               threadId,
               operation: "threads.retry_after_item",
             });
-            streamEvent(response, errorEvent("Thread not found", false));
+            streamEvent(response, errorEvent("Thread not found", false), {
+              logger,
+              context: { httpRequestId, requestId, requestType, threadId },
+            });
             response.end();
             return;
           }
@@ -811,7 +898,10 @@ function createChatKitApi({
               threadId,
               itemId,
             });
-            streamEvent(response, errorEvent("No user message found to retry", false));
+            streamEvent(response, errorEvent("No user message found to retry", false), {
+              logger,
+              context: { httpRequestId, requestId, requestType, threadId, itemId },
+            });
             response.end();
             return;
           }
@@ -844,6 +934,7 @@ function createChatKitApi({
             model: input.inference_options.model,
             response,
             logger,
+            httpRequestId,
             requestId,
             allowShellCommands: config.allowShellCommands,
             allowWebSearch: config.allowWebSearch,
@@ -861,7 +952,10 @@ function createChatKitApi({
             type: requestType,
             error,
           });
-          streamEvent(response, errorEvent(error.message, true));
+          streamEvent(response, errorEvent(error.message, true), {
+            logger,
+            context: { httpRequestId, requestId, requestType, phase: "retry_handler" },
+          });
         }
 
         response.end();
@@ -877,12 +971,16 @@ function createChatKitApi({
         });
 
         try {
-          streamEvent(response, streamOptionsEvent());
+          streamEvent(response, streamOptionsEvent(), {
+            logger,
+            context: { httpRequestId, requestId, requestType, phase: "new_turn" },
+          });
 
           const input = normalizeChatKitInput(body?.params?.input, config.model);
           const threadId =
             body.type === "threads.create" ? null : body?.params?.thread_id;
           logger.info("chatkit", "stream_started", {
+            httpRequestId,
             requestId,
             type: requestType,
             existingThreadId: threadId,
@@ -893,12 +991,23 @@ function createChatKitApi({
           let threadRecord = null;
 
           if (body.type === "threads.create") {
-            const threadStart = await codexClient.sendRequest("thread/start", {
+            const threadStartParams = {
               cwd: config.repoRoot,
               model: input.inference_options.model,
               approvalPolicy: config.approvalPolicy,
               sandbox: "danger-full-access",
               ephemeral: false,
+            };
+            logger.info("chatkit", "thread_start_request", {
+              httpRequestId,
+              requestId,
+              params: threadStartParams,
+            });
+            const threadStart = await codexClient.sendRequest("thread/start", threadStartParams);
+            logger.info("chatkit", "thread_start_response", {
+              httpRequestId,
+              requestId,
+              response: threadStart,
             });
 
             resolvedThreadId = threadStart.thread.id;
@@ -915,6 +1024,7 @@ function createChatKitApi({
 
             const createdThread = await store.createThread(threadRecord);
             logger.info("chatkit", "thread_created", {
+              httpRequestId,
               requestId,
               threadId: resolvedThreadId,
               title: threadRecord.title,
@@ -922,6 +1032,9 @@ function createChatKitApi({
             streamEvent(response, {
               type: "thread.created",
               thread: createdThread,
+            }, {
+              logger,
+              context: { httpRequestId, requestId, requestType, threadId: resolvedThreadId },
             });
           } else {
             const existingThread = await store.getThread(resolvedThreadId);
@@ -931,7 +1044,10 @@ function createChatKitApi({
                 threadId: resolvedThreadId,
                 operation: "threads.add_user_message",
               });
-              streamEvent(response, errorEvent("Thread not found", false));
+              streamEvent(response, errorEvent("Thread not found", false), {
+                logger,
+                context: { httpRequestId, requestId, requestType, threadId: resolvedThreadId },
+              });
               response.end();
               return;
             }
@@ -945,6 +1061,7 @@ function createChatKitApi({
 
           await store.appendItem(resolvedThreadId, userItem);
           logger.info("chatkit", "user_message_appended", {
+            httpRequestId,
             requestId,
             threadId: resolvedThreadId,
             userItemId: userItem.id,
@@ -953,6 +1070,9 @@ function createChatKitApi({
           streamEvent(response, {
             type: "thread.item.done",
             item: userItem,
+          }, {
+            logger,
+            context: { httpRequestId, requestId, requestType, threadId: resolvedThreadId },
           });
 
           await streamCodexTurn({
@@ -963,22 +1083,28 @@ function createChatKitApi({
             model: input.inference_options.model,
             response,
             logger,
+            httpRequestId,
             requestId,
             allowShellCommands: config.allowShellCommands,
             allowWebSearch: config.allowWebSearch,
             activeWebUiTurns,
           });
           logger.info("chatkit", "stream_finished", {
+            httpRequestId,
             requestId,
             threadId: resolvedThreadId,
           });
         } catch (error) {
           logger.error("chatkit", "stream_handler_failed", {
+            httpRequestId,
             requestId,
             type: requestType,
             error,
           });
-          streamEvent(response, errorEvent(error.message, true));
+          streamEvent(response, errorEvent(error.message, true), {
+            logger,
+            context: { httpRequestId, requestId, requestType, phase: "stream_handler" },
+          });
         }
 
         response.end();
@@ -1119,6 +1245,32 @@ export async function startWebUiServer() {
         statusCode: response.statusCode,
         durationMs: Date.now() - startedAt,
         writableEnded: response.writableEnded,
+      });
+    });
+    response.on("finish", () => {
+      logger.info("http", "response_finished", {
+        httpRequestId,
+        method: request.method,
+        url: request.url,
+        statusCode: response.statusCode,
+        durationMs: Date.now() - startedAt,
+        writableEnded: response.writableEnded,
+      });
+    });
+    response.on("error", (error) => {
+      logger.error("http", "response_error", {
+        httpRequestId,
+        method: request.method,
+        url: request.url,
+        error,
+      });
+    });
+    request.on("aborted", () => {
+      logger.warn("http", "request_aborted", {
+        httpRequestId,
+        method: request.method,
+        url: request.url,
+        durationMs: Date.now() - startedAt,
       });
     });
 
@@ -1351,7 +1503,7 @@ export async function startWebUiServer() {
 
       if (request.method === "POST" && requestUrl.pathname === "/chatkit") {
         const body = await readJsonBody(request);
-        await handleChatKitRequest(body, response);
+        await handleChatKitRequest(body, response, { httpRequestId });
         return;
       }
 
