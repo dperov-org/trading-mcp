@@ -133,6 +133,15 @@ heartbeats, and HTTP finish/close/abort events. This is intentionally verbose:
 the files can contain prompt text, model output, tool arguments, and other
 sensitive data. Treat the log directory as sensitive operational data.
 
+When Codex app-server is restarted, its in-memory thread IDs may no longer
+exist while the ChatKit history is still valid. Before continuing an existing
+thread, Web UI verifies it with `thread/read`. If Codex reports `thread not
+found`, Web UI automatically creates a replacement Codex thread, preserves the
+existing ChatKit thread and its visible history, records the new
+`metadata.codex_thread_id`, and supplies the last persisted messages as
+context for the next turn. The recovery is logged as
+`codex_thread_recovery_started` and `codex_thread_recovered`.
+
 For debugging a hung browser session, start with `webui-latest.jsonl` and look for:
 
 - `request_timeout`
@@ -141,6 +150,8 @@ For debugging a hung browser session, start with `webui-latest.jsonl` and look f
 - `stream_handler_failed`
 - `completion_still_waiting` (shows a turn accepted by Codex but not completed yet)
 - `sse.event_written` paired with `http.response_finished` or `http.request_aborted`
+- `codex_thread_recovered` (a stale app-server thread was transparently replaced)
+- `assistant_finalizations_waiting` (the SSE response waits for final assistant items before closing)
 - `unsupported_request_type` with `threads.retry_after_item`, which means the deployed backend is older than the retry handler
 - repeated `stderr` or `warning` events
 

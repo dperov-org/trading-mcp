@@ -75,6 +75,7 @@
     "webui:app-server:linux": "bash scripts/start-codex-app-server-with-mcp.sh",
     "webui:app-server:smoke": "node apps/local-mcp-web-ui/src/smoke-app-server.mjs",
     "webui:external-codex:smoke": "node apps/local-mcp-web-ui/src/smoke-external-codex.mjs",
+    "webui:stale-thread-recovery:smoke": "node apps/local-mcp-web-ui/src/smoke-stale-thread-recovery.mjs",
     "webui:mexc-routing:smoke": "node apps/local-mcp-web-ui/src/smoke-mexc-routing.mjs",
     "webui:smoke": "node apps/local-mcp-web-ui/src/smoke-webui.mjs",
     "singapur:mcp": "bash scripts/singapur/start-mcp-screen.sh",

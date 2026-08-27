@@ -20,7 +20,8 @@
     "smoke": "node src/smoke-webui.mjs",
     "smoke:app-server": "node src/smoke-app-server.mjs",
     "smoke:external-sync": "node src/smoke-external-change-sync.mjs",
-    "smoke:reconcile": "node src/smoke-thread-reconcile.mjs"
+    "smoke:reconcile": "node src/smoke-thread-reconcile.mjs",
+    "smoke:stale-thread-recovery": "node src/smoke-stale-thread-recovery.mjs"
   },
   "engines": {
     "node": ">=20.6"

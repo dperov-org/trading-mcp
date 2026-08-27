@@ -155,6 +155,162 @@ function isMissingCodexThreadError(error) {
   );
 }
 
+function itemTextForRecovery(item) {
+  if (!Array.isArray(item?.content)) {
+    return "";
+  }
+
+  return item.content
+    .map((part) => (typeof part?.text === "string" ? part.text.trim() : ""))
+    .filter(Boolean)
+    .join("\n")
+    .trim();
+}
+
+function buildRecoveryContext(items = [], { maxItems = 16, maxChars = 32_000 } = {}) {
+  const entries = items
+    .slice(-maxItems)
+    .map((item) => {
+      const text = itemTextForRecovery(item);
+      if (!text) {
+        return "";
+      }
+
+      const speaker = item.type === "assistant_message" ? "Assistant" : "User";
+      return `${speaker}: ${text}`;
+    })
+    .filter(Boolean);
+
+  if (entries.length === 0) {
+    return "";
+  }
+
+  const transcript = entries.join("\n\n");
+  const limitedTranscript =
+    transcript.length > maxChars ? transcript.slice(-maxChars) : transcript;
+  return [
+    "The previous Codex app-server session was restarted. The following persisted ChatKit history belongs to this conversation. Use it as context; do not claim that you executed actions mentioned in it.",
+    "",
+    limitedTranscript,
+    "",
+    "Continue by answering the new user message below.",
+  ].join("\n");
+}
+
+function addRecoveryContextToInput(input, recoveryContext) {
+  if (!recoveryContext) {
+    return input;
+  }
+
+  return {
+    ...input,
+    content: [
+      {
+        type: "input_text",
+        text: recoveryContext,
+      },
+      ...(Array.isArray(input?.content) ? input.content : []),
+    ],
+  };
+}
+
+async function ensureCodexThreadAvailable({
+  codexClient,
+  store,
+  logger,
+  config,
+  chatkitThreadId,
+  codexThreadId,
+  threadItems,
+  model,
+  httpRequestId,
+  requestId,
+  activeWebUiThreads,
+}) {
+  try {
+    const response = await codexClient.sendRequest(
+      "thread/read",
+      { threadId: codexThreadId, includeTurns: false },
+      30_000,
+    );
+    logger.debug("chatkit", "codex_thread_available", {
+      httpRequestId,
+      requestId,
+      chatkitThreadId,
+      codexThreadId,
+      response,
+    });
+    return {
+      codexThreadId,
+      recovered: false,
+      recoveryContext: "",
+    };
+  } catch (error) {
+    if (!isMissingCodexThreadError(error)) {
+      logger.error("chatkit", "codex_thread_availability_check_failed", {
+        httpRequestId,
+        requestId,
+        chatkitThreadId,
+        codexThreadId,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  const recoveryContext = buildRecoveryContext(threadItems);
+  logger.warn("chatkit", "codex_thread_recovery_started", {
+    httpRequestId,
+    requestId,
+    chatkitThreadId,
+    staleCodexThreadId: codexThreadId,
+    persistedItemCount: Array.isArray(threadItems) ? threadItems.length : 0,
+    recoveryContextLength: recoveryContext.length,
+  });
+
+  const threadStartParams = {
+    cwd: config.repoRoot,
+    model,
+    approvalPolicy: config.approvalPolicy,
+    sandbox: "danger-full-access",
+    ephemeral: false,
+  };
+  const replacement = await codexClient.sendRequest("thread/start", threadStartParams);
+  const replacementCodexThreadId = replacement?.thread?.id;
+  if (!replacementCodexThreadId) {
+    throw new Error("Codex did not return an ID for the replacement thread");
+  }
+
+  activeWebUiThreads?.add(replacementCodexThreadId);
+  setTimeout(() => activeWebUiThreads?.delete(replacementCodexThreadId), 300_000).unref?.();
+  const recoveredAt = nowIsoString();
+  const updatedThread = await store.updateThread(chatkitThreadId, async (record) => {
+    record.metadata ||= {};
+    record.metadata.codex_thread_id = replacementCodexThreadId;
+    record.metadata.codex_thread_recovered_from = codexThreadId;
+    record.metadata.codex_thread_recovered_at = recoveredAt;
+    record.metadata.updated_at = recoveredAt;
+  });
+  if (!updatedThread) {
+    throw new Error(`ChatKit thread not found while recovering: ${chatkitThreadId}`);
+  }
+
+  logger.warn("chatkit", "codex_thread_recovered", {
+    httpRequestId,
+    requestId,
+    chatkitThreadId,
+    staleCodexThreadId: codexThreadId,
+    replacementCodexThreadId,
+    recoveryContextLength: recoveryContext.length,
+    replacement,
+  });
+  return {
+    codexThreadId: replacementCodexThreadId,
+    recovered: true,
+    recoveryContext,
+  };
+}
+
 function shortId(value) {
   return typeof value === "string" && value.length > 12
     ? `${value.slice(0, 8)}...${value.slice(-4)}`
@@ -239,6 +395,7 @@ async function streamCodexTurn({
   codexClient,
   store,
   threadId,
+  codexThreadId = threadId,
   input,
   model,
   response,
@@ -254,10 +411,12 @@ async function streamCodexTurn({
   let finishTurn;
   let shellExecutionBlocked = false;
   const assistantItems = new Map();
+  const pendingAssistantFinalizations = new Set();
   const streamContext = () => ({
     httpRequestId,
     requestId,
     threadId,
+    codexThreadId,
     turnId: activeTurnId,
   });
   const emit = (payload) => streamEvent(response, payload, {
@@ -349,7 +508,7 @@ async function streamCodexTurn({
       metadata:
         codexItem?.id && activeTurnId
           ? codexMetadata({
-              threadId,
+              threadId: codexThreadId,
               turnId: activeTurnId,
               itemId: codexItem.id,
               kind: "agentMessage",
@@ -366,6 +525,33 @@ async function streamCodexTurn({
     });
   };
 
+  const queueAssistantFinalization = (codexItem) => {
+    const task = finalizeAssistant(codexItem).catch((error) => {
+      logger.error("turn", "assistant_finalize_failed", {
+        ...streamContext(),
+        itemId: codexItem?.id || null,
+        error,
+      });
+    });
+    pendingAssistantFinalizations.add(task);
+    void task.finally(() => pendingAssistantFinalizations.delete(task));
+  };
+
+  const waitForAssistantFinalizations = async () => {
+    if (pendingAssistantFinalizations.size === 0) {
+      return;
+    }
+
+    logger.debug("turn", "assistant_finalizations_waiting", {
+      ...streamContext(),
+      count: pendingAssistantFinalizations.size,
+    });
+    await Promise.all([...pendingAssistantFinalizations]);
+    logger.debug("turn", "assistant_finalizations_completed", {
+      ...streamContext(),
+    });
+  };
+
   const onNotification = (message) => {
     if (!message?.method) {
       logger.debug("turn", "notification_ignored", {
@@ -377,12 +563,13 @@ async function streamCodexTurn({
     }
 
     const params = message.params || {};
-    if (params.threadId && params.threadId !== threadId) {
+    if (params.threadId && params.threadId !== codexThreadId) {
       logger.debug("turn", "notification_ignored", {
         ...streamContext(),
         reason: "different_thread",
         notificationMethod: message.method,
         notificationThreadId: params.threadId,
+        expectedCodexThreadId: codexThreadId,
         message,
       });
       return;
@@ -454,15 +641,7 @@ async function streamCodexTurn({
           itemId: params.item?.id,
         });
         if (params.item?.type === "agentMessage") {
-          void finalizeAssistant(params.item).catch((error) => {
-            logger.error("turn", "assistant_finalize_failed", {
-              requestId,
-              threadId,
-              turnId: params.turnId,
-              itemId: params.item?.id,
-              error,
-            });
-          });
+          queueAssistantFinalization(params.item);
         }
         break;
 
@@ -544,7 +723,7 @@ async function streamCodexTurn({
     });
 
     const turnStartParams = {
-      threadId,
+      threadId: codexThreadId,
       input: toCodexUserInput(input, { allowShellCommands, allowWebSearch }),
       model,
     };
@@ -660,6 +839,8 @@ async function streamCodexTurn({
         },
       );
     });
+
+    await waitForAssistantFinalizations();
 
     const fallbackMessages = (completedTurn?.items || []).filter(
       (item) => item.type === "agentMessage" && typeof item.text === "string",
@@ -925,12 +1106,27 @@ function createChatKitApi({
             },
             config.model,
           );
+          const recovery = await ensureCodexThreadAvailable({
+            codexClient,
+            store,
+            logger,
+            config,
+            chatkitThreadId: threadId,
+            codexThreadId: context.thread?.metadata?.codex_thread_id || threadId,
+            threadItems: context.thread?.items?.data || [],
+            model: input.inference_options.model,
+            httpRequestId,
+            requestId,
+            activeWebUiThreads,
+          });
+          const inputForCodex = addRecoveryContextToInput(input, recovery.recoveryContext);
 
           await streamCodexTurn({
             codexClient,
             store,
             threadId,
-            input,
+            codexThreadId: recovery.codexThreadId,
+            input: inputForCodex,
             model: input.inference_options.model,
             response,
             logger,
@@ -988,6 +1184,8 @@ function createChatKitApi({
           });
 
           let resolvedThreadId = threadId;
+          let resolvedCodexThreadId = threadId;
+          let inputForCodex = input;
           let threadRecord = null;
 
           if (body.type === "threads.create") {
@@ -1011,6 +1209,7 @@ function createChatKitApi({
             });
 
             resolvedThreadId = threadStart.thread.id;
+            resolvedCodexThreadId = resolvedThreadId;
             activeWebUiThreads?.add(resolvedThreadId);
             setTimeout(() => {
               activeWebUiThreads?.delete(resolvedThreadId);
@@ -1051,6 +1250,22 @@ function createChatKitApi({
               response.end();
               return;
             }
+
+            const recovery = await ensureCodexThreadAvailable({
+              codexClient,
+              store,
+              logger,
+              config,
+              chatkitThreadId: resolvedThreadId,
+              codexThreadId: existingThread.metadata?.codex_thread_id || resolvedThreadId,
+              threadItems: existingThread.items?.data || [],
+              model: input.inference_options.model,
+              httpRequestId,
+              requestId,
+              activeWebUiThreads,
+            });
+            resolvedCodexThreadId = recovery.codexThreadId;
+            inputForCodex = addRecoveryContextToInput(input, recovery.recoveryContext);
           }
 
           const userItem = createUserMessageItem({
@@ -1079,7 +1294,8 @@ function createChatKitApi({
             codexClient,
             store,
             threadId: resolvedThreadId,
-            input,
+            codexThreadId: resolvedCodexThreadId,
+            input: inputForCodex,
             model: input.inference_options.model,
             response,
             logger,
