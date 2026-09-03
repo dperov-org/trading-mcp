@@ -194,138 +194,140 @@ import { getRiskLimit as tool_191 } from "../../../../src/tools/market/getRiskLi
 import { getRpiOrderbook as tool_192 } from "../../../../src/tools/market/getRpiOrderbook.ts";
 import { getServerTime as tool_193 } from "../../../../src/tools/market/getServerTime.ts";
 import { getTickers as tool_194 } from "../../../../src/tools/market/getTickers.ts";
-import { getAds as tool_195 } from "../../../../src/tools/p2p/getAds.ts";
-import { getAllOrders as tool_196 } from "../../../../src/tools/p2p/getAllOrders.ts";
-import { getChatMessages as tool_197 } from "../../../../src/tools/p2p/getChatMessages.ts";
-import { getCounterpartyUserInfo as tool_198 } from "../../../../src/tools/p2p/getCounterpartyUserInfo.ts";
-import { getMyAdDetails as tool_199 } from "../../../../src/tools/p2p/getMyAdDetails.ts";
-import { getMyAds as tool_200 } from "../../../../src/tools/p2p/getMyAds.ts";
-import { getOrderDetail as tool_201 } from "../../../../src/tools/p2p/getOrderDetail.ts";
-import { getPendingOrders as tool_202 } from "../../../../src/tools/p2p/getPendingOrders.ts";
-import { getUserPayment as tool_203 } from "../../../../src/tools/p2p/getUserPayment.ts";
-import { markOrderAsPaid as tool_204 } from "../../../../src/tools/p2p/markOrderAsPaid.ts";
-import { postAd as tool_205 } from "../../../../src/tools/p2p/postAd.ts";
-import { removeAd as tool_206 } from "../../../../src/tools/p2p/removeAd.ts";
-import { updateAd as tool_207 } from "../../../../src/tools/p2p/updateAd.ts";
-import { addReduceMargin as tool_208 } from "../../../../src/tools/position/addReduceMargin.ts";
-import { confirmNewRiskLimit as tool_209 } from "../../../../src/tools/position/confirmNewRiskLimit.ts";
-import { getClosedPnl as tool_210 } from "../../../../src/tools/position/getClosedPnl.ts";
-import { getClosePosition as tool_211 } from "../../../../src/tools/position/getClosePosition.ts";
-import { getMovePositionHistory as tool_212 } from "../../../../src/tools/position/getMovePositionHistory.ts";
-import { getPositionInfo as tool_213 } from "../../../../src/tools/position/getPositionInfo.ts";
-import { movePosition as tool_214 } from "../../../../src/tools/position/movePosition.ts";
-import { setAutoAddMargin as tool_215 } from "../../../../src/tools/position/setAutoAddMargin.ts";
-import { setLeverage as tool_216 } from "../../../../src/tools/position/setLeverage.ts";
-import { setTradingStop as tool_217 } from "../../../../src/tools/position/setTradingStop.ts";
-import { switchPositionMode as tool_218 } from "../../../../src/tools/position/switchPositionMode.ts";
-import { acceptNonLpQuote as tool_219 } from "../../../../src/tools/rfq-trading/acceptNonLpQuote.ts";
-import { cancelAllQuotes as tool_220 } from "../../../../src/tools/rfq-trading/cancelAllQuotes.ts";
-import { cancelAllRfqs as tool_221 } from "../../../../src/tools/rfq-trading/cancelAllRfqs.ts";
-import { cancelQuote as tool_222 } from "../../../../src/tools/rfq-trading/cancelQuote.ts";
-import { cancelRfq as tool_223 } from "../../../../src/tools/rfq-trading/cancelRfq.ts";
-import { createQuote as tool_224 } from "../../../../src/tools/rfq-trading/createQuote.ts";
-import { createRfq as tool_225 } from "../../../../src/tools/rfq-trading/createRfq.ts";
-import { executeQuote as tool_226 } from "../../../../src/tools/rfq-trading/executeQuote.ts";
-import { getPublicTrades as tool_227 } from "../../../../src/tools/rfq-trading/getPublicTrades.ts";
-import { getQuotes as tool_228 } from "../../../../src/tools/rfq-trading/getQuotes.ts";
-import { getQuotesRealtime as tool_229 } from "../../../../src/tools/rfq-trading/getQuotesRealtime.ts";
-import { getRfqConfig as tool_230 } from "../../../../src/tools/rfq-trading/getRfqConfig.ts";
-import { getRfqs as tool_231 } from "../../../../src/tools/rfq-trading/getRfqs.ts";
-import { getRfqsRealtime as tool_232 } from "../../../../src/tools/rfq-trading/getRfqsRealtime.ts";
-import { getTradeHistory as tool_233 } from "../../../../src/tools/rfq-trading/getTradeHistory.ts";
-import { getSmartLeverageRedeemEstAmountList as tool_234 } from "../../../../src/tools/smartleverage/getSmartLeverageRedeemEstAmountList.ts";
-import { accountFixedBorrow as tool_235 } from "../../../../src/tools/spot-margin-trade-uta/accountFixedBorrow.ts";
-import { getSpotMarginTradeAutoRepayMode as tool_236 } from "../../../../src/tools/spot-margin-trade-uta/getSpotMarginTradeAutoRepayMode.ts";
-import { getSpotMarginTradeCoinState as tool_237 } from "../../../../src/tools/spot-margin-trade-uta/getSpotMarginTradeCoinState.ts";
-import { getSpotMarginTradeMaxBorrowable as tool_238 } from "../../../../src/tools/spot-margin-trade-uta/getSpotMarginTradeMaxBorrowable.ts";
-import { getSpotMarginTradeRepaymentAvailableAmount as tool_239 } from "../../../../src/tools/spot-margin-trade-uta/getSpotMarginTradeRepaymentAvailableAmount.ts";
-import { getSpotMarginTradeState as tool_240 } from "../../../../src/tools/spot-margin-trade-uta/getSpotMarginTradeState.ts";
-import { queryBorrowLiability as tool_241 } from "../../../../src/tools/spot-margin-trade-uta/queryBorrowLiability.ts";
-import { queryFixedBorrowContracts as tool_242 } from "../../../../src/tools/spot-margin-trade-uta/queryFixedBorrowContracts.ts";
-import { queryFixedBorrowMarket as tool_243 } from "../../../../src/tools/spot-margin-trade-uta/queryFixedBorrowMarket.ts";
-import { queryFixedBorrowOrders as tool_244 } from "../../../../src/tools/spot-margin-trade-uta/queryFixedBorrowOrders.ts";
-import { renewFixedBorrow as tool_245 } from "../../../../src/tools/spot-margin-trade-uta/renewFixedBorrow.ts";
-import { setAutoRepayMode as tool_246 } from "../../../../src/tools/spot-margin-trade-uta/setAutoRepayMode.ts";
-import { spotMarginSetLeverage as tool_247 } from "../../../../src/tools/spot-margin-trade-uta/spotMarginSetLeverage.ts";
-import { spotMarginSwitchMode as tool_248 } from "../../../../src/tools/spot-margin-trade-uta/spotMarginSwitchMode.ts";
-import { getHistoricalInterestRate as tool_249 } from "../../../../src/tools/spot-margin-uta/getHistoricalInterestRate.ts";
-import { getPositionTiers as tool_250 } from "../../../../src/tools/spot-margin-uta/getPositionTiers.ts";
-import { getTieredCollateralRatio as tool_251 } from "../../../../src/tools/spot-margin-uta/getTieredCollateralRatio.ts";
-import { getVipMarginData as tool_252 } from "../../../../src/tools/spot-margin-uta/getVipMarginData.ts";
-import { amendSpreadOrder as tool_253 } from "../../../../src/tools/spread-trading/amendSpreadOrder.ts";
-import { cancelAllSpreadOrders as tool_254 } from "../../../../src/tools/spread-trading/cancelAllSpreadOrders.ts";
-import { cancelSpreadOrder as tool_255 } from "../../../../src/tools/spread-trading/cancelSpreadOrder.ts";
-import { createSpreadOrder as tool_256 } from "../../../../src/tools/spread-trading/createSpreadOrder.ts";
-import { getSpreadInstrumentsInfo as tool_257 } from "../../../../src/tools/spread-trading/getSpreadInstrumentsInfo.ts";
-import { getSpreadMaxQty as tool_258 } from "../../../../src/tools/spread-trading/getSpreadMaxQty.ts";
-import { getSpreadOpenOrders as tool_259 } from "../../../../src/tools/spread-trading/getSpreadOpenOrders.ts";
-import { getSpreadOrderbook as tool_260 } from "../../../../src/tools/spread-trading/getSpreadOrderbook.ts";
-import { getSpreadOrderHistory as tool_261 } from "../../../../src/tools/spread-trading/getSpreadOrderHistory.ts";
-import { getSpreadRecentTrades as tool_262 } from "../../../../src/tools/spread-trading/getSpreadRecentTrades.ts";
-import { getSpreadTickers as tool_263 } from "../../../../src/tools/spread-trading/getSpreadTickers.ts";
-import { getSpreadTradeHistory as tool_264 } from "../../../../src/tools/spread-trading/getSpreadTradeHistory.ts";
-import { createChaseOrderStrategy as tool_265 } from "../../../../src/tools/strategy/createChaseOrderStrategy.ts";
-import { createIcebergStrategy as tool_266 } from "../../../../src/tools/strategy/createIcebergStrategy.ts";
-import { createTwapStrategy as tool_267 } from "../../../../src/tools/strategy/createTwapStrategy.ts";
-import { queryStrategyList as tool_268 } from "../../../../src/tools/strategy/queryStrategyList.ts";
-import { queryStrategyOrderList as tool_269 } from "../../../../src/tools/strategy/queryStrategyOrderList.ts";
-import { stopStrategy as tool_270 } from "../../../../src/tools/strategy/stopStrategy.ts";
-import { listSubscriptions as tool_271 } from "../../../../src/tools/subscription/listSubscriptions.ts";
-import { readMessages as tool_272 } from "../../../../src/tools/subscription/readMessages.ts";
-import { startSubscription as tool_273 } from "../../../../src/tools/subscription/startSubscription.ts";
-import { stopSubscription as tool_274 } from "../../../../src/tools/subscription/stopSubscription.ts";
-import { amendOrder as tool_275 } from "../../../../src/tools/trade/amendOrder.ts";
-import { batchAmendOrders as tool_276 } from "../../../../src/tools/trade/batchAmendOrders.ts";
-import { batchCancelOrders as tool_277 } from "../../../../src/tools/trade/batchCancelOrders.ts";
-import { batchCreateOrders as tool_278 } from "../../../../src/tools/trade/batchCreateOrders.ts";
-import { cancelAllOrders as tool_279 } from "../../../../src/tools/trade/cancelAllOrders.ts";
-import { cancelOrder as tool_280 } from "../../../../src/tools/trade/cancelOrder.ts";
-import { createOrder as tool_281 } from "../../../../src/tools/trade/createOrder.ts";
-import { getOpenOrders as tool_282 } from "../../../../src/tools/trade/getOpenOrders.ts";
-import { getOrderHistory as tool_283 } from "../../../../src/tools/trade/getOrderHistory.ts";
-import { getSpotBorrowQuota as tool_284 } from "../../../../src/tools/trade/getSpotBorrowQuota.ts";
-import { preCheckOrder as tool_285 } from "../../../../src/tools/trade/preCheckOrder.ts";
-import { setDcp as tool_286 } from "../../../../src/tools/trade/setDcp.ts";
-import { getMemberAccountType as tool_287 } from "../../../../src/tools/user/getMemberAccountType.ts";
-import { listSubAPIKeysV5 as tool_288 } from "../../../../src/tools/user/listSubAPIKeysV5.ts";
-import { queryAPIKey as tool_289 } from "../../../../src/tools/user/queryAPIKey.ts";
-import { queryEscrowSubMembersV5 as tool_290 } from "../../../../src/tools/user/queryEscrowSubMembersV5.ts";
-import { queryReferrals as tool_291 } from "../../../../src/tools/user/queryReferrals.ts";
-import { querySubMembers as tool_292 } from "../../../../src/tools/user/querySubMembers.ts";
-import { querySubMembersV5 as tool_293 } from "../../../../src/tools/user/querySubMembersV5.ts";
-import { subscribeAdlAlert as tool_294 } from "../../../../src/tools/websocket/subscribeAdlAlert.ts";
-import { subscribeDcp as tool_295 } from "../../../../src/tools/websocket/subscribeDcp.ts";
-import { subscribeEarnDualAssets as tool_296 } from "../../../../src/tools/websocket/subscribeEarnDualAssets.ts";
-import { subscribeExecution as tool_297 } from "../../../../src/tools/websocket/subscribeExecution.ts";
-import { subscribeExecutionFast as tool_298 } from "../../../../src/tools/websocket/subscribeExecutionFast.ts";
-import { subscribeGreeks as tool_299 } from "../../../../src/tools/websocket/subscribeGreeks.ts";
-import { subscribeInsurance as tool_300 } from "../../../../src/tools/websocket/subscribeInsurance.ts";
-import { subscribeKline as tool_301 } from "../../../../src/tools/websocket/subscribeKline.ts";
-import { subscribeLiquidation as tool_302 } from "../../../../src/tools/websocket/subscribeLiquidation.ts";
-import { subscribeOrder as tool_303 } from "../../../../src/tools/websocket/subscribeOrder.ts";
-import { subscribeOrderbook as tool_304 } from "../../../../src/tools/websocket/subscribeOrderbook.ts";
-import { subscribePosition as tool_305 } from "../../../../src/tools/websocket/subscribePosition.ts";
-import { subscribePriceLimit as tool_306 } from "../../../../src/tools/websocket/subscribePriceLimit.ts";
-import { subscribePublicTrade as tool_307 } from "../../../../src/tools/websocket/subscribePublicTrade.ts";
-import { subscribeRfqPublicTrades as tool_308 } from "../../../../src/tools/websocket/subscribeRfqPublicTrades.ts";
-import { subscribeRfqQuotes as tool_309 } from "../../../../src/tools/websocket/subscribeRfqQuotes.ts";
-import { subscribeRfqRfqs as tool_310 } from "../../../../src/tools/websocket/subscribeRfqRfqs.ts";
-import { subscribeRfqTrades as tool_311 } from "../../../../src/tools/websocket/subscribeRfqTrades.ts";
-import { subscribeRpiOrderbook as tool_312 } from "../../../../src/tools/websocket/subscribeRpiOrderbook.ts";
-import { subscribeSpreadExecution as tool_313 } from "../../../../src/tools/websocket/subscribeSpreadExecution.ts";
-import { subscribeSpreadOrder as tool_314 } from "../../../../src/tools/websocket/subscribeSpreadOrder.ts";
-import { subscribeSpreadOrderbook as tool_315 } from "../../../../src/tools/websocket/subscribeSpreadOrderbook.ts";
-import { subscribeSpreadPublicTrade as tool_316 } from "../../../../src/tools/websocket/subscribeSpreadPublicTrade.ts";
-import { subscribeSpreadTickers as tool_317 } from "../../../../src/tools/websocket/subscribeSpreadTickers.ts";
-import { subscribeSystemStatus as tool_318 } from "../../../../src/tools/websocket/subscribeSystemStatus.ts";
-import { subscribeTickers as tool_319 } from "../../../../src/tools/websocket/subscribeTickers.ts";
-import { subscribeWallet as tool_320 } from "../../../../src/tools/websocket/subscribeWallet.ts";
-import { wsAmendOrder as tool_321 } from "../../../../src/tools/wstrade/wsAmendOrder.ts";
-import { wsBatchAmendOrders as tool_322 } from "../../../../src/tools/wstrade/wsBatchAmendOrders.ts";
-import { wsBatchCancelOrders as tool_323 } from "../../../../src/tools/wstrade/wsBatchCancelOrders.ts";
-import { wsBatchCreateOrders as tool_324 } from "../../../../src/tools/wstrade/wsBatchCreateOrders.ts";
-import { wsCancelOrder as tool_325 } from "../../../../src/tools/wstrade/wsCancelOrder.ts";
-import { wsCreateOrder as tool_326 } from "../../../../src/tools/wstrade/wsCreateOrder.ts";
+import { buildBybitOptionSymbol as tool_195 } from "../../../../src/tools/option-symbol/buildBybitOptionSymbol.ts";
+import { parseBybitOptionSymbol as tool_196 } from "../../../../src/tools/option-symbol/parseBybitOptionSymbol.ts";
+import { getAds as tool_197 } from "../../../../src/tools/p2p/getAds.ts";
+import { getAllOrders as tool_198 } from "../../../../src/tools/p2p/getAllOrders.ts";
+import { getChatMessages as tool_199 } from "../../../../src/tools/p2p/getChatMessages.ts";
+import { getCounterpartyUserInfo as tool_200 } from "../../../../src/tools/p2p/getCounterpartyUserInfo.ts";
+import { getMyAdDetails as tool_201 } from "../../../../src/tools/p2p/getMyAdDetails.ts";
+import { getMyAds as tool_202 } from "../../../../src/tools/p2p/getMyAds.ts";
+import { getOrderDetail as tool_203 } from "../../../../src/tools/p2p/getOrderDetail.ts";
+import { getPendingOrders as tool_204 } from "../../../../src/tools/p2p/getPendingOrders.ts";
+import { getUserPayment as tool_205 } from "../../../../src/tools/p2p/getUserPayment.ts";
+import { markOrderAsPaid as tool_206 } from "../../../../src/tools/p2p/markOrderAsPaid.ts";
+import { postAd as tool_207 } from "../../../../src/tools/p2p/postAd.ts";
+import { removeAd as tool_208 } from "../../../../src/tools/p2p/removeAd.ts";
+import { updateAd as tool_209 } from "../../../../src/tools/p2p/updateAd.ts";
+import { addReduceMargin as tool_210 } from "../../../../src/tools/position/addReduceMargin.ts";
+import { confirmNewRiskLimit as tool_211 } from "../../../../src/tools/position/confirmNewRiskLimit.ts";
+import { getClosedPnl as tool_212 } from "../../../../src/tools/position/getClosedPnl.ts";
+import { getClosePosition as tool_213 } from "../../../../src/tools/position/getClosePosition.ts";
+import { getMovePositionHistory as tool_214 } from "../../../../src/tools/position/getMovePositionHistory.ts";
+import { getPositionInfo as tool_215 } from "../../../../src/tools/position/getPositionInfo.ts";
+import { movePosition as tool_216 } from "../../../../src/tools/position/movePosition.ts";
+import { setAutoAddMargin as tool_217 } from "../../../../src/tools/position/setAutoAddMargin.ts";
+import { setLeverage as tool_218 } from "../../../../src/tools/position/setLeverage.ts";
+import { setTradingStop as tool_219 } from "../../../../src/tools/position/setTradingStop.ts";
+import { switchPositionMode as tool_220 } from "../../../../src/tools/position/switchPositionMode.ts";
+import { acceptNonLpQuote as tool_221 } from "../../../../src/tools/rfq-trading/acceptNonLpQuote.ts";
+import { cancelAllQuotes as tool_222 } from "../../../../src/tools/rfq-trading/cancelAllQuotes.ts";
+import { cancelAllRfqs as tool_223 } from "../../../../src/tools/rfq-trading/cancelAllRfqs.ts";
+import { cancelQuote as tool_224 } from "../../../../src/tools/rfq-trading/cancelQuote.ts";
+import { cancelRfq as tool_225 } from "../../../../src/tools/rfq-trading/cancelRfq.ts";
+import { createQuote as tool_226 } from "../../../../src/tools/rfq-trading/createQuote.ts";
+import { createRfq as tool_227 } from "../../../../src/tools/rfq-trading/createRfq.ts";
+import { executeQuote as tool_228 } from "../../../../src/tools/rfq-trading/executeQuote.ts";
+import { getPublicTrades as tool_229 } from "../../../../src/tools/rfq-trading/getPublicTrades.ts";
+import { getQuotes as tool_230 } from "../../../../src/tools/rfq-trading/getQuotes.ts";
+import { getQuotesRealtime as tool_231 } from "../../../../src/tools/rfq-trading/getQuotesRealtime.ts";
+import { getRfqConfig as tool_232 } from "../../../../src/tools/rfq-trading/getRfqConfig.ts";
+import { getRfqs as tool_233 } from "../../../../src/tools/rfq-trading/getRfqs.ts";
+import { getRfqsRealtime as tool_234 } from "../../../../src/tools/rfq-trading/getRfqsRealtime.ts";
+import { getTradeHistory as tool_235 } from "../../../../src/tools/rfq-trading/getTradeHistory.ts";
+import { getSmartLeverageRedeemEstAmountList as tool_236 } from "../../../../src/tools/smartleverage/getSmartLeverageRedeemEstAmountList.ts";
+import { accountFixedBorrow as tool_237 } from "../../../../src/tools/spot-margin-trade-uta/accountFixedBorrow.ts";
+import { getSpotMarginTradeAutoRepayMode as tool_238 } from "../../../../src/tools/spot-margin-trade-uta/getSpotMarginTradeAutoRepayMode.ts";
+import { getSpotMarginTradeCoinState as tool_239 } from "../../../../src/tools/spot-margin-trade-uta/getSpotMarginTradeCoinState.ts";
+import { getSpotMarginTradeMaxBorrowable as tool_240 } from "../../../../src/tools/spot-margin-trade-uta/getSpotMarginTradeMaxBorrowable.ts";
+import { getSpotMarginTradeRepaymentAvailableAmount as tool_241 } from "../../../../src/tools/spot-margin-trade-uta/getSpotMarginTradeRepaymentAvailableAmount.ts";
+import { getSpotMarginTradeState as tool_242 } from "../../../../src/tools/spot-margin-trade-uta/getSpotMarginTradeState.ts";
+import { queryBorrowLiability as tool_243 } from "../../../../src/tools/spot-margin-trade-uta/queryBorrowLiability.ts";
+import { queryFixedBorrowContracts as tool_244 } from "../../../../src/tools/spot-margin-trade-uta/queryFixedBorrowContracts.ts";
+import { queryFixedBorrowMarket as tool_245 } from "../../../../src/tools/spot-margin-trade-uta/queryFixedBorrowMarket.ts";
+import { queryFixedBorrowOrders as tool_246 } from "../../../../src/tools/spot-margin-trade-uta/queryFixedBorrowOrders.ts";
+import { renewFixedBorrow as tool_247 } from "../../../../src/tools/spot-margin-trade-uta/renewFixedBorrow.ts";
+import { setAutoRepayMode as tool_248 } from "../../../../src/tools/spot-margin-trade-uta/setAutoRepayMode.ts";
+import { spotMarginSetLeverage as tool_249 } from "../../../../src/tools/spot-margin-trade-uta/spotMarginSetLeverage.ts";
+import { spotMarginSwitchMode as tool_250 } from "../../../../src/tools/spot-margin-trade-uta/spotMarginSwitchMode.ts";
+import { getHistoricalInterestRate as tool_251 } from "../../../../src/tools/spot-margin-uta/getHistoricalInterestRate.ts";
+import { getPositionTiers as tool_252 } from "../../../../src/tools/spot-margin-uta/getPositionTiers.ts";
+import { getTieredCollateralRatio as tool_253 } from "../../../../src/tools/spot-margin-uta/getTieredCollateralRatio.ts";
+import { getVipMarginData as tool_254 } from "../../../../src/tools/spot-margin-uta/getVipMarginData.ts";
+import { amendSpreadOrder as tool_255 } from "../../../../src/tools/spread-trading/amendSpreadOrder.ts";
+import { cancelAllSpreadOrders as tool_256 } from "../../../../src/tools/spread-trading/cancelAllSpreadOrders.ts";
+import { cancelSpreadOrder as tool_257 } from "../../../../src/tools/spread-trading/cancelSpreadOrder.ts";
+import { createSpreadOrder as tool_258 } from "../../../../src/tools/spread-trading/createSpreadOrder.ts";
+import { getSpreadInstrumentsInfo as tool_259 } from "../../../../src/tools/spread-trading/getSpreadInstrumentsInfo.ts";
+import { getSpreadMaxQty as tool_260 } from "../../../../src/tools/spread-trading/getSpreadMaxQty.ts";
+import { getSpreadOpenOrders as tool_261 } from "../../../../src/tools/spread-trading/getSpreadOpenOrders.ts";
+import { getSpreadOrderbook as tool_262 } from "../../../../src/tools/spread-trading/getSpreadOrderbook.ts";
+import { getSpreadOrderHistory as tool_263 } from "../../../../src/tools/spread-trading/getSpreadOrderHistory.ts";
+import { getSpreadRecentTrades as tool_264 } from "../../../../src/tools/spread-trading/getSpreadRecentTrades.ts";
+import { getSpreadTickers as tool_265 } from "../../../../src/tools/spread-trading/getSpreadTickers.ts";
+import { getSpreadTradeHistory as tool_266 } from "../../../../src/tools/spread-trading/getSpreadTradeHistory.ts";
+import { createChaseOrderStrategy as tool_267 } from "../../../../src/tools/strategy/createChaseOrderStrategy.ts";
+import { createIcebergStrategy as tool_268 } from "../../../../src/tools/strategy/createIcebergStrategy.ts";
+import { createTwapStrategy as tool_269 } from "../../../../src/tools/strategy/createTwapStrategy.ts";
+import { queryStrategyList as tool_270 } from "../../../../src/tools/strategy/queryStrategyList.ts";
+import { queryStrategyOrderList as tool_271 } from "../../../../src/tools/strategy/queryStrategyOrderList.ts";
+import { stopStrategy as tool_272 } from "../../../../src/tools/strategy/stopStrategy.ts";
+import { listSubscriptions as tool_273 } from "../../../../src/tools/subscription/listSubscriptions.ts";
+import { readMessages as tool_274 } from "../../../../src/tools/subscription/readMessages.ts";
+import { startSubscription as tool_275 } from "../../../../src/tools/subscription/startSubscription.ts";
+import { stopSubscription as tool_276 } from "../../../../src/tools/subscription/stopSubscription.ts";
+import { amendOrder as tool_277 } from "../../../../src/tools/trade/amendOrder.ts";
+import { batchAmendOrders as tool_278 } from "../../../../src/tools/trade/batchAmendOrders.ts";
+import { batchCancelOrders as tool_279 } from "../../../../src/tools/trade/batchCancelOrders.ts";
+import { batchCreateOrders as tool_280 } from "../../../../src/tools/trade/batchCreateOrders.ts";
+import { cancelAllOrders as tool_281 } from "../../../../src/tools/trade/cancelAllOrders.ts";
+import { cancelOrder as tool_282 } from "../../../../src/tools/trade/cancelOrder.ts";
+import { createOrder as tool_283 } from "../../../../src/tools/trade/createOrder.ts";
+import { getOpenOrders as tool_284 } from "../../../../src/tools/trade/getOpenOrders.ts";
+import { getOrderHistory as tool_285 } from "../../../../src/tools/trade/getOrderHistory.ts";
+import { getSpotBorrowQuota as tool_286 } from "../../../../src/tools/trade/getSpotBorrowQuota.ts";
+import { preCheckOrder as tool_287 } from "../../../../src/tools/trade/preCheckOrder.ts";
+import { setDcp as tool_288 } from "../../../../src/tools/trade/setDcp.ts";
+import { getMemberAccountType as tool_289 } from "../../../../src/tools/user/getMemberAccountType.ts";
+import { listSubAPIKeysV5 as tool_290 } from "../../../../src/tools/user/listSubAPIKeysV5.ts";
+import { queryAPIKey as tool_291 } from "../../../../src/tools/user/queryAPIKey.ts";
+import { queryEscrowSubMembersV5 as tool_292 } from "../../../../src/tools/user/queryEscrowSubMembersV5.ts";
+import { queryReferrals as tool_293 } from "../../../../src/tools/user/queryReferrals.ts";
+import { querySubMembers as tool_294 } from "../../../../src/tools/user/querySubMembers.ts";
+import { querySubMembersV5 as tool_295 } from "../../../../src/tools/user/querySubMembersV5.ts";
+import { subscribeAdlAlert as tool_296 } from "../../../../src/tools/websocket/subscribeAdlAlert.ts";
+import { subscribeDcp as tool_297 } from "../../../../src/tools/websocket/subscribeDcp.ts";
+import { subscribeEarnDualAssets as tool_298 } from "../../../../src/tools/websocket/subscribeEarnDualAssets.ts";
+import { subscribeExecution as tool_299 } from "../../../../src/tools/websocket/subscribeExecution.ts";
+import { subscribeExecutionFast as tool_300 } from "../../../../src/tools/websocket/subscribeExecutionFast.ts";
+import { subscribeGreeks as tool_301 } from "../../../../src/tools/websocket/subscribeGreeks.ts";
+import { subscribeInsurance as tool_302 } from "../../../../src/tools/websocket/subscribeInsurance.ts";
+import { subscribeKline as tool_303 } from "../../../../src/tools/websocket/subscribeKline.ts";
+import { subscribeLiquidation as tool_304 } from "../../../../src/tools/websocket/subscribeLiquidation.ts";
+import { subscribeOrder as tool_305 } from "../../../../src/tools/websocket/subscribeOrder.ts";
+import { subscribeOrderbook as tool_306 } from "../../../../src/tools/websocket/subscribeOrderbook.ts";
+import { subscribePosition as tool_307 } from "../../../../src/tools/websocket/subscribePosition.ts";
+import { subscribePriceLimit as tool_308 } from "../../../../src/tools/websocket/subscribePriceLimit.ts";
+import { subscribePublicTrade as tool_309 } from "../../../../src/tools/websocket/subscribePublicTrade.ts";
+import { subscribeRfqPublicTrades as tool_310 } from "../../../../src/tools/websocket/subscribeRfqPublicTrades.ts";
+import { subscribeRfqQuotes as tool_311 } from "../../../../src/tools/websocket/subscribeRfqQuotes.ts";
+import { subscribeRfqRfqs as tool_312 } from "../../../../src/tools/websocket/subscribeRfqRfqs.ts";
+import { subscribeRfqTrades as tool_313 } from "../../../../src/tools/websocket/subscribeRfqTrades.ts";
+import { subscribeRpiOrderbook as tool_314 } from "../../../../src/tools/websocket/subscribeRpiOrderbook.ts";
+import { subscribeSpreadExecution as tool_315 } from "../../../../src/tools/websocket/subscribeSpreadExecution.ts";
+import { subscribeSpreadOrder as tool_316 } from "../../../../src/tools/websocket/subscribeSpreadOrder.ts";
+import { subscribeSpreadOrderbook as tool_317 } from "../../../../src/tools/websocket/subscribeSpreadOrderbook.ts";
+import { subscribeSpreadPublicTrade as tool_318 } from "../../../../src/tools/websocket/subscribeSpreadPublicTrade.ts";
+import { subscribeSpreadTickers as tool_319 } from "../../../../src/tools/websocket/subscribeSpreadTickers.ts";
+import { subscribeSystemStatus as tool_320 } from "../../../../src/tools/websocket/subscribeSystemStatus.ts";
+import { subscribeTickers as tool_321 } from "../../../../src/tools/websocket/subscribeTickers.ts";
+import { subscribeWallet as tool_322 } from "../../../../src/tools/websocket/subscribeWallet.ts";
+import { wsAmendOrder as tool_323 } from "../../../../src/tools/wstrade/wsAmendOrder.ts";
+import { wsBatchAmendOrders as tool_324 } from "../../../../src/tools/wstrade/wsBatchAmendOrders.ts";
+import { wsBatchCancelOrders as tool_325 } from "../../../../src/tools/wstrade/wsBatchCancelOrders.ts";
+import { wsBatchCreateOrders as tool_326 } from "../../../../src/tools/wstrade/wsBatchCreateOrders.ts";
+import { wsCancelOrder as tool_327 } from "../../../../src/tools/wstrade/wsCancelOrder.ts";
+import { wsCreateOrder as tool_328 } from "../../../../src/tools/wstrade/wsCreateOrder.ts";
 
 export const generatedOpenAiToolRegistry = [
   {
@@ -2864,6 +2866,32 @@ export const generatedOpenAiToolRegistry = [
     tool: tool_194,
   },
   {
+    name: "buildBybitOptionSymbol",
+    group: "option-symbol",
+    namespace: "option-symbol",
+    sourcePath: "option-symbol/buildBybitOptionSymbol",
+    compactDescription: "Build one canonical Bybit option symbol from structured fields. Use this tool — never assemble an option symbol yourself — before querying or discussing a contract specified by expiry, strike, call/put, and settlement coin. expiry must b...",
+    fullDescription: "Build one canonical Bybit option symbol from structured fields. Use this tool — never assemble an option symbol yourself — before querying or discussing a contract specified by expiry, strike, call/put, and settlement coin. expiry must be YYYY-MM-DD; the output uses Bybit's variable-width day format, for example 2026-09-03 becomes 3SEP26.\n\nBuilding a symbol does not prove that the contract exists. Immediately verify the returned symbol with getInstrumentsInfo using category=option and symbol=<symbol>; use Bybit's deliveryTime and status as the authority.\n\nAgent instruction: Do not add a leading zero to the day, infer listing availability from the constructed text, or report a missing expiry without a successful exact Bybit lookup.",
+    parameters: {"type":"object","properties":{"baseCoin":{"type":"string","minLength":1,"description":"Underlying coin, for example BTC."},"expiry":{"type":"string","description":"Expiry date in YYYY-MM-DD format, for example 2026-09-03."},"strike":{"type":"string","minLength":1,"description":"Positive decimal strike without a leading zero, for example 73000."},"optionType":{"type":"string","enum":["C","P","Call","Put"],"description":"Call or put, as C/P or Call/Put."},"settleCoin":{"type":"string","minLength":1,"default":"USDT","description":"Settlement coin, normally USDT."}},"required":["baseCoin","expiry","strike","optionType"],"additionalProperties":false},
+    strictCompatible: true,
+    strictParameters: {"type":"object","additionalProperties":false,"properties":{"baseCoin":{"type":"string","description":"Underlying coin, for example BTC.","minLength":1},"expiry":{"type":"string","description":"Expiry date in YYYY-MM-DD format, for example 2026-09-03."},"strike":{"type":"string","description":"Positive decimal strike without a leading zero, for example 73000.","minLength":1},"optionType":{"type":"string","enum":["C","P","Call","Put"],"description":"Call or put, as C/P or Call/Put."},"settleCoin":{"anyOf":[{"type":"string","description":"Settlement coin, normally USDT.","minLength":1},{"type":"null"}]}},"required":["baseCoin","expiry","strike","optionType","settleCoin"]},
+    strictIncompatibilityReasons: [],
+    tool: tool_195,
+  },
+  {
+    name: "parseBybitOptionSymbol",
+    group: "option-symbol",
+    namespace: "option-symbol",
+    sourcePath: "option-symbol/parseBybitOptionSymbol",
+    compactDescription: "Parse a Bybit option symbol into structured, validated fields. Use this tool — never parse, pad, or normalize an option symbol yourself — whenever a user supplies or refers to a Bybit option symbol. The canonical format is BASE-DMMMYY-ST...",
+    fullDescription: "Parse a Bybit option symbol into structured, validated fields. Use this tool — never parse, pad, or normalize an option symbol yourself — whenever a user supplies or refers to a Bybit option symbol. The canonical format is BASE-DMMMYY-STRIKE-C|P-SETTLE: its expiry day has one or two digits with no leading zero, so BTC-3SEP26-73000-P-USDT is valid while a two-digit-only assumption is wrong.\n\nThe output is syntax validation only; it does not prove that the contract is currently listed. To verify availability, pass the returned canonical symbol unchanged to getInstrumentsInfo with category=option and symbol=<symbol>, then use deliveryTime and status from Bybit as the authority.\n\nAgent instruction: Do not claim that a symbol or expiry is unavailable based on your own text parsing, an inferred date, or a partial contract list.",
+    parameters: {"type":"object","properties":{"symbol":{"type":"string","minLength":1,"description":"Exact Bybit option symbol supplied by the user."}},"required":["symbol"],"additionalProperties":false},
+    strictCompatible: true,
+    strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string","description":"Exact Bybit option symbol supplied by the user.","minLength":1}},"required":["symbol"]},
+    strictIncompatibilityReasons: [],
+    tool: tool_196,
+  },
+  {
     name: "getAds",
     group: "p2p",
     namespace: "p2p",
@@ -2874,7 +2902,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"tokenId":{"type":"string"},"currencyId":{"type":"string"},"side":{"type":"string","enum":["0","1"]},"page":{"anyOf":[{"type":"string"},{"type":"null"}]},"size":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["tokenId","currencyId","side","page","size"]},
     strictIncompatibilityReasons: [],
-    tool: tool_195,
+    tool: tool_197,
   },
   {
     name: "getAllOrders",
@@ -2887,7 +2915,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"page":{"type":"integer"},"size":{"type":"integer"},"status":{"anyOf":[{"type":"integer"},{"type":"null"}]},"beginTime":{"anyOf":[{"type":"string"},{"type":"null"}]},"endTime":{"anyOf":[{"type":"string"},{"type":"null"}]},"tokenId":{"anyOf":[{"type":"string"},{"type":"null"}]},"side":{"anyOf":[{"type":"integer"},{"type":"null"}]}},"required":["page","size","status","beginTime","endTime","tokenId","side"]},
     strictIncompatibilityReasons: [],
-    tool: tool_196,
+    tool: tool_198,
   },
   {
     name: "getChatMessages",
@@ -2900,7 +2928,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"orderId":{"type":"string"},"currentPage":{"anyOf":[{"type":"string"},{"type":"null"}]},"size":{"type":"string"}},"required":["orderId","currentPage","size"]},
     strictIncompatibilityReasons: [],
-    tool: tool_197,
+    tool: tool_199,
   },
   {
     name: "getCounterpartyUserInfo",
@@ -2913,7 +2941,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"originalUid":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["originalUid","orderId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_198,
+    tool: tool_200,
   },
   {
     name: "getMyAdDetails",
@@ -2926,7 +2954,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"itemId":{"type":"string"}},"required":["itemId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_199,
+    tool: tool_201,
   },
   {
     name: "getMyAds",
@@ -2939,7 +2967,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"itemId":{"anyOf":[{"type":"string"},{"type":"null"}]},"status":{"anyOf":[{"type":"string"},{"type":"null"}]},"side":{"anyOf":[{"type":"string"},{"type":"null"}]},"tokenId":{"anyOf":[{"type":"string"},{"type":"null"}]},"page":{"anyOf":[{"type":"string"},{"type":"null"}]},"size":{"anyOf":[{"type":"string"},{"type":"null"}]},"currencyId":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["itemId","status","side","tokenId","page","size","currencyId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_200,
+    tool: tool_202,
   },
   {
     name: "getOrderDetail",
@@ -2952,7 +2980,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"orderId":{"type":"string"}},"required":["orderId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_201,
+    tool: tool_203,
   },
   {
     name: "getPendingOrders",
@@ -2965,7 +2993,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"status":{"anyOf":[{"type":"integer"},{"type":"null"}]},"beginTime":{"anyOf":[{"type":"string"},{"type":"null"}]},"endTime":{"anyOf":[{"type":"string"},{"type":"null"}]},"tokenId":{"anyOf":[{"type":"string"},{"type":"null"}]},"side":{"anyOf":[{"type":"integer"},{"type":"null"}]},"page":{"type":"integer"},"size":{"type":"integer"}},"required":["status","beginTime","endTime","tokenId","side","page","size"]},
     strictIncompatibilityReasons: [],
-    tool: tool_202,
+    tool: tool_204,
   },
   {
     name: "getUserPayment",
@@ -2978,7 +3006,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{},"required":[]},
     strictIncompatibilityReasons: [],
-    tool: tool_203,
+    tool: tool_205,
   },
   {
     name: "markOrderAsPaid",
@@ -2991,7 +3019,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"orderId":{"type":"string"},"paymentType":{"type":"string"},"paymentId":{"type":"string"}},"required":["orderId","paymentType","paymentId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_204,
+    tool: tool_206,
   },
   {
     name: "postAd",
@@ -3004,7 +3032,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"tokenId":{"type":"string"},"currencyId":{"type":"string"},"side":{"type":"string","enum":["0","1"]},"priceType":{"type":"string","enum":["0","1"]},"premium":{"type":"string"},"price":{"type":"string"},"minAmount":{"type":"string"},"maxAmount":{"type":"string"},"remark":{"type":"string"},"tradingPreferenceSet":{"type":"object","additionalProperties":false,"properties":{"hasUnPostAd":{"anyOf":[{"type":"string"},{"type":"null"}]},"isKyc":{"anyOf":[{"type":"string"},{"type":"null"}]},"isEmail":{"anyOf":[{"type":"string"},{"type":"null"}]},"isMobile":{"anyOf":[{"type":"string"},{"type":"null"}]},"hasRegisterTime":{"anyOf":[{"type":"string"},{"type":"null"}]},"registerTimeThreshold":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderFinishNumberDay30":{"anyOf":[{"type":"string"},{"type":"null"}]},"completeRateDay30":{"anyOf":[{"type":"string"},{"type":"null"}]},"nationalLimit":{"anyOf":[{"type":"string"},{"type":"null"}]},"hasOrderFinishNumberDay30":{"anyOf":[{"type":"string"},{"type":"null"}]},"hasCompleteRateDay30":{"anyOf":[{"type":"string"},{"type":"null"}]},"hasNationalLimit":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["hasUnPostAd","isKyc","isEmail","isMobile","hasRegisterTime","registerTimeThreshold","orderFinishNumberDay30","completeRateDay30","nationalLimit","hasOrderFinishNumberDay30","hasCompleteRateDay30","hasNationalLimit"]},"paymentIds":{"type":"array","items":{"type":"string"}},"quantity":{"type":"string"},"paymentPeriod":{"type":"string"},"itemType":{"type":"string","enum":["ORIGIN","BULK"]}},"required":["tokenId","currencyId","side","priceType","premium","price","minAmount","maxAmount","remark","tradingPreferenceSet","paymentIds","quantity","paymentPeriod","itemType"]},
     strictIncompatibilityReasons: [],
-    tool: tool_205,
+    tool: tool_207,
   },
   {
     name: "removeAd",
@@ -3017,7 +3045,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"itemId":{"type":"string"}},"required":["itemId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_206,
+    tool: tool_208,
   },
   {
     name: "updateAd",
@@ -3030,7 +3058,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"id":{"type":"string"},"priceType":{"type":"string","enum":["0","1"]},"premium":{"type":"string"},"price":{"type":"string"},"minAmount":{"type":"string"},"maxAmount":{"type":"string"},"remark":{"type":"string"},"tradingPreferenceSet":{"type":"object","additionalProperties":false,"properties":{"hasUnPostAd":{"anyOf":[{"type":"string"},{"type":"null"}]},"isKyc":{"anyOf":[{"type":"string"},{"type":"null"}]},"isEmail":{"anyOf":[{"type":"string"},{"type":"null"}]},"isMobile":{"anyOf":[{"type":"string"},{"type":"null"}]},"hasRegisterTime":{"anyOf":[{"type":"string"},{"type":"null"}]},"registerTimeThreshold":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderFinishNumberDay30":{"anyOf":[{"type":"string"},{"type":"null"}]},"completeRateDay30":{"anyOf":[{"type":"string"},{"type":"null"}]},"nationalLimit":{"anyOf":[{"type":"string"},{"type":"null"}]},"hasOrderFinishNumberDay30":{"anyOf":[{"type":"string"},{"type":"null"}]},"hasCompleteRateDay30":{"anyOf":[{"type":"string"},{"type":"null"}]},"hasNationalLimit":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["hasUnPostAd","isKyc","isEmail","isMobile","hasRegisterTime","registerTimeThreshold","orderFinishNumberDay30","completeRateDay30","nationalLimit","hasOrderFinishNumberDay30","hasCompleteRateDay30","hasNationalLimit"]},"paymentIds":{"type":"array","items":{"type":"string"}},"actionType":{"type":"string","enum":["MODIFY","ACTIVE"]},"quantity":{"type":"string"},"paymentPeriod":{"type":"string"}},"required":["id","priceType","premium","price","minAmount","maxAmount","remark","tradingPreferenceSet","paymentIds","actionType","quantity","paymentPeriod"]},
     strictIncompatibilityReasons: [],
-    tool: tool_207,
+    tool: tool_209,
   },
   {
     name: "addReduceMargin",
@@ -3043,7 +3071,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear","inverse"]},"symbol":{"type":"string"},"margin":{"type":"string"},"positionIdx":{"anyOf":[{"type":"string","enum":["0","1","2"]},{"type":"null"}]}},"required":["category","symbol","margin","positionIdx"]},
     strictIncompatibilityReasons: [],
-    tool: tool_208,
+    tool: tool_210,
   },
   {
     name: "confirmNewRiskLimit",
@@ -3056,7 +3084,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear","inverse"]},"symbol":{"type":"string"}},"required":["category","symbol"]},
     strictIncompatibilityReasons: [],
-    tool: tool_209,
+    tool: tool_211,
   },
   {
     name: "getClosedPnl",
@@ -3069,7 +3097,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear"]},"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"startTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"endTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":100},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["category","symbol","startTime","endTime","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_210,
+    tool: tool_212,
   },
   {
     name: "getClosePosition",
@@ -3082,7 +3110,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["option"]},"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"startTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"endTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":100},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["category","symbol","startTime","endTime","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_211,
+    tool: tool_213,
   },
   {
     name: "getMovePositionHistory",
@@ -3095,7 +3123,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"anyOf":[{"type":"string","enum":["linear","spot","option","inverse"]},{"type":"null"}]},"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"startTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"endTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"status":{"anyOf":[{"type":"string","enum":["Processing","Filled","Rejected"]},{"type":"null"}]},"blockTradeId":{"anyOf":[{"type":"string"},{"type":"null"}]},"limit":{"anyOf":[{"type":"string"},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["category","symbol","startTime","endTime","status","blockTradeId","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_212,
+    tool: tool_214,
   },
   {
     name: "getPositionInfo",
@@ -3108,7 +3136,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear","inverse","option"]},"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"baseCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"settleCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":200},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["category","symbol","baseCoin","settleCoin","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_213,
+    tool: tool_215,
   },
   {
     name: "movePosition",
@@ -3121,7 +3149,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"fromUid":{"type":"string"},"toUid":{"type":"string"},"list":{"type":"array","items":{"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear","spot","option","inverse"]},"symbol":{"type":"string"},"price":{"type":"string"},"side":{"type":"string","enum":["Buy","Sell"]},"qty":{"type":"string"}},"required":["category","symbol","price","side","qty"]}}},"required":["fromUid","toUid","list"]},
     strictIncompatibilityReasons: [],
-    tool: tool_214,
+    tool: tool_216,
   },
   {
     name: "setAutoAddMargin",
@@ -3134,7 +3162,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear"]},"symbol":{"type":"string"},"autoAddMargin":{"type":"string","enum":["0","1"]},"positionIdx":{"anyOf":[{"type":"string","enum":["0","1","2"]},{"type":"null"}]}},"required":["category","symbol","autoAddMargin","positionIdx"]},
     strictIncompatibilityReasons: [],
-    tool: tool_215,
+    tool: tool_217,
   },
   {
     name: "setLeverage",
@@ -3147,20 +3175,20 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear","inverse"]},"symbol":{"type":"string"},"buyLeverage":{"type":"string"},"sellLeverage":{"type":"string"}},"required":["category","symbol","buyLeverage","sellLeverage"]},
     strictIncompatibilityReasons: [],
-    tool: tool_216,
+    tool: tool_218,
   },
   {
     name: "setTradingStop",
     group: "position",
     namespace: "position",
     sourcePath: "position/setTradingStop",
-    compactDescription: "Configure trading stop parameters including take profit, stop loss, and trailing stop. Supports both full position and partial position TP/SL modes. Agent hint: Use this to set TP/SL/trailing stop on an open position. Set tpslMode to Ful...",
-    fullDescription: "Configure trading stop parameters including take profit, stop loss, and trailing stop.\nSupports both full position and partial position TP/SL modes.\n\nAgent hint: Use this to set TP/SL/trailing stop on an open position. Set tpslMode to Full for entire position or Partial for partial.\nIn Partial mode, tpSize and slSize must be equal. Set any value to \"0\" to cancel it.\npositionIdx is required: 0 for one-way mode, 1 for buy hedge, 2 for sell hedge.",
-    parameters: {"type":"object","properties":{"category":{"type":"string","enum":["linear","inverse"]},"symbol":{"type":"string"},"takeProfit":{"type":"string"},"stopLoss":{"type":"string"},"trailingStop":{"type":"string"},"tpTriggerBy":{"type":"string","enum":["MarkPrice","IndexPrice","LastPrice"]},"slTriggerBy":{"type":"string","enum":["MarkPrice","IndexPrice","LastPrice"]},"activePrice":{"type":"string"},"tpslMode":{"type":"string","enum":["Full","Partial"]},"tpSize":{"type":"string"},"slSize":{"type":"string"},"tpLimitPrice":{"type":"string"},"slLimitPrice":{"type":"string"},"tpOrderType":{"type":"string","enum":["Market","Limit"]},"slOrderType":{"type":"string","enum":["Market","Limit"]},"positionIdx":{"type":"string","enum":["0","1","2"]}},"required":["category","symbol","tpslMode","positionIdx"],"additionalProperties":false},
-    strictCompatible: true,
-    strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear","inverse"]},"symbol":{"type":"string"},"takeProfit":{"anyOf":[{"type":"string"},{"type":"null"}]},"stopLoss":{"anyOf":[{"type":"string"},{"type":"null"}]},"trailingStop":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpTriggerBy":{"anyOf":[{"type":"string","enum":["MarkPrice","IndexPrice","LastPrice"]},{"type":"null"}]},"slTriggerBy":{"anyOf":[{"type":"string","enum":["MarkPrice","IndexPrice","LastPrice"]},{"type":"null"}]},"activePrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpslMode":{"type":"string","enum":["Full","Partial"]},"tpSize":{"anyOf":[{"type":"string"},{"type":"null"}]},"slSize":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"slLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"]},{"type":"null"}]},"slOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"]},{"type":"null"}]},"positionIdx":{"type":"string","enum":["0","1","2"]}},"required":["category","symbol","takeProfit","stopLoss","trailingStop","tpTriggerBy","slTriggerBy","activePrice","tpslMode","tpSize","slSize","tpLimitPrice","slLimitPrice","tpOrderType","slOrderType","positionIdx"]},
-    strictIncompatibilityReasons: [],
-    tool: tool_217,
+    compactDescription: "Configure trading stop parameters including take profit, stop loss, and trailing stop. Supports both full position and partial position TP/SL modes. Options support full-position market TP/SL only. Agent hint: Use this to set TP/SL/trail...",
+    fullDescription: "Configure trading stop parameters including take profit, stop loss, and trailing stop.\nSupports both full position and partial position TP/SL modes.\nOptions support full-position market TP/SL only.\n\nAgent hint: Use this to set TP/SL/trailing stop on an open position. Set tpslMode to Full for entire position or Partial for partial.\nIn Partial mode, tpSize and slSize must be equal. For options, use tpslMode=Full and market TP/SL only. Set any value to \"0\" to cancel it.\npositionIdx is required: 0 for one-way mode, 1 for buy hedge, 2 for sell hedge.",
+    parameters: {"type":"object","properties":{"category":{"type":"string","enum":["linear","inverse","option"]},"symbol":{"type":"string"},"takeProfit":{"type":"string"},"stopLoss":{"type":"string"},"trailingStop":{"type":"string"},"tpTriggerBy":{"type":"string","enum":["MarkPrice","IndexPrice","LastPrice"]},"slTriggerBy":{"type":"string","enum":["MarkPrice","IndexPrice","LastPrice"]},"activePrice":{"type":"string"},"tpslMode":{"type":"string","enum":["Full","Partial"]},"tpSize":{"type":"string"},"slSize":{"type":"string"},"tpLimitPrice":{"type":"string"},"slLimitPrice":{"type":"string"},"tpOrderType":{"type":"string","enum":["Market","Limit"]},"slOrderType":{"type":"string","enum":["Market","Limit"]},"positionIdx":{"type":"string","enum":["0","1","2"]}},"required":["category","symbol","tpslMode","positionIdx"],"additionalProperties":false},
+    strictCompatible: false,
+    strictParameters: {"type":"object","properties":{"category":{"type":"string","enum":["linear","inverse","option"]},"symbol":{"type":"string"},"takeProfit":{"type":"string"},"stopLoss":{"type":"string"},"trailingStop":{"type":"string"},"tpTriggerBy":{"type":"string","enum":["MarkPrice","IndexPrice","LastPrice"]},"slTriggerBy":{"type":"string","enum":["MarkPrice","IndexPrice","LastPrice"]},"activePrice":{"type":"string"},"tpslMode":{"type":"string","enum":["Full","Partial"]},"tpSize":{"type":"string"},"slSize":{"type":"string"},"tpLimitPrice":{"type":"string"},"slLimitPrice":{"type":"string"},"tpOrderType":{"type":"string","enum":["Market","Limit"]},"slOrderType":{"type":"string","enum":["Market","Limit"]},"positionIdx":{"type":"string","enum":["0","1","2"]}},"required":["category","symbol","tpslMode","positionIdx"],"additionalProperties":false},
+    strictIncompatibilityReasons: ["Unsupported strict schema type at setTradingStop: ZodEffects"],
+    tool: tool_219,
   },
   {
     name: "switchPositionMode",
@@ -3173,7 +3201,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear"]},"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"coin":{"anyOf":[{"type":"string"},{"type":"null"}]},"mode":{"type":"string","enum":["0","3"]}},"required":["category","symbol","coin","mode"]},
     strictIncompatibilityReasons: [],
-    tool: tool_218,
+    tool: tool_220,
   },
   {
     name: "acceptNonLpQuote",
@@ -3186,7 +3214,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"rfqId":{"type":"string"}},"required":["rfqId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_219,
+    tool: tool_221,
   },
   {
     name: "cancelAllQuotes",
@@ -3199,7 +3227,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{},"required":[]},
     strictIncompatibilityReasons: [],
-    tool: tool_220,
+    tool: tool_222,
   },
   {
     name: "cancelAllRfqs",
@@ -3212,7 +3240,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{},"required":[]},
     strictIncompatibilityReasons: [],
-    tool: tool_221,
+    tool: tool_223,
   },
   {
     name: "cancelQuote",
@@ -3225,7 +3253,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"quoteId":{"anyOf":[{"type":"string"},{"type":"null"}]},"rfqId":{"anyOf":[{"type":"string"},{"type":"null"}]},"quoteLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["quoteId","rfqId","quoteLinkId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_222,
+    tool: tool_224,
   },
   {
     name: "cancelRfq",
@@ -3238,7 +3266,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"rfqId":{"anyOf":[{"type":"string"},{"type":"null"}]},"rfqLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["rfqId","rfqLinkId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_223,
+    tool: tool_225,
   },
   {
     name: "createQuote",
@@ -3251,7 +3279,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"rfqId":{"type":"string"},"quoteLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"anonymous":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"expireIn":{"anyOf":[{"type":"integer","minimum":10,"maximum":120},{"type":"null"}]},"quoteBuyList":{"anyOf":[{"type":"array","items":{"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","option"]},"symbol":{"type":"string"},"price":{"type":"string"}},"required":["category","symbol","price"]}},{"type":"null"}]},"quoteSellList":{"anyOf":[{"type":"array","items":{"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","option"]},"symbol":{"type":"string"},"price":{"type":"string"}},"required":["category","symbol","price"]}},{"type":"null"}]}},"required":["rfqId","quoteLinkId","anonymous","expireIn","quoteBuyList","quoteSellList"]},
     strictIncompatibilityReasons: [],
-    tool: tool_224,
+    tool: tool_226,
   },
   {
     name: "createRfq",
@@ -3264,7 +3292,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"counterparties":{"type":"array","items":{"type":"string"}},"rfqLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"anonymous":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"strategyType":{"anyOf":[{"type":"string"},{"type":"null"}]},"list":{"type":"array","items":{"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","option"]},"symbol":{"type":"string"},"side":{"type":"string","enum":["Buy","Sell"]},"qty":{"type":"string"}},"required":["category","symbol","side","qty"]}}},"required":["counterparties","rfqLinkId","anonymous","strategyType","list"]},
     strictIncompatibilityReasons: [],
-    tool: tool_225,
+    tool: tool_227,
   },
   {
     name: "executeQuote",
@@ -3277,7 +3305,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"rfqId":{"type":"string"},"quoteId":{"type":"string"},"quoteSide":{"type":"string","enum":["Buy","Sell"]}},"required":["rfqId","quoteId","quoteSide"]},
     strictIncompatibilityReasons: [],
-    tool: tool_226,
+    tool: tool_228,
   },
   {
     name: "getPublicTrades",
@@ -3290,7 +3318,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"startTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"endTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":100},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["startTime","endTime","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_227,
+    tool: tool_229,
   },
   {
     name: "getQuotes",
@@ -3303,7 +3331,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"rfqId":{"anyOf":[{"type":"string"},{"type":"null"}]},"quoteId":{"anyOf":[{"type":"string"},{"type":"null"}]},"quoteLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"traderType":{"anyOf":[{"type":"string","enum":["quote","request"]},{"type":"null"}]},"status":{"anyOf":[{"type":"string","enum":["Active","Canceled","PendingFill","Filled","Expired","Failed"]},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":100},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["rfqId","quoteId","quoteLinkId","traderType","status","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_228,
+    tool: tool_230,
   },
   {
     name: "getQuotesRealtime",
@@ -3316,7 +3344,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"rfqId":{"anyOf":[{"type":"string"},{"type":"null"}]},"quoteId":{"anyOf":[{"type":"string"},{"type":"null"}]},"quoteLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"traderType":{"anyOf":[{"type":"string","enum":["quote","request"]},{"type":"null"}]}},"required":["rfqId","quoteId","quoteLinkId","traderType"]},
     strictIncompatibilityReasons: [],
-    tool: tool_229,
+    tool: tool_231,
   },
   {
     name: "getRfqConfig",
@@ -3329,7 +3357,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{},"required":[]},
     strictIncompatibilityReasons: [],
-    tool: tool_230,
+    tool: tool_232,
   },
   {
     name: "getRfqs",
@@ -3342,7 +3370,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"rfqId":{"anyOf":[{"type":"string"},{"type":"null"}]},"rfqLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"traderType":{"anyOf":[{"type":"string","enum":["quote","request"]},{"type":"null"}]},"status":{"anyOf":[{"type":"string","enum":["Active","Canceled","Filled","Expired","Failed"]},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":100},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["rfqId","rfqLinkId","traderType","status","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_231,
+    tool: tool_233,
   },
   {
     name: "getRfqsRealtime",
@@ -3355,7 +3383,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"rfqId":{"anyOf":[{"type":"string"},{"type":"null"}]},"rfqLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"traderType":{"anyOf":[{"type":"string","enum":["quote","request"]},{"type":"null"}]}},"required":["rfqId","rfqLinkId","traderType"]},
     strictIncompatibilityReasons: [],
-    tool: tool_232,
+    tool: tool_234,
   },
   {
     name: "getTradeHistory",
@@ -3368,7 +3396,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"rfqId":{"anyOf":[{"type":"string"},{"type":"null"}]},"rfqLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"quoteId":{"anyOf":[{"type":"string"},{"type":"null"}]},"quoteLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"traderType":{"anyOf":[{"type":"string","enum":["quote","request"]},{"type":"null"}]},"status":{"anyOf":[{"type":"string","enum":["Filled","Failed"]},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":100},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["rfqId","rfqLinkId","quoteId","quoteLinkId","traderType","status","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_233,
+    tool: tool_235,
   },
   {
     name: "getSmartLeverageRedeemEstAmountList",
@@ -3381,7 +3409,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["SmartLeverage","DoubleWin"]},"positionIds":{"type":"array","items":{"type":"integer"}}},"required":["category","positionIds"]},
     strictIncompatibilityReasons: [],
-    tool: tool_234,
+    tool: tool_236,
   },
   {
     name: "accountFixedBorrow",
@@ -3394,7 +3422,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"orderCurrency":{"type":"string"},"orderAmount":{"type":"string"},"annualRate":{"type":"string"},"term":{"type":"string","enum":["7","14","30","90","180"]},"repayType":{"anyOf":[{"type":"string","enum":["1","2"]},{"type":"null"}]},"strategyType":{"anyOf":[{"type":"string","enum":["PARTIAL","FULL"]},{"type":"null"}]}},"required":["orderCurrency","orderAmount","annualRate","term","repayType","strategyType"]},
     strictIncompatibilityReasons: [],
-    tool: tool_235,
+    tool: tool_237,
   },
   {
     name: "getSpotMarginTradeAutoRepayMode",
@@ -3407,7 +3435,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"currency":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["currency"]},
     strictIncompatibilityReasons: [],
-    tool: tool_236,
+    tool: tool_238,
   },
   {
     name: "getSpotMarginTradeCoinState",
@@ -3420,7 +3448,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"currency":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["currency"]},
     strictIncompatibilityReasons: [],
-    tool: tool_237,
+    tool: tool_239,
   },
   {
     name: "getSpotMarginTradeMaxBorrowable",
@@ -3433,7 +3461,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"currency":{"type":"string"}},"required":["currency"]},
     strictIncompatibilityReasons: [],
-    tool: tool_238,
+    tool: tool_240,
   },
   {
     name: "getSpotMarginTradeRepaymentAvailableAmount",
@@ -3446,7 +3474,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"currency":{"type":"string"}},"required":["currency"]},
     strictIncompatibilityReasons: [],
-    tool: tool_239,
+    tool: tool_241,
   },
   {
     name: "getSpotMarginTradeState",
@@ -3459,7 +3487,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{},"required":[]},
     strictIncompatibilityReasons: [],
-    tool: tool_240,
+    tool: tool_242,
   },
   {
     name: "queryBorrowLiability",
@@ -3472,7 +3500,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"currency":{"type":"string"}},"required":["currency"]},
     strictIncompatibilityReasons: [],
-    tool: tool_241,
+    tool: tool_243,
   },
   {
     name: "queryFixedBorrowContracts",
@@ -3485,7 +3513,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderCurrency":{"anyOf":[{"type":"string"},{"type":"null"}]},"term":{"anyOf":[{"type":"string"},{"type":"null"}]},"limit":{"anyOf":[{"type":"string"},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["orderId","orderCurrency","term","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_242,
+    tool: tool_244,
   },
   {
     name: "queryFixedBorrowMarket",
@@ -3498,7 +3526,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"orderCurrency":{"type":"string"},"term":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderBy":{"type":"string","enum":["apy","term","quantity"]},"sort":{"anyOf":[{"type":"string","enum":["0","1"]},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer"},{"type":"null"}]}},"required":["orderCurrency","term","orderBy","sort","limit"]},
     strictIncompatibilityReasons: [],
-    tool: tool_243,
+    tool: tool_245,
   },
   {
     name: "queryFixedBorrowOrders",
@@ -3511,7 +3539,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderCurrency":{"anyOf":[{"type":"string"},{"type":"null"}]},"state":{"anyOf":[{"type":"string","enum":["1","2","3","4"]},{"type":"null"}]},"term":{"anyOf":[{"type":"string"},{"type":"null"}]},"limit":{"anyOf":[{"type":"string"},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["orderId","orderCurrency","state","term","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_244,
+    tool: tool_246,
   },
   {
     name: "renewFixedBorrow",
@@ -3524,7 +3552,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"loanId":{"type":"string"},"qty":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["loanId","qty"]},
     strictIncompatibilityReasons: [],
-    tool: tool_245,
+    tool: tool_247,
   },
   {
     name: "setAutoRepayMode",
@@ -3537,7 +3565,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"currency":{"anyOf":[{"type":"string"},{"type":"null"}]},"autoRepayMode":{"type":"string","enum":["1","0"]}},"required":["currency","autoRepayMode"]},
     strictIncompatibilityReasons: [],
-    tool: tool_246,
+    tool: tool_248,
   },
   {
     name: "spotMarginSetLeverage",
@@ -3550,7 +3578,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"leverage":{"type":"string"},"currency":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["leverage","currency"]},
     strictIncompatibilityReasons: [],
-    tool: tool_247,
+    tool: tool_249,
   },
   {
     name: "spotMarginSwitchMode",
@@ -3563,7 +3591,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"spotMarginMode":{"type":"string","enum":["0","1"]}},"required":["spotMarginMode"]},
     strictIncompatibilityReasons: [],
-    tool: tool_248,
+    tool: tool_250,
   },
   {
     name: "getHistoricalInterestRate",
@@ -3576,7 +3604,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"currency":{"type":"string"},"vipLevel":{"anyOf":[{"type":"string"},{"type":"null"}]},"startTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"endTime":{"anyOf":[{"type":"integer"},{"type":"null"}]}},"required":["currency","vipLevel","startTime","endTime"]},
     strictIncompatibilityReasons: [],
-    tool: tool_249,
+    tool: tool_251,
   },
   {
     name: "getPositionTiers",
@@ -3589,7 +3617,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"currency":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["currency"]},
     strictIncompatibilityReasons: [],
-    tool: tool_250,
+    tool: tool_252,
   },
   {
     name: "getTieredCollateralRatio",
@@ -3602,7 +3630,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"currency":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["currency"]},
     strictIncompatibilityReasons: [],
-    tool: tool_251,
+    tool: tool_253,
   },
   {
     name: "getVipMarginData",
@@ -3615,7 +3643,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"vipLevel":{"anyOf":[{"type":"string"},{"type":"null"}]},"currency":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["vipLevel","currency"]},
     strictIncompatibilityReasons: [],
-    tool: tool_252,
+    tool: tool_254,
   },
   {
     name: "amendSpreadOrder",
@@ -3628,7 +3656,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"qty":{"anyOf":[{"type":"string"},{"type":"null"}]},"price":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["symbol","orderId","orderLinkId","qty","price"]},
     strictIncompatibilityReasons: [],
-    tool: tool_253,
+    tool: tool_255,
   },
   {
     name: "cancelAllSpreadOrders",
@@ -3641,7 +3669,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"cancelAll":{"anyOf":[{"type":"boolean"},{"type":"null"}]}},"required":["symbol","cancelAll"]},
     strictIncompatibilityReasons: [],
-    tool: tool_254,
+    tool: tool_256,
   },
   {
     name: "cancelSpreadOrder",
@@ -3654,7 +3682,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["orderId","orderLinkId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_255,
+    tool: tool_257,
   },
   {
     name: "createSpreadOrder",
@@ -3667,7 +3695,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"side":{"type":"string","enum":["Buy","Sell"]},"orderType":{"type":"string","enum":["Limit","Market"]},"qty":{"type":"string"},"price":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"timeInForce":{"anyOf":[{"type":"string","enum":["GTC","IOC","FOK","PostOnly"]},{"type":"null"}]}},"required":["symbol","side","orderType","qty","price","orderLinkId","timeInForce"]},
     strictIncompatibilityReasons: [],
-    tool: tool_256,
+    tool: tool_258,
   },
   {
     name: "getSpreadInstrumentsInfo",
@@ -3680,7 +3708,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"baseCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":500},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["symbol","baseCoin","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_257,
+    tool: tool_259,
   },
   {
     name: "getSpreadMaxQty",
@@ -3693,7 +3721,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"side":{"type":"string","enum":["1","2"]},"orderPrice":{"type":"string"}},"required":["symbol","side","orderPrice"]},
     strictIncompatibilityReasons: [],
-    tool: tool_258,
+    tool: tool_260,
   },
   {
     name: "getSpreadOpenOrders",
@@ -3706,7 +3734,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"baseCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":50},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["symbol","baseCoin","orderId","orderLinkId","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_259,
+    tool: tool_261,
   },
   {
     name: "getSpreadOrderbook",
@@ -3719,7 +3747,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":25},{"type":"null"}]}},"required":["symbol","limit"]},
     strictIncompatibilityReasons: [],
-    tool: tool_260,
+    tool: tool_262,
   },
   {
     name: "getSpreadOrderHistory",
@@ -3732,7 +3760,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"baseCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"startTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"endTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":50},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["symbol","baseCoin","orderId","orderLinkId","startTime","endTime","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_261,
+    tool: tool_263,
   },
   {
     name: "getSpreadRecentTrades",
@@ -3745,7 +3773,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":1000},{"type":"null"}]}},"required":["symbol","limit"]},
     strictIncompatibilityReasons: [],
-    tool: tool_262,
+    tool: tool_264,
   },
   {
     name: "getSpreadTickers",
@@ -3758,7 +3786,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"}},"required":["symbol"]},
     strictIncompatibilityReasons: [],
-    tool: tool_263,
+    tool: tool_265,
   },
   {
     name: "getSpreadTradeHistory",
@@ -3771,7 +3799,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"startTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"endTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":50},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["symbol","orderId","orderLinkId","startTime","endTime","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_264,
+    tool: tool_266,
   },
   {
     name: "createChaseOrderStrategy",
@@ -3784,7 +3812,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["UTA_USDT","UTA_USDC","UTA_USDC_FUTURE","UTA_SPOT","UTA_INVERSE","UTA_INVERSE_FUTURE","UTA_USDT_FUTURE"]},"symbol":{"type":"string"},"side":{"type":"string","enum":["Buy","Sell"]},"size":{"type":"string"},"strategyType":{"anyOf":[{"type":"string","enum":["chaseOrder"]},{"type":"null"}]},"chaseDistance":{"anyOf":[{"type":"string"},{"type":"null"}]},"chasePercentE4":{"anyOf":[{"type":"integer","minimum":1,"maximum":1000},{"type":"null"}]},"maxChasePrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"triggerPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"reduceOnly":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"positionIdx":{"anyOf":[{"type":"string","enum":["0","1","2"]},{"type":"null"}]},"leverageType":{"anyOf":[{"type":"string","enum":["0","1"]},{"type":"null"}]}},"required":["category","symbol","side","size","strategyType","chaseDistance","chasePercentE4","maxChasePrice","triggerPrice","reduceOnly","positionIdx","leverageType"]},
     strictIncompatibilityReasons: [],
-    tool: tool_265,
+    tool: tool_267,
   },
   {
     name: "createIcebergStrategy",
@@ -3797,7 +3825,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["UTA_USDT","UTA_USDC","UTA_USDC_FUTURE","UTA_SPOT","UTA_INVERSE","UTA_INVERSE_FUTURE","UTA_USDT_FUTURE"]},"symbol":{"type":"string"},"side":{"type":"string","enum":["Buy","Sell"]},"size":{"type":"string"},"strategyType":{"anyOf":[{"type":"string","enum":["iceberg"]},{"type":"null"}]},"subSize":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderCount":{"anyOf":[{"type":"integer","minimum":2},{"type":"null"}]},"limitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"chaseDistance":{"anyOf":[{"type":"string"},{"type":"null"}]},"chasePercentE4":{"anyOf":[{"type":"integer","minimum":0,"maximum":999},{"type":"null"}]},"maxChasePrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"postOnly":{"anyOf":[{"type":"string","enum":["0","1"]},{"type":"null"}]},"reduceOnly":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"positionIdx":{"anyOf":[{"type":"string","enum":["0","1","2"]},{"type":"null"}]},"leverageType":{"anyOf":[{"type":"string","enum":["0","1"]},{"type":"null"}]}},"required":["category","symbol","side","size","strategyType","subSize","orderCount","limitPrice","chaseDistance","chasePercentE4","maxChasePrice","postOnly","reduceOnly","positionIdx","leverageType"]},
     strictIncompatibilityReasons: [],
-    tool: tool_266,
+    tool: tool_268,
   },
   {
     name: "createTwapStrategy",
@@ -3810,7 +3838,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["UTA_USDT","UTA_USDC","UTA_USDC_FUTURE","UTA_SPOT","UTA_INVERSE","UTA_INVERSE_FUTURE","UTA_USDT_FUTURE"]},"symbol":{"type":"string"},"side":{"type":"string","enum":["Buy","Sell"]},"size":{"type":"string"},"strategyType":{"anyOf":[{"type":"string","enum":["twap"]},{"type":"null"}]},"duration":{"type":"integer","minimum":300,"maximum":86400},"interval":{"anyOf":[{"type":"integer","minimum":5},{"type":"null"}]},"isRandom":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"triggerPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"maxChasePrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"chaseDistance":{"anyOf":[{"type":"string"},{"type":"null"}]},"chasePercentE4":{"anyOf":[{"type":"integer","minimum":1,"maximum":9999},{"type":"null"}]},"reduceOnly":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"positionIdx":{"anyOf":[{"type":"string","enum":["0","1","2"]},{"type":"null"}]},"leverageType":{"anyOf":[{"type":"string","enum":["0","1"]},{"type":"null"}]}},"required":["category","symbol","side","size","strategyType","duration","interval","isRandom","triggerPrice","maxChasePrice","chaseDistance","chasePercentE4","reduceOnly","positionIdx","leverageType"]},
     strictIncompatibilityReasons: [],
-    tool: tool_267,
+    tool: tool_269,
   },
   {
     name: "queryStrategyList",
@@ -3823,7 +3851,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"strategyId":{"anyOf":[{"type":"string"},{"type":"null"}]},"status":{"anyOf":[{"type":"string","enum":["2","3","4","5","6"]},{"type":"null"}]},"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"category":{"anyOf":[{"type":"string","enum":["UTA_USDT","UTA_USDC","UTA_USDC_FUTURE","UTA_SPOT","UTA_INVERSE","UTA_INVERSE_FUTURE","UTA_USDT_FUTURE"]},{"type":"null"}]},"strategyType":{"anyOf":[{"type":"string","enum":["twap","chaseOrder","iceberg"]},{"type":"null"}]},"beginTimeE0":{"anyOf":[{"type":"integer"},{"type":"null"}]},"endTimeE0":{"anyOf":[{"type":"integer"},{"type":"null"}]},"pageSize":{"anyOf":[{"type":"integer","minimum":1,"maximum":50},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["strategyId","status","symbol","category","strategyType","beginTimeE0","endTimeE0","pageSize","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_268,
+    tool: tool_270,
   },
   {
     name: "queryStrategyOrderList",
@@ -3836,7 +3864,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"strategyId":{"type":"string"},"status":{"anyOf":[{"type":"string","enum":["1","2","3","4","5"]},{"type":"null"}]},"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"BeginTimeE0":{"anyOf":[{"type":"integer"},{"type":"null"}]},"EndTimeE0":{"anyOf":[{"type":"integer"},{"type":"null"}]},"pageSize":{"anyOf":[{"type":"integer","minimum":1,"maximum":50},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]},"StrategyType":{"anyOf":[{"type":"string","enum":["twap","chaseOrder","iceberg"]},{"type":"null"}]}},"required":["strategyId","status","symbol","BeginTimeE0","EndTimeE0","pageSize","cursor","StrategyType"]},
     strictIncompatibilityReasons: [],
-    tool: tool_269,
+    tool: tool_271,
   },
   {
     name: "stopStrategy",
@@ -3849,7 +3877,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"strategyId":{"type":"string"}},"required":["strategyId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_270,
+    tool: tool_272,
   },
   {
     name: "listSubscriptions",
@@ -3862,7 +3890,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{},"required":[]},
     strictIncompatibilityReasons: [],
-    tool: tool_271,
+    tool: tool_273,
   },
   {
     name: "readMessages",
@@ -3875,7 +3903,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"subscriptionId":{"type":"string","description":"由 startSubscription 返回的订阅 ID"},"limit":{"anyOf":[{"type":"integer","description":"最多返回最近 N 条消息；不填则返回全部缓冲消息","minimum":1},{"type":"null"}]},"clearAfterRead":{"anyOf":[{"type":"boolean","description":"读取后是否清空缓冲区（默认 true）"},{"type":"null"}]}},"required":["subscriptionId","limit","clearAfterRead"]},
     strictIncompatibilityReasons: [],
-    tool: tool_272,
+    tool: tool_274,
   },
   {
     name: "startSubscription",
@@ -3888,7 +3916,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear","spot","inverse","option","private","spread","misc"],"description":"WS 端点分类"},"topic":{"type":"string","description":"完整 topic 字符串，如 \"orderbook.50.BTCUSDT\" 或 \"execution.linear\""},"requiresAuth":{"anyOf":[{"type":"boolean","description":"私有频道（execution、order、position、wallet 等）设为 true"},{"type":"null"}]},"maxMessages":{"anyOf":[{"type":"integer","description":"单个订阅的消息缓冲上限，超出时丢弃最旧的消息（默认 500）","minimum":1,"maximum":5000},{"type":"null"}]}},"required":["category","topic","requiresAuth","maxMessages"]},
     strictIncompatibilityReasons: [],
-    tool: tool_273,
+    tool: tool_275,
   },
   {
     name: "stopSubscription",
@@ -3901,7 +3929,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"subscriptionId":{"type":"string","description":"由 startSubscription 返回的订阅 ID"}},"required":["subscriptionId"]},
     strictIncompatibilityReasons: [],
-    tool: tool_274,
+    tool: tool_276,
   },
   {
     name: "amendOrder",
@@ -3914,7 +3942,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"]},"symbol":{"type":"string"},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderIv":{"anyOf":[{"type":"string"},{"type":"null"}]},"triggerPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"qty":{"anyOf":[{"type":"string"},{"type":"null"}]},"price":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpslMode":{"anyOf":[{"type":"string","enum":["Full","Partial"]},{"type":"null"}]},"takeProfit":{"anyOf":[{"type":"string"},{"type":"null"}]},"stopLoss":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"slTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"triggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"tpLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"slLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["category","symbol","orderId","orderLinkId","orderIv","triggerPrice","qty","price","tpslMode","takeProfit","stopLoss","tpTriggerBy","slTriggerBy","triggerBy","tpLimitPrice","slLimitPrice"]},
     strictIncompatibilityReasons: [],
-    tool: tool_275,
+    tool: tool_277,
   },
   {
     name: "batchAmendOrders",
@@ -3927,7 +3955,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"]},"request":{"type":"array","items":{"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"qty":{"anyOf":[{"type":"string"},{"type":"null"}]},"price":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderIv":{"anyOf":[{"type":"string"},{"type":"null"}]},"triggerPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpslMode":{"anyOf":[{"type":"string","enum":["Full","Partial"]},{"type":"null"}]},"takeProfit":{"anyOf":[{"type":"string"},{"type":"null"}]},"stopLoss":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"slTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"triggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"tpLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"slLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["symbol","orderId","orderLinkId","qty","price","orderIv","triggerPrice","tpslMode","takeProfit","stopLoss","tpTriggerBy","slTriggerBy","triggerBy","tpLimitPrice","slLimitPrice"]}}},"required":["category","request"]},
     strictIncompatibilityReasons: [],
-    tool: tool_276,
+    tool: tool_278,
   },
   {
     name: "batchCancelOrders",
@@ -3940,7 +3968,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"]},"request":{"type":"array","items":{"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["symbol","orderId","orderLinkId"]}}},"required":["category","request"]},
     strictIncompatibilityReasons: [],
-    tool: tool_277,
+    tool: tool_279,
   },
   {
     name: "batchCreateOrders",
@@ -3953,7 +3981,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"]},"request":{"type":"array","items":{"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"side":{"type":"string","enum":["Buy","Sell"]},"orderType":{"type":"string","enum":["Market","Limit"]},"qty":{"type":"string"},"price":{"anyOf":[{"type":"string"},{"type":"null"}]},"isLeverage":{"anyOf":[{"type":"string","enum":["0","1"]},{"type":"null"}]},"marketUnit":{"anyOf":[{"type":"string","enum":["baseCoin","quoteCoin"]},{"type":"null"}]},"timeInForce":{"anyOf":[{"type":"string","enum":["GTC","IOC","FOK","PostOnly"]},{"type":"null"}]},"triggerDirection":{"anyOf":[{"type":"string","enum":["1","2"]},{"type":"null"}]},"orderFilter":{"anyOf":[{"type":"string","enum":["Order","tpslOrder","StopOrder"]},{"type":"null"}]},"triggerPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"triggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"orderIv":{"anyOf":[{"type":"string"},{"type":"null"}]},"positionIdx":{"anyOf":[{"type":"string","enum":["0","1","2"]},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"takeProfit":{"anyOf":[{"type":"string"},{"type":"null"}]},"stopLoss":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"slTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"tpslMode":{"anyOf":[{"type":"string","enum":["Full","Partial"]},{"type":"null"}]},"tpOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"]},{"type":"null"}]},"slOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"]},{"type":"null"}]},"tpLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"slLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"reduceOnly":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"closeOnTrigger":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"smpType":{"anyOf":[{"type":"string"},{"type":"null"}]},"mmp":{"anyOf":[{"type":"boolean"},{"type":"null"}]}},"required":["symbol","side","orderType","qty","price","isLeverage","marketUnit","timeInForce","triggerDirection","orderFilter","triggerPrice","triggerBy","orderIv","positionIdx","orderLinkId","takeProfit","stopLoss","tpTriggerBy","slTriggerBy","tpslMode","tpOrderType","slOrderType","tpLimitPrice","slLimitPrice","reduceOnly","closeOnTrigger","smpType","mmp"]}}},"required":["category","request"]},
     strictIncompatibilityReasons: [],
-    tool: tool_278,
+    tool: tool_280,
   },
   {
     name: "cancelAllOrders",
@@ -3966,7 +3994,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"]},"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"baseCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"settleCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderFilter":{"anyOf":[{"type":"string","enum":["Order","tpslOrder","StopOrder","OcoOrder","BidirectionalTpslOrder","OpenOrder"]},{"type":"null"}]},"stopOrderType":{"anyOf":[{"type":"string","enum":["Stop"]},{"type":"null"}]}},"required":["category","symbol","baseCoin","settleCoin","orderFilter","stopOrderType"]},
     strictIncompatibilityReasons: [],
-    tool: tool_279,
+    tool: tool_281,
   },
   {
     name: "cancelOrder",
@@ -3979,7 +4007,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"]},"symbol":{"type":"string"},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderFilter":{"anyOf":[{"type":"string","enum":["Order","tpslOrder","StopOrder"]},{"type":"null"}]}},"required":["category","symbol","orderId","orderLinkId","orderFilter"]},
     strictIncompatibilityReasons: [],
-    tool: tool_280,
+    tool: tool_282,
   },
   {
     name: "createOrder",
@@ -3992,7 +4020,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"]},"symbol":{"type":"string"},"isLeverage":{"anyOf":[{"type":"string","enum":["0","1"]},{"type":"null"}]},"side":{"type":"string","enum":["Buy","Sell"]},"orderType":{"type":"string","enum":["Market","Limit"]},"qty":{"type":"string"},"marketUnit":{"anyOf":[{"type":"string","enum":["baseCoin","quoteCoin"]},{"type":"null"}]},"slippageToleranceType":{"anyOf":[{"type":"string","enum":["TickSize","Percent"]},{"type":"null"}]},"slippageTolerance":{"anyOf":[{"type":"string"},{"type":"null"}]},"price":{"anyOf":[{"type":"string"},{"type":"null"}]},"triggerDirection":{"anyOf":[{"type":"string","enum":["1","2"]},{"type":"null"}]},"orderFilter":{"anyOf":[{"type":"string","enum":["Order","tpslOrder","StopOrder"]},{"type":"null"}]},"triggerPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"triggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"orderIv":{"anyOf":[{"type":"string"},{"type":"null"}]},"timeInForce":{"anyOf":[{"type":"string","enum":["GTC","IOC","FOK","PostOnly","RPI"]},{"type":"null"}]},"positionIdx":{"anyOf":[{"type":"string","enum":["0","1","2"]},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"takeProfit":{"anyOf":[{"type":"string"},{"type":"null"}]},"stopLoss":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"slTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"reduceOnly":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"closeOnTrigger":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"smpType":{"anyOf":[{"type":"string"},{"type":"null"}]},"mmp":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"tpslMode":{"anyOf":[{"type":"string","enum":["Full","Partial"]},{"type":"null"}]},"tpLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"slLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"]},{"type":"null"}]},"slOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"]},{"type":"null"}]},"bboSideType":{"anyOf":[{"type":"string","enum":["Queue","Counterparty"]},{"type":"null"}]},"bboLevel":{"anyOf":[{"type":"string","enum":["1","2","3","4","5"]},{"type":"null"}]}},"required":["category","symbol","isLeverage","side","orderType","qty","marketUnit","slippageToleranceType","slippageTolerance","price","triggerDirection","orderFilter","triggerPrice","triggerBy","orderIv","timeInForce","positionIdx","orderLinkId","takeProfit","stopLoss","tpTriggerBy","slTriggerBy","reduceOnly","closeOnTrigger","smpType","mmp","tpslMode","tpLimitPrice","slLimitPrice","tpOrderType","slOrderType","bboSideType","bboLevel"]},
     strictIncompatibilityReasons: [],
-    tool: tool_281,
+    tool: tool_283,
   },
   {
     name: "getOpenOrders",
@@ -4005,7 +4033,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"]},"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"baseCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"settleCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"openOnly":{"anyOf":[{"type":"string","enum":["0","1"]},{"type":"null"}]},"orderFilter":{"anyOf":[{"type":"string","enum":["Order","StopOrder","tpslOrder","OcoOrder","BidirectionalTpslOrder"]},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":50},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["category","symbol","baseCoin","settleCoin","orderId","orderLinkId","openOnly","orderFilter","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_282,
+    tool: tool_284,
   },
   {
     name: "getOrderHistory",
@@ -4018,7 +4046,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"]},"symbol":{"anyOf":[{"type":"string"},{"type":"null"}]},"baseCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"settleCoin":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"orderFilter":{"anyOf":[{"type":"string","enum":["Order","StopOrder","tpslOrder","OcoOrder","BidirectionalTpslOrder"]},{"type":"null"}]},"orderStatus":{"anyOf":[{"type":"string"},{"type":"null"}]},"startTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"endTime":{"anyOf":[{"type":"integer"},{"type":"null"}]},"limit":{"anyOf":[{"type":"integer","minimum":1,"maximum":50},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["category","symbol","baseCoin","settleCoin","orderId","orderLinkId","orderFilter","orderStatus","startTime","endTime","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_283,
+    tool: tool_285,
   },
   {
     name: "getSpotBorrowQuota",
@@ -4031,7 +4059,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot"]},"symbol":{"type":"string"},"side":{"type":"string","enum":["Buy","Sell"]}},"required":["category","symbol","side"]},
     strictIncompatibilityReasons: [],
-    tool: tool_284,
+    tool: tool_286,
   },
   {
     name: "preCheckOrder",
@@ -4044,7 +4072,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["linear","option"]},"symbol":{"type":"string"},"side":{"type":"string","enum":["Buy","Sell"]},"orderType":{"type":"string","enum":["Market","Limit"]},"qty":{"type":"string"},"price":{"anyOf":[{"type":"string"},{"type":"null"}]},"isLeverage":{"anyOf":[{"type":"string","enum":["0","1"]},{"type":"null"}]},"timeInForce":{"anyOf":[{"type":"string","enum":["GTC","IOC","FOK","PostOnly"]},{"type":"null"}]},"positionIdx":{"anyOf":[{"type":"string","enum":["0","1","2"]},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string"},{"type":"null"}]},"takeProfit":{"anyOf":[{"type":"string"},{"type":"null"}]},"stopLoss":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"slTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"]},{"type":"null"}]},"reduceOnly":{"anyOf":[{"type":"boolean"},{"type":"null"}]},"tpslMode":{"anyOf":[{"type":"string","enum":["Full","Partial"]},{"type":"null"}]},"tpLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"slLimitPrice":{"anyOf":[{"type":"string"},{"type":"null"}]},"tpOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"]},{"type":"null"}]},"slOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"]},{"type":"null"}]},"orderIv":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["category","symbol","side","orderType","qty","price","isLeverage","timeInForce","positionIdx","orderLinkId","takeProfit","stopLoss","tpTriggerBy","slTriggerBy","reduceOnly","tpslMode","tpLimitPrice","slLimitPrice","tpOrderType","slOrderType","orderIv"]},
     strictIncompatibilityReasons: [],
-    tool: tool_285,
+    tool: tool_287,
   },
   {
     name: "setDcp",
@@ -4057,7 +4085,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"product":{"anyOf":[{"type":"string","enum":["OPTIONS","DERIVATIVES","SPOT"]},{"type":"null"}]},"timeWindow":{"type":"integer","minimum":3,"maximum":300}},"required":["product","timeWindow"]},
     strictIncompatibilityReasons: [],
-    tool: tool_286,
+    tool: tool_288,
   },
   {
     name: "getMemberAccountType",
@@ -4070,7 +4098,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"memberIds":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["memberIds"]},
     strictIncompatibilityReasons: [],
-    tool: tool_287,
+    tool: tool_289,
   },
   {
     name: "listSubAPIKeysV5",
@@ -4083,7 +4111,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"subuid":{"type":"integer"},"limit":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]}},"required":["subuid","limit","cursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_288,
+    tool: tool_290,
   },
   {
     name: "queryAPIKey",
@@ -4096,7 +4124,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{},"required":[]},
     strictIncompatibilityReasons: [],
-    tool: tool_289,
+    tool: tool_291,
   },
   {
     name: "queryEscrowSubMembersV5",
@@ -4109,7 +4137,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"nextCursor":{"anyOf":[{"type":"integer","minimum":0},{"type":"null"}]},"pageSize":{"anyOf":[{"type":"integer","minimum":1,"maximum":100},{"type":"null"}]}},"required":["nextCursor","pageSize"]},
     strictIncompatibilityReasons: [],
-    tool: tool_290,
+    tool: tool_292,
   },
   {
     name: "queryReferrals",
@@ -4122,7 +4150,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"cursor":{"anyOf":[{"type":"string"},{"type":"null"}]},"size":{"anyOf":[{"type":"integer","minimum":1,"maximum":100},{"type":"null"}]},"status":{"anyOf":[{"type":"array","items":{"type":"string","enum":["0","1"]}},{"type":"null"}]}},"required":["cursor","size","status"]},
     strictIncompatibilityReasons: [],
-    tool: tool_291,
+    tool: tool_293,
   },
   {
     name: "querySubMembers",
@@ -4135,7 +4163,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{},"required":[]},
     strictIncompatibilityReasons: [],
-    tool: tool_292,
+    tool: tool_294,
   },
   {
     name: "querySubMembersV5",
@@ -4148,7 +4176,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"pageSize":{"anyOf":[{"type":"integer","minimum":1,"maximum":100},{"type":"null"}]},"nextCursor":{"anyOf":[{"type":"integer","minimum":0},{"type":"null"}]}},"required":["pageSize","nextCursor"]},
     strictIncompatibilityReasons: [],
-    tool: tool_293,
+    tool: tool_295,
   },
   {
     name: "subscribeAdlAlert",
@@ -4161,7 +4189,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"coin":{"type":"string"},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["coin","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_294,
+    tool: tool_296,
   },
   {
     name: "subscribeDcp",
@@ -4174,7 +4202,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_295,
+    tool: tool_297,
   },
   {
     name: "subscribeEarnDualAssets",
@@ -4187,7 +4215,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_296,
+    tool: tool_298,
   },
   {
     name: "subscribeExecution",
@@ -4200,7 +4228,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"anyOf":[{"type":"string","enum":["spot","linear","inverse","option"]},{"type":"null"}]},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["category","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_297,
+    tool: tool_299,
   },
   {
     name: "subscribeExecutionFast",
@@ -4213,7 +4241,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_298,
+    tool: tool_300,
   },
   {
     name: "subscribeGreeks",
@@ -4226,7 +4254,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_299,
+    tool: tool_301,
   },
   {
     name: "subscribeInsurance",
@@ -4239,7 +4267,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"coin":{"type":"string"},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["coin","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_300,
+    tool: tool_302,
   },
   {
     name: "subscribeKline",
@@ -4252,7 +4280,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"interval":{"type":"string","enum":["1","3","5","15","30","60","120","240","360","720","D","W","M"]},"symbol":{"type":"string"},"category":{"anyOf":[{"type":"string","enum":["linear","spot","inverse"]},{"type":"null"}]},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["interval","symbol","category","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_301,
+    tool: tool_303,
   },
   {
     name: "subscribeLiquidation",
@@ -4265,7 +4293,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"category":{"anyOf":[{"type":"string","enum":["linear","inverse"]},{"type":"null"}]},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["symbol","category","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_302,
+    tool: tool_304,
   },
   {
     name: "subscribeOrder",
@@ -4278,7 +4306,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"anyOf":[{"type":"string","enum":["spot","linear","inverse","option"]},{"type":"null"}]},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["category","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_303,
+    tool: tool_305,
   },
   {
     name: "subscribeOrderbook",
@@ -4291,7 +4319,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"depth":{"type":"string","enum":["1","50","200","1000"]},"symbol":{"type":"string"},"category":{"anyOf":[{"type":"string","enum":["linear","spot","inverse","option"]},{"type":"null"}]},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["depth","symbol","category","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_304,
+    tool: tool_306,
   },
   {
     name: "subscribePosition",
@@ -4304,7 +4332,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"anyOf":[{"type":"string","enum":["linear","inverse","option"]},{"type":"null"}]},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["category","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_305,
+    tool: tool_307,
   },
   {
     name: "subscribePriceLimit",
@@ -4317,7 +4345,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"category":{"anyOf":[{"type":"string","enum":["linear","inverse"]},{"type":"null"}]},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["symbol","category","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_306,
+    tool: tool_308,
   },
   {
     name: "subscribePublicTrade",
@@ -4330,7 +4358,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"category":{"anyOf":[{"type":"string","enum":["linear","spot","inverse","option"]},{"type":"null"}]},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["symbol","category","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_307,
+    tool: tool_309,
   },
   {
     name: "subscribeRfqPublicTrades",
@@ -4343,7 +4371,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_308,
+    tool: tool_310,
   },
   {
     name: "subscribeRfqQuotes",
@@ -4356,7 +4384,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_309,
+    tool: tool_311,
   },
   {
     name: "subscribeRfqRfqs",
@@ -4369,7 +4397,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_310,
+    tool: tool_312,
   },
   {
     name: "subscribeRfqTrades",
@@ -4382,7 +4410,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_311,
+    tool: tool_313,
   },
   {
     name: "subscribeRpiOrderbook",
@@ -4395,7 +4423,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"category":{"anyOf":[{"type":"string","enum":["linear","spot","inverse"]},{"type":"null"}]},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["symbol","category","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_312,
+    tool: tool_314,
   },
   {
     name: "subscribeSpreadExecution",
@@ -4408,7 +4436,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_313,
+    tool: tool_315,
   },
   {
     name: "subscribeSpreadOrder",
@@ -4421,7 +4449,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_314,
+    tool: tool_316,
   },
   {
     name: "subscribeSpreadOrderbook",
@@ -4434,7 +4462,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_315,
+    tool: tool_317,
   },
   {
     name: "subscribeSpreadPublicTrade",
@@ -4447,7 +4475,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_316,
+    tool: tool_318,
   },
   {
     name: "subscribeSpreadTickers",
@@ -4460,7 +4488,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_317,
+    tool: tool_319,
   },
   {
     name: "subscribeSystemStatus",
@@ -4473,7 +4501,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_318,
+    tool: tool_320,
   },
   {
     name: "subscribeTickers",
@@ -4486,7 +4514,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string"},"category":{"anyOf":[{"type":"string","enum":["linear","spot","inverse","option"]},{"type":"null"}]},"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["symbol","category","messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_319,
+    tool: tool_321,
   },
   {
     name: "subscribeWallet",
@@ -4499,7 +4527,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"messageCount":{"anyOf":[{"type":"integer","minimum":1},{"type":"null"}]},"timeoutMs":{"anyOf":[{"type":"integer","minimum":100},{"type":"null"}]}},"required":["messageCount","timeoutMs"]},
     strictIncompatibilityReasons: [],
-    tool: tool_320,
+    tool: tool_322,
   },
   {
     name: "wsAmendOrder",
@@ -4512,7 +4540,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"],"description":"Product type."},"symbol":{"type":"string","description":"Trading pair or contract name."},"orderId":{"anyOf":[{"type":"string","description":"System-generated order ID. Either `orderId` or `orderLinkId` is required."},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string","description":"User-defined order ID. Either `orderId` or `orderLinkId` is required."},{"type":"null"}]},"orderIv":{"anyOf":[{"type":"string","description":"Implied volatility (option only). Pass actual value, e.g., \"0.1\" for 10%."},{"type":"null"}]},"triggerPrice":{"anyOf":[{"type":"string","description":"Modified trigger price for conditional orders."},{"type":"null"}]},"qty":{"anyOf":[{"type":"string","description":"Modified order quantity. Omit if unchanged."},{"type":"null"}]},"price":{"anyOf":[{"type":"string","description":"Modified order price. Omit if unchanged."},{"type":"null"}]},"tpslMode":{"anyOf":[{"type":"string","enum":["Full","Partial"],"description":"TP/SL mode. `Full`=entire position (market only), `Partial`=partial position (supports limit)"},{"type":"null"}]},"takeProfit":{"anyOf":[{"type":"string","description":"Modified take-profit price. Pass \"0\" to cancel existing TP."},{"type":"null"}]},"stopLoss":{"anyOf":[{"type":"string","description":"Modified stop-loss price. Pass \"0\" to cancel existing SL."},{"type":"null"}]},"tpTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Take-profit trigger price type. Required if modifying TP without prior setting."},{"type":"null"}]},"slTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Stop-loss trigger price type. Required if modifying SL without prior setting."},{"type":"null"}]},"triggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Trigger price type for conditional orders."},{"type":"null"}]},"tpLimitPrice":{"anyOf":[{"type":"string","description":"Limit price after take-profit triggers (Partial mode only)."},{"type":"null"}]},"slLimitPrice":{"anyOf":[{"type":"string","description":"Limit price after stop-loss triggers (Partial mode only)."},{"type":"null"}]}},"required":["category","symbol","orderId","orderLinkId","orderIv","triggerPrice","qty","price","tpslMode","takeProfit","stopLoss","tpTriggerBy","slTriggerBy","triggerBy","tpLimitPrice","slLimitPrice"]},
     strictIncompatibilityReasons: [],
-    tool: tool_321,
+    tool: tool_323,
   },
   {
     name: "wsBatchAmendOrders",
@@ -4525,7 +4553,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"],"description":"Product type."},"request":{"type":"array","items":{"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string","description":"Trading pair or contract name."},"orderId":{"anyOf":[{"type":"string","description":"System-generated order ID. Either `orderId` or `orderLinkId` is required."},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string","description":"User-defined order ID. Either `orderId` or `orderLinkId` is required."},{"type":"null"}]},"orderIv":{"anyOf":[{"type":"string","description":"Implied volatility (option only). Pass actual value, e.g., \"0.1\" for 10%."},{"type":"null"}]},"triggerPrice":{"anyOf":[{"type":"string","description":"Modified trigger price for conditional orders."},{"type":"null"}]},"qty":{"anyOf":[{"type":"string","description":"Modified order quantity. Omit if unchanged."},{"type":"null"}]},"price":{"anyOf":[{"type":"string","description":"Modified order price. Omit if unchanged."},{"type":"null"}]},"tpslMode":{"anyOf":[{"type":"string","enum":["Full","Partial"],"description":"TP/SL mode. `Full`=entire position (market only), `Partial`=partial position (supports limit)"},{"type":"null"}]},"takeProfit":{"anyOf":[{"type":"string","description":"Modified take-profit price. Pass \"0\" to cancel existing TP."},{"type":"null"}]},"stopLoss":{"anyOf":[{"type":"string","description":"Modified stop-loss price. Pass \"0\" to cancel existing SL."},{"type":"null"}]},"tpTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Take-profit trigger price type."},{"type":"null"}]},"slTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Stop-loss trigger price type."},{"type":"null"}]},"triggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Trigger price type for conditional orders."},{"type":"null"}]},"tpLimitPrice":{"anyOf":[{"type":"string","description":"Limit price after take-profit triggers (Partial mode only)."},{"type":"null"}]},"slLimitPrice":{"anyOf":[{"type":"string","description":"Limit price after stop-loss triggers (Partial mode only)."},{"type":"null"}]}},"required":["symbol","orderId","orderLinkId","orderIv","triggerPrice","qty","price","tpslMode","takeProfit","stopLoss","tpTriggerBy","slTriggerBy","triggerBy","tpLimitPrice","slLimitPrice"]},"description":"Array of order amendment objects. Max 20 for futures/options, 10 for spot.","minItems":1,"maxItems":20}},"required":["category","request"]},
     strictIncompatibilityReasons: [],
-    tool: tool_322,
+    tool: tool_324,
   },
   {
     name: "wsBatchCancelOrders",
@@ -4538,7 +4566,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"],"description":"Product type."},"request":{"type":"array","items":{"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string","description":"Trading pair or contract name."},"orderId":{"anyOf":[{"type":"string","description":"System-generated order ID. Either `orderId` or `orderLinkId` is required."},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string","description":"User-defined order ID. Either `orderId` or `orderLinkId` is required."},{"type":"null"}]},"orderFilter":{"anyOf":[{"type":"string","enum":["Order","tpslOrder","StopOrder"],"description":"Order type filter (spot only). `Order`=normal, `tpslOrder`=TP/SL, `StopOrder`=conditional"},{"type":"null"}]}},"required":["symbol","orderId","orderLinkId","orderFilter"]},"description":"Array of order cancel objects. Max 20 for futures/options, 10 for spot.","minItems":1,"maxItems":20}},"required":["category","request"]},
     strictIncompatibilityReasons: [],
-    tool: tool_323,
+    tool: tool_325,
   },
   {
     name: "wsBatchCreateOrders",
@@ -4551,7 +4579,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"],"description":"Product type."},"request":{"type":"array","items":{"type":"object","additionalProperties":false,"properties":{"symbol":{"type":"string","description":"Trading pair or contract name."},"isLeverage":{"anyOf":[{"type":"integer","enum":[0,1],"description":"Whether to borrow (spot margin). `0`=spot trading, `1`=margin trading"},{"type":"null"}]},"side":{"type":"string","enum":["Buy","Sell"],"description":"Order direction."},"orderType":{"type":"string","enum":["Market","Limit"],"description":"Order type."},"qty":{"type":"string","description":"Order quantity (positive number as string)."},"marketUnit":{"anyOf":[{"type":"string","enum":["baseCoin","quoteCoin"],"description":"Unit for spot market order quantity."},{"type":"null"}]},"price":{"anyOf":[{"type":"string","description":"Order price. Required for limit orders; ignored for market orders."},{"type":"null"}]},"triggerDirection":{"anyOf":[{"type":"integer","enum":[1,2],"description":"Conditional order trigger direction. `1`=rise, `2`=fall"},{"type":"null"}]},"orderFilter":{"anyOf":[{"type":"string","enum":["Order","tpslOrder","StopOrder"],"description":"Order type filter (spot only)."},{"type":"null"}]},"triggerPrice":{"anyOf":[{"type":"string","description":"Trigger price for conditional or TP/SL orders."},{"type":"null"}]},"triggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Price type used to trigger conditional orders."},{"type":"null"}]},"orderIv":{"anyOf":[{"type":"string","description":"Implied volatility for option orders. e.g., \"0.1\" means 10%."},{"type":"null"}]},"timeInForce":{"anyOf":[{"type":"string","enum":["GTC","IOC","FOK","PostOnly"],"description":"Time-in-force strategy."},{"type":"null"}]},"positionIdx":{"anyOf":[{"type":"integer","enum":[0,1,2],"description":"Position index for linear/inverse hedge mode. `0`=one-way, `1`=buy-side, `2`=sell-side"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string","description":"User-defined order ID.","maxLength":36},{"type":"null"}]},"takeProfit":{"anyOf":[{"type":"string","description":"Take-profit price."},{"type":"null"}]},"stopLoss":{"anyOf":[{"type":"string","description":"Stop-loss price."},{"type":"null"}]},"tpTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Price type to trigger take-profit."},{"type":"null"}]},"slTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Price type to trigger stop-loss."},{"type":"null"}]},"reduceOnly":{"anyOf":[{"type":"boolean","description":"Reduce-only flag. Valid for futures and options."},{"type":"null"}]},"closeOnTrigger":{"anyOf":[{"type":"boolean","description":"Close-on-trigger flag. Valid for linear/inverse futures."},{"type":"null"}]},"smpType":{"anyOf":[{"type":"string","description":"Self-match prevention execution type."},{"type":"null"}]},"mmp":{"anyOf":[{"type":"boolean","description":"Market maker protection flag. Valid for options only."},{"type":"null"}]},"tpslMode":{"anyOf":[{"type":"string","enum":["Full","Partial"],"description":"TP/SL mode."},{"type":"null"}]},"tpLimitPrice":{"anyOf":[{"type":"string","description":"Limit price when take-profit is triggered (Partial mode)."},{"type":"null"}]},"slLimitPrice":{"anyOf":[{"type":"string","description":"Limit price when stop-loss is triggered (Partial mode)."},{"type":"null"}]},"tpOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"],"description":"Order type for take-profit."},{"type":"null"}]},"slOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"],"description":"Order type for stop-loss."},{"type":"null"}]}},"required":["symbol","isLeverage","side","orderType","qty","marketUnit","price","triggerDirection","orderFilter","triggerPrice","triggerBy","orderIv","timeInForce","positionIdx","orderLinkId","takeProfit","stopLoss","tpTriggerBy","slTriggerBy","reduceOnly","closeOnTrigger","smpType","mmp","tpslMode","tpLimitPrice","slLimitPrice","tpOrderType","slOrderType"]},"description":"Array of order objects. Max 20 for futures/options, 10 for spot.","minItems":1,"maxItems":20}},"required":["category","request"]},
     strictIncompatibilityReasons: [],
-    tool: tool_324,
+    tool: tool_326,
   },
   {
     name: "wsCancelOrder",
@@ -4564,7 +4592,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"],"description":"Product type."},"symbol":{"type":"string","description":"Trading pair or contract name."},"orderId":{"anyOf":[{"type":"string","description":"System-generated order ID. Either `orderId` or `orderLinkId` is required."},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string","description":"User-defined order ID. Either `orderId` or `orderLinkId` is required."},{"type":"null"}]},"orderFilter":{"anyOf":[{"type":"string","enum":["Order","tpslOrder","StopOrder"],"description":"Order type filter (spot only). `Order`=normal, `tpslOrder`=TP/SL, `StopOrder`=conditional"},{"type":"null"}]}},"required":["category","symbol","orderId","orderLinkId","orderFilter"]},
     strictIncompatibilityReasons: [],
-    tool: tool_325,
+    tool: tool_327,
   },
   {
     name: "wsCreateOrder",
@@ -4577,7 +4605,7 @@ export const generatedOpenAiToolRegistry = [
     strictCompatible: true,
     strictParameters: {"type":"object","additionalProperties":false,"properties":{"category":{"type":"string","enum":["spot","linear","inverse","option"],"description":"Product type."},"symbol":{"type":"string","description":"Trading pair or contract name."},"isLeverage":{"anyOf":[{"type":"integer","enum":[0,1],"description":"Whether to borrow (spot margin). `0`=spot trading, `1`=margin trading"},{"type":"null"}]},"side":{"type":"string","enum":["Buy","Sell"],"description":"Order direction."},"orderType":{"type":"string","enum":["Market","Limit"],"description":"Order type."},"qty":{"type":"string","description":"Order quantity (positive number as string)."},"marketUnit":{"anyOf":[{"type":"string","enum":["baseCoin","quoteCoin"],"description":"Unit for spot market order quantity. `baseCoin` or `quoteCoin`"},{"type":"null"}]},"price":{"anyOf":[{"type":"string","description":"Order price. Required for limit orders; ignored for market orders."},{"type":"null"}]},"triggerDirection":{"anyOf":[{"type":"integer","enum":[1,2],"description":"Conditional order trigger direction. `1`=rise, `2`=fall"},{"type":"null"}]},"orderFilter":{"anyOf":[{"type":"string","enum":["Order","tpslOrder","StopOrder"],"description":"Order type filter (spot only). `Order`=normal, `tpslOrder`=TP/SL, `StopOrder`=conditional"},{"type":"null"}]},"triggerPrice":{"anyOf":[{"type":"string","description":"Trigger price for conditional or TP/SL orders."},{"type":"null"}]},"triggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Price type used to trigger conditional orders."},{"type":"null"}]},"orderIv":{"anyOf":[{"type":"string","description":"Implied volatility for option orders. e.g., \"0.1\" means 10%."},{"type":"null"}]},"timeInForce":{"anyOf":[{"type":"string","enum":["GTC","IOC","FOK","PostOnly"],"description":"Time-in-force. `GTC`=Good Till Cancel, `IOC`=Immediate or Cancel, `FOK`=Fill or Kill, `PostOnly`=maker-only"},{"type":"null"}]},"positionIdx":{"anyOf":[{"type":"integer","enum":[0,1,2],"description":"Position index for linear/inverse hedge mode. `0`=one-way, `1`=buy-side, `2`=sell-side"},{"type":"null"}]},"orderLinkId":{"anyOf":[{"type":"string","description":"User-defined order ID. Required for options.","maxLength":36},{"type":"null"}]},"takeProfit":{"anyOf":[{"type":"string","description":"Take-profit price."},{"type":"null"}]},"stopLoss":{"anyOf":[{"type":"string","description":"Stop-loss price."},{"type":"null"}]},"tpTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Price type to trigger take-profit."},{"type":"null"}]},"slTriggerBy":{"anyOf":[{"type":"string","enum":["LastPrice","IndexPrice","MarkPrice"],"description":"Price type to trigger stop-loss."},{"type":"null"}]},"reduceOnly":{"anyOf":[{"type":"boolean","description":"Reduce-only flag. Valid for futures and options."},{"type":"null"}]},"closeOnTrigger":{"anyOf":[{"type":"boolean","description":"Close-on-trigger flag. Valid for linear/inverse futures."},{"type":"null"}]},"smpType":{"anyOf":[{"type":"string","description":"Self-match prevention execution type."},{"type":"null"}]},"mmp":{"anyOf":[{"type":"boolean","description":"Market maker protection flag. Valid for options only."},{"type":"null"}]},"tpslMode":{"anyOf":[{"type":"string","enum":["Full","Partial"],"description":"TP/SL mode. `Full`=entire position (market only), `Partial`=partial position (supports limit)"},{"type":"null"}]},"tpLimitPrice":{"anyOf":[{"type":"string","description":"Limit price when take-profit is triggered (Partial mode)."},{"type":"null"}]},"slLimitPrice":{"anyOf":[{"type":"string","description":"Limit price when stop-loss is triggered (Partial mode)."},{"type":"null"}]},"tpOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"],"description":"Order type for take-profit."},{"type":"null"}]},"slOrderType":{"anyOf":[{"type":"string","enum":["Market","Limit"],"description":"Order type for stop-loss."},{"type":"null"}]}},"required":["category","symbol","isLeverage","side","orderType","qty","marketUnit","price","triggerDirection","orderFilter","triggerPrice","triggerBy","orderIv","timeInForce","positionIdx","orderLinkId","takeProfit","stopLoss","tpTriggerBy","slTriggerBy","reduceOnly","closeOnTrigger","smpType","mmp","tpslMode","tpLimitPrice","slLimitPrice","tpOrderType","slOrderType"]},
     strictIncompatibilityReasons: [],
-    tool: tool_326,
+    tool: tool_328,
   },
 ];
 
@@ -4601,6 +4629,7 @@ export const generatedOpenAiGroups = [
   "fixedterm",
   "liquiditymining",
   "market",
+  "option-symbol",
   "p2p",
   "position",
   "rfq-trading",
@@ -4639,6 +4668,7 @@ export const generatedOpenAiNamespaces = [
   "fixedterm",
   "liquiditymining",
   "market",
+  "option-symbol",
   "p2p",
   "position",
   "rfq-trading",
@@ -4674,6 +4704,7 @@ export const generatedOpenAiGroupCounts = {
   "fixedterm": 6,
   "liquiditymining": 10,
   "market": 22,
+  "option-symbol": 2,
   "p2p": 13,
   "position": 11,
   "rfq-trading": 15,

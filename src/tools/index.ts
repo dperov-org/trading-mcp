@@ -18,6 +18,7 @@ import { fiatConvertTools } from './fiat-convert/index.js';
 import { fixedtermTools } from './fixedterm/index.js';
 import { liquidityminingTools } from './liquiditymining/index.js';
 import { marketTools } from './market/index.js';
+import { optionSymbolTools } from './option-symbol/index.js';
 import { p2pTools } from './p2p/index.js';
 import { positionTools } from './position/index.js';
 import { rfqTradingTools } from './rfq-trading/index.js';
@@ -52,6 +53,7 @@ export const allTools = [
   ...fixedtermTools,
   ...liquidityminingTools,
   ...marketTools,
+  ...optionSymbolTools,
   ...p2pTools,
   ...positionTools,
   ...rfqTradingTools,

@@ -92,6 +92,14 @@ export function toCodexUserInput(chatkitInput, options = {}) {
   const webSearchRule = allowWebSearch
     ? "- Prefer MCP tools for exchange/account/market data. Web search is allowed for public internet information such as news, macro context, or recent external developments."
     : "- Use MCP tools only. If MCP data is insufficient, explain what is missing instead of using web search or the shell.";
+  const bybitOptionSymbolRule = [
+    "Bybit option-symbol rule:",
+    "- Do not manually parse, pad, normalize, or assemble Bybit option symbols.",
+    "- If the user provides a Bybit option symbol, call parseBybitOptionSymbol and use its returned canonical symbol unchanged.",
+    "- If expiry, strike, and C/P are provided separately, call buildBybitOptionSymbol, then query getInstrumentsInfo with category=option and the exact returned symbol.",
+    "- Only Bybit's successful getInstrumentsInfo response, specifically status and deliveryTime, can confirm availability. Never infer absence from a partial list or the spelling of a symbol.",
+    "",
+  ].join("\n");
   const policyPrefix = allowShellCommands
     ? ""
     : [
@@ -113,7 +121,7 @@ export function toCodexUserInput(chatkitInput, options = {}) {
   return [
     {
       type: "text",
-      text: `${policyPrefix}${finalText}`.trim(),
+      text: `${policyPrefix}${bybitOptionSymbolRule}${finalText}`.trim(),
       text_elements: [],
     },
   ];

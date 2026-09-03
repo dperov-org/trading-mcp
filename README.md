@@ -140,6 +140,17 @@ The AI will read the README, understand all available tools, and be ready to ass
 
 ---
 
+## Bybit option symbols
+
+For a Bybit option, use the dedicated MCP tools instead of parsing or composing the text in an agent response:
+
+- `parseBybitOptionSymbol` validates a supplied canonical symbol and returns its structured fields.
+- `buildBybitOptionSymbol` builds a canonical symbol from `baseCoin`, ISO expiry date, strike, C/P, and settlement coin.
+
+The canonical form is `BASE-DMMMYY-STRIKE-C|P-SETTLE`; the day is one or two digits and has no leading zero. For example, `BTC-3SEP26-73000-P-USDT` is valid. Building or parsing is not evidence that a contract is listed: verify the exact returned symbol with `getInstrumentsInfo` using `category=option`, and treat Bybit's `status` and `deliveryTime` as authoritative.
+
+---
+
 ## Configuration Reference
 
 | Variable | Required | Default | Description |

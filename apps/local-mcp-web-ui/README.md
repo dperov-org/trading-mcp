@@ -91,6 +91,11 @@ It downloads the browser bundle, the embedded frame HTML, the first-layer frame 
   - `tailscale funnel` with session auth inside the backend for public access
 - denies shell command execution by default, so the agent must use MCP/tools instead of local `npm`/`bash` helper scripts unless explicitly re-enabled
 - allows built-in web search by default for public internet context such as news or recent macro developments
+- injects a Bybit option-symbol workflow: the agent uses `parseBybitOptionSymbol` or `buildBybitOptionSymbol` rather than parsing text itself, then confirms the exact symbol with `getInstrumentsInfo`
+
+### Bybit option-symbol workflow
+
+For an option symbol received from a user, the UI instructs Codex to call `parseBybitOptionSymbol`; for separately supplied expiry, strike, and call/put fields, it must first call `buildBybitOptionSymbol`. Both tools use Bybit's canonical variable-width day format (`BTC-3SEP26-73000-P-USDT`, not `03SEP26`). Neither tool establishes that the contract is listed: only a successful exact `getInstrumentsInfo(category=option, symbol=...)` response and its `status` / `deliveryTime` fields can do that.
 
 ## What the MVP intentionally does not do
 
