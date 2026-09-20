@@ -25,9 +25,19 @@ export function formatToolExecutionError(err: unknown): string {
 export async function executeToolCall(
   tool: ToolDefinition,
   args: ToolArguments | undefined,
+  options: { dryRun?: boolean } = {},
 ) {
   try {
     const parsed = tool.inputSchema.parse(args ?? {}) as ToolArguments;
+    if (options.dryRun && tool.operation === 'write') {
+      return createToolTextResponse(JSON.stringify({
+        ok: true,
+        mode: 'dry-run',
+        exchangeRequestSent: false,
+        operation: tool.name,
+        validatedArguments: parsed,
+      }, null, 2));
+    }
     const result = await tool.handler(parsed);
     return createToolTextResponse(JSON.stringify(result, null, 2));
   } catch (err) {

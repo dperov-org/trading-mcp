@@ -8,6 +8,7 @@ export interface ExchangeRuntime {
   tools: ToolDefinition[];
   beforeToolCall?: McpServerConfig['beforeToolCall'];
   startupDetails?: McpServerConfig['startupDetails'];
+  dryRun?: boolean;
 }
 
 function toInt(value: string | undefined, fallback: number): number {
@@ -58,6 +59,7 @@ export async function startExchangeRuntimeServer(runtime: ExchangeRuntime): Prom
     tools: runtime.tools,
     beforeToolCall: runtime.beforeToolCall,
     startupDetails: runtime.startupDetails,
+    dryRun: runtime.dryRun,
   };
 
   if (getRuntimeTransport(runtime) === 'http') {

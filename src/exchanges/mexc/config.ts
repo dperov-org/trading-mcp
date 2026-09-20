@@ -35,6 +35,16 @@ export interface MexcConfig {
   recvWindow: number;
   enableSpot: boolean;
   enableFutures: boolean;
+  writeMode: 'live' | 'dry-run';
+}
+
+function getWriteMode(value: string | undefined): 'live' | 'dry-run' {
+  const normalized = value?.trim().toLowerCase() || 'live';
+  if (normalized === 'live' || normalized === 'dry-run') {
+    return normalized;
+  }
+
+  throw new Error('MEXC_WRITE_MODE must be either "live" or "dry-run"');
 }
 
 export function getMexcConfig(): MexcConfig {
@@ -68,18 +78,19 @@ export function getMexcConfig(): MexcConfig {
     recvWindow: toInt(process.env.MEXC_RECV_WINDOW, 5000),
     enableSpot: toBoolean(process.env.MEXC_ENABLE_SPOT, true),
     enableFutures: toBoolean(process.env.MEXC_ENABLE_FUTURES, true),
+    writeMode: getWriteMode(process.env.MEXC_WRITE_MODE),
   };
 }
 
 export function getMexcAuthSummary(): string {
   const config = getMexcConfig();
   if (!config.spotApiKey && !config.futuresApiKey) {
-    return `auth: unauthenticated, spot: ${config.enableSpot ? 'enabled' : 'disabled'}, futures: ${config.enableFutures ? 'enabled' : 'disabled'}`;
+    return `auth: unauthenticated, spot: ${config.enableSpot ? 'enabled' : 'disabled'}, futures: ${config.enableFutures ? 'enabled' : 'disabled'}, write-mode: ${config.writeMode}`;
   }
 
   if ((config.enableSpot && !config.spotApiSecret) || (config.enableFutures && !config.futuresApiSecret)) {
-    return 'auth: config error — MEXC secret key is missing';
+    return `auth: config error — MEXC secret key is missing, write-mode: ${config.writeMode}`;
   }
 
-  return `auth: HMAC-SHA256, spot: ${config.enableSpot ? 'enabled' : 'disabled'}, futures: ${config.enableFutures ? 'enabled' : 'disabled'}`;
+  return `auth: HMAC-SHA256, spot: ${config.enableSpot ? 'enabled' : 'disabled'}, futures: ${config.enableFutures ? 'enabled' : 'disabled'}, write-mode: ${config.writeMode}`;
 }

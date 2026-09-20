@@ -11,7 +11,32 @@ import { subAccountTools } from './subAccount/index.js';
 import { tradeTools } from './trade/index.js';
 import { websocketTools } from './websocket/index.js';
 
-export const mexcSpotTools: ToolDefinition[] = [
+const mexcWriteToolNames = new Set([
+  'createTestOrder',
+  'createOrder',
+  'cancelOrder',
+  'cancelAllOrders',
+  'createFuturesOrder',
+  'cancelFuturesOrderByExternalId',
+  'cancelAllFuturesOrders',
+  'cancelFuturesOrders',
+  'createFuturesTriggerOrder',
+  'cancelFuturesTriggerOrders',
+  'cancelAllFuturesTriggerOrders',
+  'updateFuturesOrderTpSl',
+  'cancelFuturesStopOrders',
+  'cancelAllFuturesStopOrders',
+  'updateFuturesTriggerOrderTpSl',
+]);
+
+function classifyMexcTools(tools: ToolDefinition[]): ToolDefinition[] {
+  return tools.map((tool) => ({
+    ...tool,
+    operation: mexcWriteToolNames.has(tool.name) ? 'write' : 'read',
+  }));
+}
+
+export const mexcSpotTools: ToolDefinition[] = classifyMexcTools([
   getMexcTradingReviewSnapshot,
   getMexcCapabilityGuide,
   ...marketTools,
@@ -21,13 +46,13 @@ export const mexcSpotTools: ToolDefinition[] = [
   ...rebateTools,
   ...tradeTools,
   ...websocketTools,
-];
+]);
 
-export const mexcFuturesTools: ToolDefinition[] = [
+export const mexcFuturesTools: ToolDefinition[] = classifyMexcTools([
   ...futuresMarketTools,
   ...futuresAccountTools,
   ...futuresTradeTools,
-];
+]);
 
 export const mexcTools: ToolDefinition[] = [
   ...mexcSpotTools,

@@ -16,6 +16,7 @@ export interface McpServerConfig {
   tools: ToolDefinition[];
   beforeToolCall?: () => Promise<string | null>;
   startupDetails?: () => string | Promise<string>;
+  dryRun?: boolean;
 }
 
 export interface McpHttpServerOptions {
@@ -25,7 +26,7 @@ export interface McpHttpServerOptions {
 }
 
 function createConfiguredServer(config: McpServerConfig): Server {
-  const { serverName, serverVersion, tools, beforeToolCall, startupDetails } = config;
+  const { serverName, serverVersion, tools, beforeToolCall, startupDetails, dryRun } = config;
 
   const server = new Server(
     { name: serverName, version: serverVersion },
@@ -55,7 +56,7 @@ function createConfiguredServer(config: McpServerConfig): Server {
       }
     }
 
-    return executeToolCall(tool, args as Record<string, unknown> | undefined);
+    return executeToolCall(tool, args as Record<string, unknown> | undefined, { dryRun });
   });
 
   return server;

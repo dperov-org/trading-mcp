@@ -862,25 +862,15 @@ npm run codex:mcp:smoke:linux
 npm run codex:mcp:smoke:mexc:linux
 ```
 
-Remote Codex app-server TUI mode:
+### Singapur remote Codex access
 
-```bash
-# PowerShell
-.\start-codex-remote.bat
-
-# Linux / WSL
-CODEX_TUI_REMOTE_URL=ws://singapur.tail3e0cf.ts.net:8790 npm run codex:session:linux
-```
-
-When `CODEX_TUI_REMOTE_URL`, `CODEX_APP_SERVER_URL`, or `WEB_UI_CODEX_APP_SERVER_URL` is set, the launcher runs `codex --remote <url> -C <remote-cwd>` and does not inject local MCP server config. The default remote cwd is `/root/projects/trading-mcp`; set `CODEX_TUI_REMOTE_CWD` to override it.
-
-Do not run Windows Codex CLI directly against the Linux app-server. Current Codex CLI versions can fail during remote TUI bootstrap when a Windows TUI decodes a Linux absolute path from the app-server:
-
-```text
-AbsolutePathBuf deserialized without a base path
-```
-
-Use `start-codex-remote.bat` from Windows. It opens an SSH TTY on `singapur` and runs the Linux Codex TUI against `ws://127.0.0.1:8790`.
+The active Singapur deployment does **not** run this repository's Web UI or a
+project-managed `codex app-server`; do not use the retired WebSocket endpoint
+on port `8790` or the `CODEX_TUI_REMOTE_URL` examples from older documents.
+ChatGPT Work reaches the host-managed Codex remote runtime through SSH. That
+runtime is operationally separate from the MCP services in this repository;
+use [SINGAPUR_RUNTIME_AND_DIAGNOSTICS.md](SINGAPUR_RUNTIME_AND_DIAGNOSTICS.md)
+for the current service topology and diagnosis boundary.
 
 Notes:
 

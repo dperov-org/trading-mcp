@@ -4,11 +4,51 @@ import { mexcFuturesRestClient } from '../../rest/futures-client.js';
 
 const decimalSchema = z.union([z.string(), z.number()]);
 const idSchema = z.union([z.string(), z.number()]);
-const sideSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
-const openTypeSchema = z.union([z.literal(1), z.literal(2)]);
-const orderTypeSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5), z.literal(6)]);
-const triggerOrderTypeSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]);
-const trendSchema = z.union([z.literal(1), z.literal(2), z.literal(3)]);
+
+function coerceEnumCode(value: unknown): unknown {
+  if (typeof value !== 'string' || !/^[1-9]\d*$/.test(value)) {
+    return value;
+  }
+
+  return Number(value);
+}
+
+function enumCodeSchema<T extends z.ZodTypeAny>(schema: T, description: string) {
+  return z.preprocess(coerceEnumCode, schema).describe(description);
+}
+
+const sideSchema = enumCodeSchema(
+  z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+  'Order side code: 1=open long, 2=close short, 3=open short, 4=close long. Use a number or a digit-only string such as "1".',
+);
+const openTypeSchema = enumCodeSchema(
+  z.union([z.literal(1), z.literal(2)]),
+  'Margin mode code: 1=isolated, 2=cross. Use a number or a digit-only string.',
+);
+const orderTypeSchema = enumCodeSchema(
+  z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5), z.literal(6)]),
+  'Order execution type: 1=limit, 2=post-only maker, 3=immediate-or-cancel, 4=fill-or-kill, 5=market, 6=market converted to current price. Types 1-4 require price. Use a number or a digit-only string.',
+);
+const triggerOrderTypeSchema = enumCodeSchema(
+  z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
+  'Triggered order execution type: 1=limit, 2=post-only maker, 3=immediate-or-cancel, 4=fill-or-kill, 5=market. orderType 1-4 require price; orderType 5 must omit price. Use a number or a digit-only string.',
+);
+const triggerTypeSchema = enumCodeSchema(
+  z.union([z.literal(1), z.literal(2)]),
+  'Trigger condition code: 1=trigger when selected price is greater than or equal to triggerPrice; 2=trigger when it is less than or equal to triggerPrice. Use a number or a digit-only string.',
+);
+const executeCycleSchema = enumCodeSchema(
+  z.union([z.literal(1), z.literal(2)]),
+  'Trigger validity period: 1=24 hours, 2=7 days. Use a number or a digit-only string.',
+);
+const trendSchema = enumCodeSchema(
+  z.union([z.literal(1), z.literal(2), z.literal(3)]),
+  'Price source for evaluating triggerPrice: 1=last price, 2=fair price, 3=index price. Use a number or a digit-only string.',
+);
+const positionModeSchema = enumCodeSchema(
+  z.union([z.literal(1), z.literal(2)]),
+  'Position mode: 1=hedge mode, 2=one-way mode. Omit to use the account setting. Use a number or a digit-only string.',
+);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -51,7 +91,7 @@ const createFuturesOrderSchema = z.object({
   externalOid: z.string().max(32).optional(),
   stopLossPrice: decimalSchema.optional(),
   takeProfitPrice: decimalSchema.optional(),
-  positionMode: z.union([z.literal(1), z.literal(2)]).optional(),
+  positionMode: positionModeSchema.optional(),
   reduceOnly: z.boolean().optional(),
   recvWindow: z.number().int().positive().optional(),
 }).superRefine((value, ctx) => {
@@ -138,21 +178,21 @@ export const cancelFuturesOrders = {
 
 const createFuturesTriggerOrderSchema = z.object({
   symbol: z.string().min(1),
-  price: decimalSchema.optional(),
-  vol: decimalSchema,
-  leverage: z.number().int().positive().optional(),
+  price: decimalSchema.optional().describe('Limit execution price. Required for trigger orderType 1-4; omit for market orderType 5.'),
+  vol: decimalSchema.describe('Positive contract quantity, not a BTC notional amount. Use contract metadata minVol and volUnit.'),
+  leverage: z.number().int().positive().optional().describe('Positive integer leverage. Required by MEXC for isolated margin when applicable.'),
   side: sideSchema,
   openType: openTypeSchema,
-  triggerPrice: decimalSchema,
-  triggerType: z.union([z.literal(1), z.literal(2)]),
-  executeCycle: z.union([z.literal(1), z.literal(2)]),
+  triggerPrice: decimalSchema.describe('Price that activates the trigger, evaluated using trend and triggerType.'),
+  triggerType: triggerTypeSchema,
+  executeCycle: executeCycleSchema,
   orderType: triggerOrderTypeSchema,
   trend: trendSchema,
-  stopLossPrice: decimalSchema.optional(),
-  takeProfitPrice: decimalSchema.optional(),
-  positionMode: z.union([z.literal(1), z.literal(2)]).optional(),
-  reduceOnly: z.boolean().optional(),
-  recvWindow: z.number().int().positive().optional(),
+  stopLossPrice: decimalSchema.optional().describe('Optional protective stop-loss price attached to the triggered order.'),
+  takeProfitPrice: decimalSchema.optional().describe('Optional protective take-profit price attached to the triggered order.'),
+  positionMode: positionModeSchema.optional(),
+  reduceOnly: z.boolean().optional().describe('For one-way positions, true means only reduce an existing position. Use false when opening.'),
+  recvWindow: z.number().int().positive().optional().describe('Optional positive request window in milliseconds. Omit rather than sending 0.'),
 }).superRefine((value, ctx) => {
   if (futuresLimitStyleTypes.has(value.orderType) && value.price === undefined) {
     ctx.addIssue({

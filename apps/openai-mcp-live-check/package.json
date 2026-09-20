@@ -7,7 +7,9 @@
   "scripts": {
     "ask": "node src/ask.mjs",
     "bridge": "node src/bridge-server.mjs",
-    "live-check": "node src/live-check.mjs"
+    "live-check": "node src/live-check.mjs",
+    "eval:mexc-write": "node --env-file=../../.env src/mexc-dry-run-model-eval.mjs",
+    "eval:mexc-write-suite": "node --env-file=../../.env src/mexc-dry-run-model-eval.mjs --suite=all-writes"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.10.2",

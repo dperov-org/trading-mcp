@@ -58,6 +58,7 @@
     "smoke:mexc": "node --env-file=.env --import tsx/esm scripts/mexc-smoke.ts",
     "smoke:mexc:readonly": "node --env-file=.env --import tsx/esm scripts/mexc-readonly-smoke.ts",
     "smoke:mexc:write": "node --env-file=.env --import tsx/esm scripts/mexc-write-smoke.ts",
+    "smoke:mexc:dry-run": "node scripts/mexc-dry-run-smoke.mjs",
     "smoke:mexc:ws": "node --env-file=.env --import tsx/esm scripts/mexc-ws-smoke.ts",
     "smoke:openai-functions": "npm --prefix apps/openai-function-tools-adapter run live-check",
     "webui:http": "node apps/local-mcp-web-ui/src/server.mjs",

@@ -18,6 +18,7 @@ export async function createMexcRuntime(): Promise<ExchangeRuntime> {
     tools,
     beforeToolCall: checkVersionForTool,
     startupDetails: getMexcAuthSummary,
+    dryRun: config.writeMode === 'dry-run',
   };
 }
 

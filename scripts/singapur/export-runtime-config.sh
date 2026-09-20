@@ -17,10 +17,10 @@ mkdir -p "$output_dir"
 
 This directory is safe to inspect and share inside the project: it intentionally excludes .env values, API credentials, session secrets, private keys, and complete process environments.
 
-- `system.txt`: OS, installed runtime versions, screen sessions, listeners, and project process tree.
+- `system.txt`: OS, installed runtime versions, screen sessions, MCP listeners, and Codex remote-runtime process evidence.
 - `tailscale-serve-status.json`: active Tailscale Serve/Funnel routing.
 - `nginx-routing.txt`: public listener and routing directives only; no private key material.
-- `project-runtime.env.example`: non-secret ports, modes, and log-rotation defaults used by the deployment scripts.
+- `project-runtime.env.example`: non-secret MCP ports and paths used by the deployment scripts.
 EOF
 } >"$output_dir/README.md"
 
@@ -40,7 +40,7 @@ EOF
   printf '\n== screens ==\n'
   screen -ls || true
   printf '\n== listeners ==\n'
-  ss -ltnp | grep -E ':(443|8787|8790|8791|8792)([[:space:]]|$)' || true
+  ss -ltnp | grep -E ':(443|8791|8792)([[:space:]]|$)' || true
   printf '\n== project process tree ==\n'
   ps -eo pid,ppid,lstart,args | grep -E 'trading-mcp|codex.*app-server|tailscale-publish' | grep -v grep || true
 } >"$output_dir/system.txt"
@@ -52,7 +52,7 @@ nginx -T 2>/dev/null |
   >"$output_dir/nginx-routing.txt" || true
 
 cat >"$output_dir/project-runtime.env.example" <<'EOF'
-# Non-secret singapur runtime settings. Store secrets only in .env or the host secret manager.
+# Non-secret singapur MCP settings. Store secrets only in .env or the host secret manager.
 BYBIT_MCP_TRANSPORT=http
 BYBIT_MCP_HTTP_HOST=127.0.0.1
 BYBIT_MCP_HTTP_PORT=8791
@@ -61,14 +61,8 @@ MEXC_MCP_TRANSPORT=http
 MEXC_MCP_HTTP_HOST=127.0.0.1
 MEXC_MCP_HTTP_PORT=8792
 MEXC_MCP_HTTP_PATH=/mcp/mexc
-CODEX_MCP_MODE=external
-CODEX_APP_SERVER_PORT=8790
-WEB_UI_CODEX_MODE=external
-WEB_UI_CODEX_APP_SERVER_URL=ws://127.0.0.1:8790
-WEB_UI_PORT=8787
-WEB_UI_LOG_MAX_BYTES=10485760
-WEB_UI_LOG_RETENTION_DAYS=30
-WEB_UI_LOG_MAX_FILES=100
+# ChatGPT Work uses the host-managed Codex remote runtime through SSH.
+# No project-managed Web UI or codex app-server port is expected on this host.
 EOF
 
 printf 'Wrote runtime inventory to %s\n' "$output_dir"
